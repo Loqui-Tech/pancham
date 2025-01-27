@@ -1,0 +1,22 @@
+name: order
+file_type: xlsx
+file_path: example/orders.xlsx
+sheet: Sheet1
+output:
+  - output_type: database
+    table: order
+fields:
+  - name: Order
+    source_name: Order Id
+    field_type: int
+    nullable: false
+  - name: Date
+    source_name: Rec Date
+    field_type: datetime
+    nullable: false
+  - name: Sent
+    field_type: bool
+    func:
+      is:
+        source_name: Disp.
+        matches: 'X'
