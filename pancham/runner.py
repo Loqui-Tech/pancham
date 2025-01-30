@@ -1,16 +1,17 @@
-from configuration.datetime_field_parser import DateTimeFieldParser
-from configuration.field_parser import FieldParser
-from configuration.match_field_parser import MatchFieldParser
-from configuration.text_field_parser import TextFieldParser
-from data_frame_configuration import DataFrameConfiguration
-from data_frame_configuration_loader import DataFrameConfigurationLoader
-from data_frame_loader import DataFrameLoader
-from database.database_engine import initialize_db_engine
-from database.database_output import DatabaseOutputWriter, DatabaseOutput
-from file_loader import FileLoader, ExcelFileLoader
-from output_configuration import OutputWriter, OutputConfiguration
-from pancham_configuration import PanchamConfiguration
-from reporter import Reporter, PrintReporter
+from configuration.to_int_field_parser import ToIntFieldParser
+from .data_frame_configuration_loader import YamlDataFrameConfigurationLoader
+from .configuration.datetime_field_parser import DateTimeFieldParser
+from .configuration.field_parser import FieldParser
+from .configuration.match_field_parser import MatchFieldParser
+from .configuration.text_field_parser import TextFieldParser
+from .data_frame_configuration import DataFrameConfiguration
+from .data_frame_loader import DataFrameLoader
+from .database.database_engine import initialize_db_engine
+from .database.database_output import DatabaseOutputWriter, DatabaseOutput
+from .file_loader import FileLoader, ExcelFileLoader
+from .output_configuration import OutputWriter, OutputConfiguration
+from .pancham_configuration import PanchamConfiguration
+from .reporter import Reporter, PrintReporter
 
 DEFAULT_LOADERS = {
     'xlsx': ExcelFileLoader()
@@ -19,7 +20,8 @@ DEFAULT_REPORTER = PrintReporter()
 DEFAULT_FIELD_PARSERS = [
     TextFieldParser(),
     MatchFieldParser(),
-    DateTimeFieldParser()
+    DateTimeFieldParser(),
+    ToIntFieldParser()
 ]
 DEFAULT_OUTPUTS = [
     DatabaseOutput()
@@ -62,6 +64,14 @@ class PanchamRunner:
         else:
             self.outputs_configuration = outputs_configuration
 
+    def load_and_run(self, configuration_file: str):
+        configuration_loader = YamlDataFrameConfigurationLoader(field_parsers=self.field_parsers, output_configuration=self.outputs_configuration)
+        configuration = configuration_loader.load(configuration_file)
+
+        self.reporter.report_configuration(configuration)
+
+        self.run(configuration)
+
     def run(self, configuration: DataFrameConfiguration):
         """
         Executes the data loading and writing process based on the provided configuration.
@@ -86,22 +96,6 @@ class PanchamRunner:
             output_writer = self.__get_output(output)
             output_writer.write(data, output)
 
-    def load_and_run(self, filename: str):
-        """
-        Loads a configuration file and executes a run process using the loaded
-        configuration.
-
-        The method uses the provided configuration loader to process the input
-        file and generate a configuration object, which is subsequently used
-        to execute the run process.
-
-        :param filename: The path to the configuration file to be loaded
-                         and processed.
-        :type filename: str
-        """
-        config_loader = DataFrameConfigurationLoader(self.field_parsers, self.outputs_configuration)
-        configuration = config_loader.load(filename)
-        self.run(configuration)
 
     def __get_output(self, output_config: dict) -> OutputWriter:
         """

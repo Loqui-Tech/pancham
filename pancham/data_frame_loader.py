@@ -1,8 +1,8 @@
 import pandas as pd
 
-from data_frame_configuration import DataFrameConfiguration
-from file_loader import FileLoader
-from reporter import Reporter
+from .data_frame_configuration import DataFrameConfiguration
+from .file_loader import FileLoader
+from .reporter import Reporter
 
 class DataFrameLoader:
 

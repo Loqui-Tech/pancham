@@ -1,6 +1,6 @@
 import pandas as pd
 
-from data_frame_configuration import DataFrameConfiguration
+from .data_frame_configuration import DataFrameConfiguration
 
 class Reporter:
     """
@@ -71,6 +71,26 @@ class Reporter:
         """
         pass
 
+    def report_configuration(self, configuration: DataFrameConfiguration):
+        """
+        Reports configuration details for DataFrame-based structures.
+
+        This method is designed to handle and process a given configuration object,
+        formatted as an instance of `DataFrameConfiguration`. The configuration
+        represents various parameters and settings for managing DataFrame-based
+        data structures. Implementation includes scenarios for reporting the
+        current configuration state to an external system or logging the details
+        internally.
+
+        :param configuration: The configuration object to be reported. Contains
+            settings and parameters pertinent to DataFrame configurations.
+        :type configuration: DataFrameConfiguration
+        :return: None indicates that the operation was successfully executed, with
+            no additional data returned.
+        :rtype: None
+        """
+        pass
+
 class PrintReporter(Reporter):
     """
     A reporter class for printing updates during file processing.
@@ -96,3 +116,9 @@ class PrintReporter(Reporter):
 
     def report_end(self, configuration: DataFrameConfiguration, data: pd.DataFrame):
         print(f"Finished processing for {configuration.file_path} - {len(data)} rows")
+
+    def report_configuration(self, configuration: DataFrameConfiguration):
+        print(f"Loading configuration for {len(configuration.fields)} fields")
+        for f in configuration.fields:
+            print(f" - {f}")
+

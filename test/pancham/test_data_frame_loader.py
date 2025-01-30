@@ -1,11 +1,11 @@
 import datetime
 import os
 
-from data_frame_configuration import DataFrameConfiguration
-from data_frame_loader import DataFrameLoader
-from file_loader import ExcelFileLoader
-from file_type import FileType
-from reporter import PrintReporter
+from pancham.data_frame_configuration import DataFrameConfiguration
+from pancham.data_frame_loader import DataFrameLoader
+from pancham.file_loader import ExcelFileLoader
+from pancham.file_type import FileType
+from pancham.reporter import PrintReporter
 
 
 class TestDataFrameLoader:

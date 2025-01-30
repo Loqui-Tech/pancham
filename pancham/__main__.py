@@ -1,8 +1,13 @@
-import argparse
+import typer
 
-def main():
+from .runner import PanchamRunner
+from .pancham_configuration import OrderedPanchamConfiguration
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-d", "--data_configuration", action="store_true")
-    parser.add_argument("-c", "--configuration", action="store_true")
+app = typer.Typer()
 
+@app.command()
+def run(data_configuration: str, configuration: str):
+    pancham_configuration = OrderedPanchamConfiguration(configuration)
+
+    runner = PanchamRunner(pancham_configuration)
+    runner.load_and_run(data_configuration)

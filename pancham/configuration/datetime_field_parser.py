@@ -1,7 +1,7 @@
 import datetime
 
-from configuration.field_parser import FieldParser
-from data_frame_field import DataFrameField
+from .field_parser import FieldParser
+from pancham.data_frame_field import DataFrameField
 
 class DateTimeFieldParser(FieldParser):
 

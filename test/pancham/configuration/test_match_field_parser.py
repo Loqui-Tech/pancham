@@ -1,4 +1,4 @@
-import pandas as pd
+import pytest
 
 from configuration.match_field_parser import MatchFieldParser
 
@@ -19,6 +19,9 @@ class TestMatchFieldParser:
         ],
         "test_parse": [
             dict(name='a', func=dict(eq=dict(source_name='a', match='b'))),
+        ],
+        "test_no_source_name": [
+            dict(func=dict(eq=dict(match='b'))),
         ]
     }
 
@@ -39,3 +42,13 @@ class TestMatchFieldParser:
         assert data_field.name == name
         assert data_field.source_name == None
         assert data_field.nullable == False
+
+    def test_no_source_name(self, func):
+        field = {
+            'name': 'a',
+            'func': func
+        }
+
+        with pytest.raises(ValueError):
+            parser = MatchFieldParser()
+            parser.parse_field(field)

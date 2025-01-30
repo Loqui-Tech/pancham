@@ -1,4 +1,4 @@
-from configuration.datetime_field_parser import DateTimeFieldParser
+from pancham.configuration.datetime_field_parser import DateTimeFieldParser
 
 def pytest_generate_tests(metafunc):
     funcarglist = metafunc.cls.params[metafunc.function.__name__]

@@ -1,10 +1,9 @@
 import pandas as pd
-from sqlalchemy import MetaData, create_engine, Engine
+from sqlalchemy import create_engine, Engine
 from typing_extensions import Literal
 
-from pancham_configuration import PanchamConfiguration
-from reporter import Reporter
-
+from pancham.pancham_configuration import PanchamConfiguration
+from pancham.reporter import Reporter
 
 class DatabaseEngine:
 

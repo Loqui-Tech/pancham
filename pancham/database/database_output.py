@@ -1,10 +1,7 @@
 import pandas as pd
 
-from data_frame_configuration import DataFrameConfiguration
-from database.database_engine import DatabaseEngine, initialize_db_engine, get_db_engine
-from output_configuration import OutputConfiguration, OutputWriter
-from pancham_configuration import PanchamConfiguration
-from reporter import Reporter
+from .database_engine import get_db_engine
+from pancham.output_configuration import OutputConfiguration, OutputWriter
 
 class DatabaseOutput(OutputConfiguration):
 
@@ -16,7 +13,7 @@ class DatabaseOutput(OutputConfiguration):
 
         for output in configuration['output']:
             if output['output_type'] == 'database':
-                db_config = output['config']
+                db_config = output
                 break
 
         if db_config is None:

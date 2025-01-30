@@ -1,5 +1,5 @@
-from data_frame_field import DataFrameField
-from data_frame_configuration import DataFrameConfiguration
+from pancham.data_frame_field import DataFrameField
+from pancham.data_frame_configuration import DataFrameConfiguration
 
 
 class TestDataFrameConfiguration:

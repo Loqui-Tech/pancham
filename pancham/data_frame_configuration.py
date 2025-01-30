@@ -2,7 +2,7 @@ from typing import Self
 
 import pandera as pa
 
-from pancham.data_frame_field import DataFrameField
+from .data_frame_field import DataFrameField
 
 class DataFrameConfiguration:
 

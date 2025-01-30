@@ -1,6 +1,6 @@
 import pandas as pd
 
-from data_frame_configuration import DataFrameConfiguration
+from .data_frame_configuration import DataFrameConfiguration
 
 
 class FileLoader:

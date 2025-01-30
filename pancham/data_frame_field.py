@@ -1,7 +1,6 @@
 from typing import Type, Callable
 import pandas as pd
 
-
 class DataFrameField:
     """
     Represents a field in a DataFrame with specific properties and behavior.
@@ -48,3 +47,6 @@ class DataFrameField:
 
     def is_dynamic(self) -> bool:
         return self.func is not None
+
+    def __str__(self) -> str:
+        return f"Name: {self.name}, Source Name: {self.source_name}, Type: {self.field_type}, Nullable: {self.nullable}"

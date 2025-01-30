@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='pancham',
-    version='0.0.1',
+    version='0.0.15',
     packages=find_packages(),
     install_requires=[
         'numpy>=2.2.0',
@@ -10,11 +10,12 @@ setup(
         'pandas>=2.0.0',
         'pandera>=0.20.0',
         'SQLAlchemy>=2.0.0',
-        'pyyaml'
+        'pyyaml',
+        'typer'
     ],
     entry_points={
         'console_scripts': [
-            'pancham = pancham.__main__:main'
+            'pancham = pancham.__main__:app'
         ]
     }
 )

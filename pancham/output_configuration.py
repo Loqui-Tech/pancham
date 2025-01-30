@@ -1,7 +1,5 @@
 import pandas as pd
 
-from data_frame_configuration import DataFrameConfiguration
-
 class OutputConfiguration:
     """
     Represents the configuration used for output operations.

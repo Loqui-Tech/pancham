@@ -1,7 +1,7 @@
 import os
 import pytest
 
-from file_loader import ExcelFileLoader
+from pancham.file_loader import ExcelFileLoader
 
 
 class TestExcelFileLoader():

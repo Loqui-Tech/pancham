@@ -17,6 +17,6 @@ fields:
   - name: Sent
     field_type: bool
     func:
-      is:
+      eq:
         source_name: Disp.
-        matches: 'X'
+        match: 'X'

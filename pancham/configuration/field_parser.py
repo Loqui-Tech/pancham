@@ -1,4 +1,4 @@
-from data_frame_field import DataFrameField
+from pancham.data_frame_field import DataFrameField
 
 
 class FieldParser:
@@ -10,6 +10,10 @@ class FieldParser:
     into a structured DataFrameField object. It ensures that input fields are
     correctly formatted before being processed in the application.
     """
+
+    FUNCTION_KEY = 'func'
+    SOURCE_NAME_KEY = 'source_name'
+    FIELD_TYPE_KEY = 'field_type'
 
     def can_parse_field(self, field: dict) -> bool:
         """
@@ -69,3 +73,36 @@ class FieldParser:
         :rtype: bool
         """
         return 'func' in field
+
+    def has_name(self, field: dict) -> bool:
+        """
+        Checks whether the provided dictionary `field` contains a key named 'name'.
+
+        This method inspects the given dictionary and determines if the key 'name'
+        exists within it.
+
+        :param field: The dictionary to be checked for the presence of the 'name' key.
+        :type field: dict
+        :return: A boolean value indicating whether the dictionary contains a 'name' key.
+        :rtype: bool
+        """
+        return 'name' in field
+
+    def has_function_key(self, field: dict, function_key: str) -> bool:
+        """
+        Checks if a field contains a specified function key.
+
+        This method determines whether a dictionary representing a field includes
+        the provided function key by verifying if the field has a name, is classified
+        as a function, and the specified function key is present in the 'func' attribute
+        of the field dictionary.
+
+        :param field: A dictionary representing a field.
+        :type field: dict
+        :param function_key: The function key to check for existence in the field.
+        :type function_key: str
+        :return: True if the field contains the specified function key, otherwise False.
+        :rtype: bool
+        """
+        return self.has_name(field) and self.is_function(field) and function_key in field[self.FUNCTION_KEY]
+
