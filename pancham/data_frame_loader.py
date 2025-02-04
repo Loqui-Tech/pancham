@@ -29,6 +29,7 @@ class DataFrameLoader:
                     raise e
 
         output = renamed_df[configuration.output_fields].copy()
+        output = output.astype(configuration.cast_values)
 
         configuration.schema.validate(output)
 

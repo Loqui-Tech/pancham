@@ -1,5 +1,7 @@
 # Pancham Data Pipelines
 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Loqui-Tech_pancham&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Loqui-Tech_pancham)
+
 Pancham simplifies the process of reading and processing data with Pandas. 
 
 ## What is it for
