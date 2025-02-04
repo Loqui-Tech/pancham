@@ -31,7 +31,9 @@ class DataFrameLoader:
 
         output = renamed_df[configuration.output_fields].copy()
         output = output.replace([np.nan, -np.inf], 0)
-        output = output.astype(configuration.cast_values)
+
+        for key, value in configuration.cast_values.items():
+            output[key] = output[value].astype(value)
 
         configuration.schema.validate(output)
 
