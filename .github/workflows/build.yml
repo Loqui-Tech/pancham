@@ -49,7 +49,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   dependency-review:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     needs:
       - test
     steps:
