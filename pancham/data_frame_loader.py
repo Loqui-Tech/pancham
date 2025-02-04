@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 
 from .data_frame_configuration import DataFrameConfiguration
@@ -29,6 +30,7 @@ class DataFrameLoader:
                     raise e
 
         output = renamed_df[configuration.output_fields].copy()
+        output = output.replace([np.nan, -np.inf], 0)
         output = output.astype(configuration.cast_values)
 
         configuration.schema.validate(output)
