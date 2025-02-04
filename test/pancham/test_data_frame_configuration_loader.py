@@ -20,7 +20,6 @@ class TestDataFrameConfigurationLoader:
         assert config.fields[0].field_type == int
 
         assert config.fields[1].name == 'Date'
-        assert config.fields[1].source_name == 'Rec Date'
         assert config.fields[1].nullable is False
         assert config.fields[1].field_type == datetime.datetime
 

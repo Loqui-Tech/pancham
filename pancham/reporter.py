@@ -91,6 +91,19 @@ class Reporter:
         """
         pass
 
+    def report_debug(self, debug_message: str):
+        """
+        Logs and reports the provided debug message for analysis or tracking purposes.
+        This method facilitates streamlined logging processes by accepting a debug message
+        as input.
+
+        :param debug_message: The debug message string provided for logging or reporting purposes.
+        :type debug_message: str
+
+        :return: None
+        """
+        pass
+
 class PrintReporter(Reporter):
     """
     A reporter class for printing updates during file processing.
@@ -108,6 +121,10 @@ class PrintReporter(Reporter):
     :type some_attribute: type
     """
 
+    def __init__(self, debug: bool = False):
+        super().__init__()
+        self.debug = debug
+
     def report_start(self, configuration: DataFrameConfiguration):
         print(f"Starting processing for {configuration.file_path}")
 
@@ -119,6 +136,24 @@ class PrintReporter(Reporter):
 
     def report_configuration(self, configuration: DataFrameConfiguration):
         print(f"Loading configuration for {len(configuration.fields)} fields")
-        for f in configuration.fields:
-            print(f" - {f}")
+        if self.debug:
+            for f in configuration.fields:
+                print(f" - {f}")
+
+    def report_debug(self, debug_message: str):
+        if self.debug:
+            print(f"DEBUG: {debug_message}")
+
+__reporter: Reporter|None = None
+
+def get_reporter(debug: bool = False) -> Reporter:
+    """
+    Get the reporter instance.
+    :param debug:
+    :return:
+    """
+    global __reporter
+    if __reporter is None:
+        __reporter = PrintReporter(debug)
+    return __reporter
 

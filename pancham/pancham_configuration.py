@@ -29,6 +29,18 @@ class PanchamConfiguration:
         """
         return ""
 
+    @property
+    def debug_status(self) -> bool:
+        """
+        This property retrieves the current debug status of the instance. The value returned
+        indicates if debugging is active or not. The returned value is boolean and immutable.
+
+        :rtype: bool
+        :return: The debug status of the instance. Returns `False` if debugging mode is not
+          enabled.
+        """
+        return False
+
 class OrderedPanchamConfiguration(PanchamConfiguration):
 
     def __init__(self, config_file_path: str|None):
@@ -39,6 +51,10 @@ class OrderedPanchamConfiguration(PanchamConfiguration):
     @property
     def database_connection(self) -> str:
         return self.__get_config_item("database_connection", "DATABASE_CONNECTION", "database_connection")
+
+    @property
+    def debug_status(self) -> bool:
+        return self.__get_config_item("debug_status", "DEBUG_STATUS", "debug_status")
 
     def __get_config_item(self, name: str, env_var: str|None = None, config_name: str|None = None) -> str:
         """

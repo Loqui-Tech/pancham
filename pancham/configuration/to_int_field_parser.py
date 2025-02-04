@@ -43,7 +43,11 @@ class ToIntFieldParser(FieldParser):
             return int(values[source])
         except ValueError as e:
             if 'error_value' in field[self.FUNCTION_KEY][self.function_id]:
-                return field[self.FUNCTION_KEY][self.function_id]['error_value']
+                error_value = field[self.FUNCTION_KEY][self.function_id]['error_value']
+
+                if type(error_value) == 'str' and error_value.lower() == 'none':
+                    return None
+                return error_value
 
             raise e
 

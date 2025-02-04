@@ -1,4 +1,4 @@
-from typing import Self
+from typing import Self, Type
 
 import pandera as pa
 
@@ -167,6 +167,30 @@ class DataFrameConfiguration:
             schema[f.name] = pa.Column(f.field_type, nullable=f.nullable)
 
         return pa.DataFrameSchema(schema)
+
+    @property
+    def cast_values(self) -> dict[str, Type]:
+        """
+        Converts provided field types into a mapping of field names and their associated
+        cast types based on the `cast_type` attribute of fields.
+
+        This method iterates over all defined fields, checks if a `cast_type` is specified,
+        and creates a dictionary mapping the field names to their corresponding field
+        types. If a field does not have a `cast_type`, it is not included in the resulting
+        dictionary.
+
+        :return: A dictionary mapping field names (str) to their respective
+            associated types (`Type`) if they have a `cast_type`. Fields without a
+            `cast_type` are excluded.
+        :rtype: dict[str, Type]
+        """
+
+        casts = {}
+        for field in self.fields:
+            if field.cast_type:
+                casts[field.name] = field.field_type
+
+        return casts
 
     def add_output(self, output_configuration: dict) -> Self:
         """

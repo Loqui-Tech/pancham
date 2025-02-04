@@ -21,7 +21,7 @@ class DataFrameLoader:
 
         for field in configuration.dynamic_fields:
             try:
-                renamed_df[field.name] = field.func(renamed_df)
+                renamed_df[field.name] = renamed_df.apply(field.func, axis=1)
             except Exception as e:
                 if field.suppress_errors:
                     self.reporter.report_error(e)

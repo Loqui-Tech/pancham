@@ -14,6 +14,7 @@ class FieldParser:
     FUNCTION_KEY = 'func'
     SOURCE_NAME_KEY = 'source_name'
     FIELD_TYPE_KEY = 'field_type'
+    NAME_KEY = 'name'
 
     def can_parse_field(self, field: dict) -> bool:
         """

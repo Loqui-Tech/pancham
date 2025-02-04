@@ -1,9 +1,11 @@
 import pandas as pd
-from sqlalchemy import create_engine, Engine
+from sqlalchemy import create_engine, Engine, MetaData
 from typing_extensions import Literal
 
 from pancham.pancham_configuration import PanchamConfiguration
 from pancham.reporter import Reporter
+
+META = MetaData()
 
 class DatabaseEngine:
 

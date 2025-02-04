@@ -12,8 +12,9 @@ fields:
     nullable: false
   - name: Date
     source_name: Rec Date
-    field_type: datetime
     nullable: false
+    func:
+      datetime:
   - name: Sent
     field_type: bool
     func:

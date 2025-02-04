@@ -27,6 +27,8 @@ class DataFrameField:
     :ivar suppress_errors: Flag to indicate whether errors should be suppressed for a
         dynamic field.
     :type suppress_errors: bool
+    :ivar cast_type: Flag to indicate if the type should be changed to the field type
+    :type: cast_type: bool
     """
 
     def __init__(
@@ -35,8 +37,9 @@ class DataFrameField:
             source_name: str|int|None,
             field_type: Type,
             nullable: bool = True,
-            func: Callable[[pd.DataFrame], int|str|None|bool|pd.Series]|None = None,
-            suppress_errors: bool = False
+            func: Callable[[dict], int|str|None|bool|pd.Series]|None = None,
+            suppress_errors: bool = False,
+            cast_type: bool = False
     ) -> None:
         self.name = name
         self.source_name = source_name
@@ -44,6 +47,7 @@ class DataFrameField:
         self.nullable = nullable
         self.func = func
         self.suppress_errors = suppress_errors
+        self.cast_type = cast_type
 
     def is_dynamic(self) -> bool:
         return self.func is not None

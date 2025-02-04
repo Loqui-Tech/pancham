@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='pancham',
-    version='0.0.15',
+    version='0.0.28',
     packages=find_packages(),
     install_requires=[
         'numpy>=2.2.0',

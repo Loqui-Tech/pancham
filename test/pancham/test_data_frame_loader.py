@@ -29,3 +29,20 @@ class TestDataFrameLoader:
         assert data.loc[9, 'Order'] == 10
         assert data.loc[9, 'Date'] == datetime.datetime(2024, 12, 31)
         assert data.loc[9, 'Sent'] == False
+
+    def test_load_example_data_with_static_fied(self):
+        loader = DataFrameLoader({FileType.EXCEL_XLSX: ExcelFileLoader()}, PrintReporter())
+        configuration = DataFrameConfiguration(self.filename, FileType.EXCEL_XLSX, sheet='Sheet1')
+        configuration.add_field('Order', 'Order Id', int)
+        configuration.add_dynamic_field('Sent', field_type=bool, func=lambda row: row['Disp.'] == 'X')
+        configuration.add_dynamic_field('Static', field_type=str, func=lambda row: 'abc')
+
+        data = loader.load(configuration)
+
+        assert len(data) == 10
+        assert data.loc[0, 'Order'] == 1
+        assert data.loc[0, 'Sent'] == True
+        assert data.loc[0, 'Static'] == 'abc'
+
+        assert data.loc[9, 'Order'] == 10
+        assert data.loc[9, 'Sent'] == False

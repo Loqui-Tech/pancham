@@ -1,3 +1,5 @@
+import datetime
+import pandas as pd
 from pancham.configuration.datetime_field_parser import DateTimeFieldParser
 
 def pytest_generate_tests(metafunc):
@@ -11,13 +13,12 @@ class TestDatetimeFieldParser:
 
     params = {
         "test_can_parse_datetime_field": [
-            dict(field=dict(name= 'a', source_name = 'b', field_type = 'datetime'), expected=True),
-            dict(field=dict(name='a', source_name='b', field_type='str'), expected=False),
-            dict(field=dict(source_name='b', field_type='datetime'), expected=False),
+            dict(field=dict(name= 'a', func = dict(datetime = dict())), expected=True),
+            dict(field=dict(name= 'a', func = dict()), expected=False),
         ],
         "test_parse": [
-            dict(name = 'a', source_name = 'b', nullable = True),
-            dict(name='a', source_name='b', nullable=False),
+            dict(name = 'a', source_name = 'b', func = dict(datetime = dict()), nullable = True, input = "01/02/2024"),
+            dict(name='a', source_name='b', func = dict(datetime = dict(format = '%m/%d/%Y')), nullable=False, input = "02/01/2024"),
         ]
     }
 
@@ -26,16 +27,24 @@ class TestDatetimeFieldParser:
 
         assert parser.can_parse_field(field) == expected
 
-    def test_parse(self, name, source_name, nullable):
+    def test_parse(self, name, source_name, func, nullable, input):
         field = {
             'name': name,
             'source_name': source_name,
-            'nullable': nullable
+            'nullable': nullable,
+            'func': func
+        }
+
+        input_data = {
+            source_name: input
         }
 
         parser = DateTimeFieldParser()
         data_field = parser.parse_field(field)
 
         assert data_field.name == name
-        assert data_field.source_name == source_name
         assert data_field.nullable == nullable
+
+        assert data_field.func(input_data).year == 2024
+        assert data_field.func(input_data).month == 2
+        assert data_field.func(input_data).day == 1

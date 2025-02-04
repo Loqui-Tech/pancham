@@ -1,11 +1,14 @@
-from configuration.to_int_field_parser import ToIntFieldParser
-from .data_frame_configuration_loader import YamlDataFrameConfigurationLoader
+from .configuration.database_match_field_parser import DatabaseMatchFieldParser
 from .configuration.datetime_field_parser import DateTimeFieldParser
+from .configuration.part_text_extractor_parser import PartTextExtractorParser
+from .configuration.static_field_parser import StaticFieldParser
+from .configuration.to_int_field_parser import ToIntFieldParser
 from .configuration.field_parser import FieldParser
 from .configuration.match_field_parser import MatchFieldParser
 from .configuration.text_field_parser import TextFieldParser
 from .data_frame_configuration import DataFrameConfiguration
 from .data_frame_loader import DataFrameLoader
+from .data_frame_configuration_loader import YamlDataFrameConfigurationLoader
 from .database.database_engine import initialize_db_engine
 from .database.database_output import DatabaseOutputWriter, DatabaseOutput
 from .file_loader import FileLoader, ExcelFileLoader
@@ -21,7 +24,10 @@ DEFAULT_FIELD_PARSERS = [
     TextFieldParser(),
     MatchFieldParser(),
     DateTimeFieldParser(),
-    ToIntFieldParser()
+    ToIntFieldParser(),
+    PartTextExtractorParser(),
+    StaticFieldParser(),
+    DatabaseMatchFieldParser()
 ]
 DEFAULT_OUTPUTS = [
     DatabaseOutput()
@@ -89,6 +95,7 @@ class PanchamRunner:
 
         :return: None
         """
+        initialize_db_engine(self.pancham_configuration, self.reporter)
         loader = DataFrameLoader(self.file_loaders, self.reporter)
         data = loader.load(configuration)
 

@@ -1,4 +1,4 @@
-from data_frame_field import DataFrameField
+from pancham.data_frame_field import DataFrameField
 from .field_parser import FieldParser
 
 
@@ -29,6 +29,6 @@ class StaticFieldParser(FieldParser):
             name=field['name'],
             nullable=True,
             source_name=None,
-            field_type=field[self.TYPE_KEY],
+            field_type=field[self.FIELD_TYPE_KEY],
             func=lambda x: properties['value']
         )
