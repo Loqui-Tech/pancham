@@ -13,12 +13,12 @@ class TestOrderedPanchamConfiguration():
 
     def test_get_db_connection_from_env(self):
         config = OrderedPanchamConfiguration(self.filename)
-        os.environ['DATABASE_CONNECTION'] = 'sqlite:////other.db'
+        os.environ['PANCHAM_DATABASE_CONNECTION'] = 'sqlite:////other.db'
 
         assert config.database_connection == 'sqlite:////other.db'
 
     def test_get_db_connection_from_none(self):
         config = OrderedPanchamConfiguration(None)
-        del os.environ['DATABASE_CONNECTION']
+        del os.environ['PANCHAM_DATABASE_CONNECTION']
 
         assert config.database_connection is None

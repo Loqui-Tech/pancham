@@ -19,15 +19,15 @@ class TestCachingDatabaseSearch:
         initialize_db_engine(MockConfig(), PrintReporter())
 
         meta = MetaData()
-        Table('order', meta, Column("email", String), Column("order_id", String))
+        Table('order0', meta, Column("email", String), Column("order_id", String))
 
         meta.create_all(get_db_engine().engine)
 
         data = pd.DataFrame({'email': ['a@example.com', 'b@example.com'], 'order_id': ['1', '2']})
 
-        get_db_engine().write_df(data, 'order')
+        get_db_engine().write_df(data, 'order0')
 
-        search = CachingDatabaseSearch('order', 'email', 'order_id')
+        search = CachingDatabaseSearch('order0', 'email', 'order_id')
 
         assert search.get_mapped_id('b@example.com') == '2'
         assert search.get_mapped_id('c@example.com') is None

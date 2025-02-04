@@ -65,6 +65,7 @@ class ExcelFileLoader(FileLoader):
         necessary details about the file's location and format. The actual reading is delegated to
         another method which handles the file input.
 
+        :param pancham_configuration:
         :param configuration: The configuration object containing the file path and optional sheet name.
         :type configuration: DataFrameConfiguration
         :return: A pandas DataFrame containing the contents of the file as specified in the configuration.
@@ -96,4 +97,5 @@ class ExcelFileLoader(FileLoader):
         if "sheet" not in kwargs:
             raise ValueError("Sheet name must be provided for Excel files.")
 
+        print(filename)
         return pd.read_excel(filename, sheet_name=kwargs["sheet"])
