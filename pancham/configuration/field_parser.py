@@ -1,3 +1,7 @@
+from typing import Callable
+
+import pandas as pd
+
 from pancham.data_frame_field import DataFrameField
 
 
@@ -15,6 +19,7 @@ class FieldParser:
     SOURCE_NAME_KEY = 'source_name'
     FIELD_TYPE_KEY = 'field_type'
     NAME_KEY = 'name'
+    CAST_KEY = 'cast'
 
     def can_parse_field(self, field: dict) -> bool:
         """
@@ -106,4 +111,30 @@ class FieldParser:
         :rtype: bool
         """
         return self.has_name(field) and self.is_function(field) and function_key in field[self.FUNCTION_KEY]
+
+    def build_func_field(self, field: dict, func: Callable[[dict], int|str|None|bool|pd.Series]) -> DataFrameField:
+        """
+        Generates a DataFrameField instance, combining the attributes of a provided
+        field dictionary along with a user-defined transformation function. This
+        method establishes a mapping between field metadata and the applied function for
+        data transformation while maintaining essential configuration attributes.
+
+        :param field: A dictionary containing the metadata about the field. Expected
+                      keys include 'name', 'field type', and 'cast type'.
+        :param func: A callable function that accepts a dictionary as input and returns
+                     an output of types int, str, None, bool, or pd.Series. This
+                     function is used to perform transformations or computations on the
+                     field data.
+        :return: A DataFrameField object constructed with metadata and the specified
+                 transformation function.
+        """
+
+        return DataFrameField(
+            name=field[self.NAME_KEY],
+            nullable=self.is_nullable(field),
+            source_name=None,
+            field_type=field[self.FIELD_TYPE_KEY],
+            func=func,
+            cast_type=field[self.CAST_KEY] is True
+        )
 

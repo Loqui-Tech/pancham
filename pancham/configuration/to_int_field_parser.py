@@ -33,7 +33,8 @@ class ToIntFieldParser(FieldParser):
             nullable=self.is_nullable(field),
             field_type=int,
             source_name=None,
-            func=lambda x: self.__to_int(field, x)
+            func=lambda x: self.__to_int(field, x),
+            cast_type=True
         )
 
     def __to_int(self, field: dict, values: dict):

@@ -68,12 +68,8 @@ class DatabaseMatchFieldParser(FieldParser):
 
             return database_search.get_mapped_id(search_value)
 
-        return DataFrameField(
-            name=field[self.NAME_KEY],
-            nullable=self.is_nullable(field),
-            source_name=None,
-            field_type=field[self.FIELD_TYPE_KEY],
+        return self.build_func_field(
+            field=field,
             func=map_value
         )
-
 
