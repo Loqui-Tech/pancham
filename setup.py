@@ -1,21 +1,10 @@
-from setuptools import setup, find_packages
+import setuptools
+import os
 
-setup(
-    name='pancham',
-    version='0.0.28',
-    packages=find_packages(),
-    install_requires=[
-        'numpy>=2.2.0',
-        'openpyxl>=3.1.0',
-        'pandas>=2.0.0',
-        'pandera>=0.20.0',
-        'SQLAlchemy>=2.0.0',
-        'pyyaml',
-        'typer'
-    ],
-    entry_points={
-        'console_scripts': [
-            'pancham = pancham.__main__:app'
-        ]
-    }
+def get_version():
+    tag = os.getenv('PANCHAM_VERSION')
+    return tag
+
+setuptools.setup(
+    version=get_version()
 )
