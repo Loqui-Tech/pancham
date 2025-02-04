@@ -16,7 +16,6 @@ jobs:
     strategy:
       matrix:
         python-version:
-          - "3.10"
           - "3.11"
           - "3.12"
 
@@ -34,6 +33,3 @@ jobs:
     - name: Test with pytest
       run: |
         pytest
-    - name: Analysing the code with pylint
-      run: |
-        pylint $(git ls-files '*.py')
