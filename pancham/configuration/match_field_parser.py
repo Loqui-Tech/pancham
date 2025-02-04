@@ -37,5 +37,5 @@ class MatchFieldParser(FieldParser):
             nullable=self.is_nullable(field),
             source_name=None,
             field_type=bool,
-            func=lambda x: x[is_properties['source_name'] == is_properties['match']]
+            func=lambda x: x[is_properties['source_name']] == is_properties['match']
         )

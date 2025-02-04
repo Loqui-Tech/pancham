@@ -1,5 +1,6 @@
 import yaml
 import os
+from benedict import benedict
 
 class PanchamConfiguration:
     """
@@ -30,6 +31,18 @@ class PanchamConfiguration:
         return ""
 
     @property
+    def source_dir(self) -> str:
+        """
+        Provides access to the source directory as a string. This property allows you
+        to retrieve the path of the directory from where the source files are managed.
+
+        :raises AttributeError: If the value is accessed before being properly initialized.
+        :return: A string representing the path of the source directory.
+        :rtype: str
+        """
+        pass
+
+    @property
     def debug_status(self) -> bool:
         """
         This property retrieves the current debug status of the instance. The value returned
@@ -50,13 +63,17 @@ class OrderedPanchamConfiguration(PanchamConfiguration):
 
     @property
     def database_connection(self) -> str:
-        return self.__get_config_item("database_connection", "DATABASE_CONNECTION", "database_connection")
+        return self.__get_config_item("database_connection", "PANCHAM_DATABASE_CONNECTION", "database.connection")
 
     @property
     def debug_status(self) -> bool:
-        return self.__get_config_item("debug_status", "DEBUG_STATUS", "debug_status")
+        return self.__get_config_item("debug_status", "PANCHAM_DEBUG_STATUS", "debug.status")
 
-    def __get_config_item(self, name: str, env_var: str|None = None, config_name: str|None = None) -> str:
+    @property
+    def source_dir(self) -> str:
+        return self.__get_config_item("source_dir", "PANCHAM_SOURCE_DIR", "source.dir")
+
+    def __get_config_item(self, name: str, env_var: str|None = None, config_name: str|None = None) -> str|bool|None:
         """
         Retrieve the configuration item based on ordering priority from configuration data,
         environment variables, or configuration file data. This method checks and returns
@@ -84,8 +101,9 @@ class OrderedPanchamConfiguration(PanchamConfiguration):
             return value
 
         config_file = self.__get_config_file_data()
-        if config_name is not None and config_name in config_file:
-            value = config_file[config_name]
+        benedict_config_file = benedict(config_file)
+        if config_name is not None and config_name in benedict_config_file:
+            value = benedict_config_file[config_name]
             self.config_data[name] = value
             return value
 

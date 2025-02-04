@@ -1,15 +1,17 @@
 import numpy as np
 import pandas as pd
 
+from .pancham_configuration import PanchamConfiguration
 from .data_frame_configuration import DataFrameConfiguration
 from .file_loader import FileLoader
 from .reporter import Reporter
 
 class DataFrameLoader:
 
-    def __init__(self, file_loaders: dict[str, FileLoader], reporter: Reporter) -> None:
+    def __init__(self, file_loaders: dict[str, FileLoader], reporter: Reporter, pancham_configuration: PanchamConfiguration) -> None:
         self.file_loaders = file_loaders
         self.reporter = reporter
+        self.pancham_configuration = pancham_configuration
 
     def load(
             self,
@@ -33,7 +35,7 @@ class DataFrameLoader:
         output = output.replace([np.nan, -np.inf], 0)
 
         for key, value in configuration.cast_values.items():
-            output[key] = output[value].astype(value)
+            output[key] = output[key].astype(value)
 
         configuration.schema.validate(output)
 

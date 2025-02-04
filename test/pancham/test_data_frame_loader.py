@@ -7,7 +7,6 @@ from pancham.file_loader import ExcelFileLoader
 from pancham.file_type import FileType
 from pancham.reporter import PrintReporter
 
-
 class TestDataFrameLoader:
 
     filename = os.path.dirname(os.path.realpath(__file__)) + "/../example/orders.xlsx"
@@ -46,3 +45,4 @@ class TestDataFrameLoader:
 
         assert data.loc[9, 'Order'] == 10
         assert data.loc[9, 'Sent'] == False
+

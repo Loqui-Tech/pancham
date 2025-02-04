@@ -1,5 +1,6 @@
 import pandas as pd
 
+from pancham_configuration import PanchamConfiguration
 from .data_frame_configuration import DataFrameConfiguration
 
 
@@ -11,7 +12,7 @@ class FileLoader:
     handle a type of file
     """
 
-    def read_file_from_configuration(self, configuration: DataFrameConfiguration) -> pd.DataFrame:
+    def read_file_from_configuration(self, configuration: DataFrameConfiguration, pancham_configuration: PanchamConfiguration|None = None) -> pd.DataFrame:
         """
         Reads and processes a file based on the given configuration.
 
@@ -55,7 +56,7 @@ class ExcelFileLoader(FileLoader):
     :type default_sheet: str
     """
 
-    def read_file_from_configuration(self, configuration: DataFrameConfiguration) -> pd.DataFrame:
+    def read_file_from_configuration(self, configuration: DataFrameConfiguration, pancham_configuration: PanchamConfiguration|None = None) -> pd.DataFrame:
         """
         Reads a file based on the provided configuration and returns its content as a pandas DataFrame.
 
@@ -69,7 +70,11 @@ class ExcelFileLoader(FileLoader):
         :return: A pandas DataFrame containing the contents of the file as specified in the configuration.
         :rtype: pd.DataFrame
         """
-        return self.read_file(configuration.file_path, sheet = configuration.sheet)
+        file_path = configuration.file_path
+        if pancham_configuration is not None and pancham_configuration.source_dir is not None:
+            file_path = f"{pancham_configuration.source_dir}/{file_path}"
+
+        return self.read_file(file_path, sheet = configuration.sheet)
 
     def read_file(self, filename: str, **kwargs) -> pd.DataFrame:
         """
