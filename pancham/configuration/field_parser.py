@@ -135,6 +135,6 @@ class FieldParser:
             source_name=None,
             field_type=field[self.FIELD_TYPE_KEY],
             func=func,
-            cast_type=field[self.CAST_KEY] is True
+            cast_type=field.get(self.CAST_KEY, False) is True
         )
 
