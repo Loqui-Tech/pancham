@@ -33,7 +33,7 @@ jobs:
         pip install pylint
     - name: Test with pytest
       run: |
-        pytest
+        pytest --cov-report term --cov-report xml:coverage.xml --cov=pancham
 
   sonar:
     runs-on: ubuntu-latest

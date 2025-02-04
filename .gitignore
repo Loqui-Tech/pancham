@@ -2,3 +2,4 @@ test/example/~$orders.xlsx
 build
 dist
 *.egg-info
+coverage.xml
