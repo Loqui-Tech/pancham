@@ -66,9 +66,10 @@ class DataFrameLoader:
                     raise e
 
         output = renamed_df[configuration.output_fields].copy()
-        output = output.replace([np.nan, -np.inf], 0)
 
         for key, value in configuration.cast_values.items():
+            if value == 'int':
+                output[key] = output[key].replace([np.nan, np.inf, -np.inf], 0)
             output[key] = output[key].astype(value)
 
         configuration.schema.validate(output)
