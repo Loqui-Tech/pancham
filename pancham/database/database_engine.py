@@ -89,6 +89,7 @@ def get_db_engine() -> DatabaseEngine:
     :return: The initialized database engine instance.
     :rtype: DatabaseEngine
     """
+    global db_engine
     if db_engine is None:
         raise ValueError("Database engine not initialized")
     return db_engine
