@@ -174,3 +174,5 @@ jobs:
       - name: Run
         run: pancham example/order_configuration.yml example/config.yaml
         working-directory: test
+        env:
+          PANCHAM_DATABASE_CONNECTION: "sqlite:///:memory:"
