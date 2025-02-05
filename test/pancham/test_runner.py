@@ -13,6 +13,7 @@ class Config(PanchamConfiguration):
     @property
     def database_connection(self) -> str:
         env_val = os.environ.get("PC_DB")
+        print(f"Connection: {env_val}")
         if env_val is None:
             return "sqlite:///:memory:"
 

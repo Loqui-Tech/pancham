@@ -1,6 +1,6 @@
 import pandas as pd
 
-from pancham_configuration import PanchamConfiguration
+from .pancham_configuration import PanchamConfiguration
 from .data_frame_configuration import DataFrameConfiguration
 
 
