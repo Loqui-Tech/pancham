@@ -171,3 +171,6 @@ jobs:
           name: pancham-${{ env.PANCHAM_VERSION }}
       - name: Install
         run: pip install pancham-${{ env.PANCHAM_TAG }}.dev0-py3-none-any.whl
+      - name: Run
+        run: pancham example/order_configuration.yml example/config.yml
+        working-directory: test
