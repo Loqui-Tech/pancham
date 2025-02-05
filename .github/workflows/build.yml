@@ -110,7 +110,7 @@ jobs:
           pip install -r requirements.txt
       - name: Build
         env:
-          PANCHAM_VERSION: "0.0.34dev"
+          PANCHAM_VERSION: "0.0.35dev"
         run: python -m build
       - uses: actions/upload-artifact@v4
         name: Publish
