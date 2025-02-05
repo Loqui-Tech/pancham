@@ -9,6 +9,9 @@ on:
 permissions:
   contents: read
 
+env:
+  PANCHAM_VERSION: "0.0.35dev"
+
 jobs:
   test:
 
@@ -54,7 +57,6 @@ jobs:
           head-ref: ${{ github.event.pull_request.head.sha || github.ref }}
 
   pgtest:
-
     runs-on: ubuntu-latest
     needs:
       - dependency-review
@@ -77,8 +79,6 @@ jobs:
           --health-retries 5
     steps:
     - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v3
       with:
@@ -93,11 +93,44 @@ jobs:
       run: |
         pytest
 
+  mysqltest:
+    runs-on: ubuntu-latest
+    needs:
+      - dependency-review
+    strategy:
+      matrix:
+        python-version:
+          - "3.11"
+          - "3.12"
+          - "3.13"
+    services:
+      postgres:
+        image: mysql
+        env:
+          MYSQL_PASSWORD: panchame
+          MYSQL_DATABASE: pancham
+          MYSQL_USER: pancham
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: Test with pytest
+      env:
+        PC_DB: "mysql://pancham:pancham@mysql:3306/pancham"
+      run: |
+        pytest
 
   build:
     runs-on: ubuntu-latest
     needs:
-      - test
+      - pgtest
+      - mysqltest
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python 3.12
@@ -109,10 +142,31 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
       - name: Build
-        env:
-          PANCHAM_VERSION: "0.0.35dev"
         run: python -m build
       - uses: actions/upload-artifact@v4
         name: Publish
         with:
-          path: dist/*
+          path: dist/*.whl
+          name: pancham-${{ env.PANCHAM_VERSION }}
+      - uses: actions/upload-artifact@v4
+        name: Publish
+        with:
+          path: dist/*.tar.gz
+          name: pancham-achive-${{ env.PANCHAM_VERSION }}
+
+  cli-test:
+    runs-on: ubuntu-latest
+    needs:
+      - build
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.12
+      - name: Download a single artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: pancham-${{ env.PANCHAM_VERSION }}
+      - name: Install
+        run: pip install pancham-${{ env.PANCHAM_VERSION }}.dev0-py3-none-any.whl

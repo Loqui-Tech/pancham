@@ -5,6 +5,26 @@ import pandera as pa
 from .data_frame_field import DataFrameField
 
 class DataFrameConfiguration:
+    """
+    Represents a configuration for managing and processing data in a DataFrame.
+
+    This class is designed to facilitate customization and validation of a DataFrame's
+    structure, allowing specification of fields, their types, dynamic behavior, and
+    schema validation. It manages fields, dynamic calculations, schema definition, and
+    output configuration for a DataFrame. It is highly customizable to cater to varying
+    data-processing requirements.
+
+    :ivar file_path: The path to the data file.
+    :type file_path: str
+    :ivar file_type: The type of the data file (e.g., csv, excel).
+    :type file_type: str
+    :ivar sheet: Optional parameter defining the sheet name if the data resides in a multi-sheet file.
+    :type sheet: str|None
+    :ivar fields: A list containing field definitions as `DataFrameField` objects.
+    :type fields: list[DataFrameField]
+    :ivar output: A list of dictionaries containing output configuration for processing.
+    :type output: list[dict]
+    """
 
     def __init__(self, file_path: str, file_type: str, sheet: str|None = None):
         self.file_path = file_path
@@ -84,7 +104,8 @@ class DataFrameConfiguration:
         """
 
         if data_frame_field is None:
-            self.fields.append(DataFrameField(name, source_name=None, field_type=field_type, nullable=nullable, func= func))
+            dff = DataFrameField(name, source_name=None, field_type=field_type, nullable=nullable, func= func)
+            self.fields.append(dff)
         else:
             self.fields.append(data_frame_field)
 
