@@ -168,6 +168,8 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: pancham-${{ env.PANCHAM_VERSION }}
+      - name: List
+        run: ls -la
       - name: Unzip
         run: unzip *.zip
       - name: Install
