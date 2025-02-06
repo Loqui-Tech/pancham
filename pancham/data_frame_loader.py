@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from pydantic_core import SchemaError
+from pandera.errors import SchemaError
 
 from .pancham_configuration import PanchamConfiguration
 from .data_frame_configuration import DataFrameConfiguration
@@ -105,7 +105,7 @@ class DataFrameLoader:
         try:
             configuration.schema.validate(output)
         except SchemaError as e:
-            if self.pancham_configuration.disable_schema_validation:
+            if self.pancham_configuration is not None and self.pancham_configuration.disable_schema_validation:
                 self.reporter.report_debug(f'Schema validation failed but is disabled: {e}')
             else:
                 raise e

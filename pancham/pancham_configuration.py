@@ -149,3 +149,54 @@ class OrderedPanchamConfiguration(PanchamConfiguration):
         with open(self.config_file_path, "r") as config_file:
             self.config_file = yaml.safe_load(config_file)
             return self.config_file
+
+class StaticPanchamConfiguration(PanchamConfiguration):
+    """
+    Configuration class for static Pancham projects.
+
+    This class extends the PanchamConfiguration class to provide static
+    configuration properties and parameters used in static project-oriented
+    settings. It allows users to specify database connection details,
+    source directories, debugging options, and schema validation
+    preferences. It is specifically useful for use cases requiring predefined
+    and constant configuration settings.
+
+    :ivar database_connection: Connection string used to interact with the
+        database.
+    :type database_connection: str
+    :ivar debug_status: Debugging mode status indicating whether debugging
+        is enabled.
+    :type debug_status: bool
+    :ivar source_dir: Directory path to the source code or project files.
+    :type source_dir: str
+    :ivar disable_schema_validation: Boolean flag to determine whether
+        schema validation needs to be disabled.
+    :type disable_schema_validation: bool
+    """
+
+    def __init__(self,
+                 database_connection: str,
+                 debug_status: bool,
+                 source_dir: str,
+                 disable_schema_validation: bool):
+        self.__database_connection = database_connection
+        self.__debug_status = debug_status
+        self.__source_dir = source_dir
+        self.__disable_schema_validation = disable_schema_validation
+
+    @property
+    def database_connection(self) -> str:
+        return self.__database_connection
+
+    @property
+    def source_dir(self) -> str:
+        return self.__source_dir
+
+    @property
+    def debug_status(self) -> bool:
+        return self.__debug_status
+
+    @property
+    def disable_schema_validation(self) -> bool:
+        return self.__disable_schema_validation
+

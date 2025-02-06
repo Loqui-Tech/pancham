@@ -1,11 +1,16 @@
 import datetime
 import os
 
+import pytest
+from pandera.errors import SchemaError
+
 from pancham.data_frame_configuration import DataFrameConfiguration
 from pancham.data_frame_loader import DataFrameLoader
 from pancham.file_loader import ExcelFileLoader
 from pancham.file_type import FileType
 from pancham.reporter import PrintReporter
+from pancham_configuration import StaticPanchamConfiguration
+
 
 class TestDataFrameLoader:
 
@@ -29,7 +34,7 @@ class TestDataFrameLoader:
         assert data.loc[9, 'Date'] == datetime.datetime(2024, 12, 31)
         assert data.loc[9, 'Sent'] == False
 
-    def test_load_example_data_with_static_fied(self):
+    def test_load_example_data_with_static_field(self):
         loader = DataFrameLoader({FileType.EXCEL_XLSX: ExcelFileLoader()}, PrintReporter())
         configuration = DataFrameConfiguration(self.filename, FileType.EXCEL_XLSX, sheet='Sheet1')
         configuration.add_field('Order', 'Order Id', int)
@@ -46,3 +51,23 @@ class TestDataFrameLoader:
         assert data.loc[9, 'Order'] == 10
         assert data.loc[9, 'Sent'] == False
 
+    def test_load_example_data_with_schema_validation(self):
+        loader = DataFrameLoader({FileType.EXCEL_XLSX: ExcelFileLoader()}, PrintReporter())
+        configuration = DataFrameConfiguration(self.filename, FileType.EXCEL_XLSX, sheet='Sheet1')
+        configuration.add_field('Order', 'Order Id', int)
+        configuration.add_field('Date', 'Rec Date', int)
+
+        with pytest.raises(SchemaError):
+            loader.load(configuration)
+
+    def test_load_example_data_with_schema_validation_and_validation_disabled(self):
+        pancham_configuration = StaticPanchamConfiguration('', False, '', True)
+        loader = DataFrameLoader({FileType.EXCEL_XLSX: ExcelFileLoader()}, PrintReporter(), pancham_configuration=pancham_configuration)
+        configuration = DataFrameConfiguration(self.filename, FileType.EXCEL_XLSX, sheet='Sheet1')
+        configuration.add_field('Order', 'Order Id', int)
+        configuration.add_field('Date', 'Rec Date', int)
+
+        data = loader.load(configuration)
+
+        assert len(data) == 10
+        assert data.loc[0, 'Order'] == 1
