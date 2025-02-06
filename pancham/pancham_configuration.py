@@ -52,7 +52,25 @@ class PanchamConfiguration:
         :return: The debug status of the instance. Returns `False` if debugging mode is not
           enabled.
         """
-        return False
+        pass
+
+
+    @property
+    def disable_schema_validation(self) -> bool:
+        """
+        Represents a property that determines whether schema validation should
+        be disabled.
+
+        This property is useful for enabling or disabling schema validation in
+        certain operations where schema correctness needs to be either enforced
+        or bypassed.
+
+        :return: Boolean value indicating whether schema validation is
+            disabled. Returns True if schema validation is disabled,
+            otherwise False.
+        :rtype: bool
+        """
+        pass
 
 class OrderedPanchamConfiguration(PanchamConfiguration):
 
@@ -72,6 +90,10 @@ class OrderedPanchamConfiguration(PanchamConfiguration):
     @property
     def source_dir(self) -> str:
         return self.__get_config_item("source_dir", "PANCHAM_SOURCE_DIR", "source.dir")
+
+    @property
+    def disable_schema_validation(self) -> bool:
+        return self.__get_config_item("disable_schema_validation", "PANCHAM_DEBUG_DISABLE_SCHEMA_VALIDATION", "debug.disable_schema_validation")
 
     def __get_config_item(self, name: str, env_var: str|None = None, config_name: str|None = None) -> str|bool|None:
         """

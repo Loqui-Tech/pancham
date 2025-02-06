@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from pydantic_core import SchemaError
 
 from .pancham_configuration import PanchamConfiguration
 from .data_frame_configuration import DataFrameConfiguration
@@ -72,8 +73,7 @@ class DataFrameLoader:
                 output[key] = output[key].replace([np.nan, np.inf, -np.inf], 0)
             output[key] = output[key].astype(value)
 
-        configuration.schema.validate(output)
-
+        self.__validate_schema(output, configuration)
         self.reporter.report_end(configuration, output)
 
         return output
@@ -87,4 +87,25 @@ class DataFrameLoader:
         loader = self.file_loaders[file_type]
         return loader.read_file_from_configuration(configuration, self.pancham_configuration)
 
+    def __validate_schema(self, output: pd.DataFrame, configuration: DataFrameConfiguration):
+        """
+        Validates the schema of the provided DataFrame against the defined configuration schema.
 
+        This method uses the schema defined in the provided configuration object to validate
+        the structure and content of the output DataFrame. If schema validation fails and
+        schema validation is not disabled, it raises an error. Otherwise, it logs the issue
+        as per the existing configuration.
+
+        :param output: The DataFrame to be validated
+        :type output: pd.DataFrame
+        :param configuration: Configuration object containing the schema definition for validation
+        :type configuration: DataFrameConfiguration
+        :return: None
+        """
+        try:
+            configuration.schema.validate(output)
+        except SchemaError as e:
+            if self.pancham_configuration.disable_schema_validation:
+                self.reporter.report_debug(f'Schema validation failed but is disabled: {e}')
+            else:
+                raise e
