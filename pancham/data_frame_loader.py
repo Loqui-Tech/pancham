@@ -79,6 +79,8 @@ class DataFrameLoader:
         return output
 
     def __load_file(self, configuration: DataFrameConfiguration) -> pd.DataFrame:
+
+
         file_type = configuration.file_type
 
         if file_type not in self.file_loaders:

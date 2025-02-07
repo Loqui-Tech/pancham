@@ -26,7 +26,7 @@ class DataFrameConfiguration:
     :type output: list[dict]
     """
 
-    def __init__(self, file_path: str, file_type: str, sheet: str|None = None):
+    def __init__(self, file_path: str|list[str], file_type: str, sheet: str|None = None):
         self.file_path = file_path
         self.file_type = file_type
         self.sheet = sheet

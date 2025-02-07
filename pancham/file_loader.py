@@ -71,11 +71,20 @@ class ExcelFileLoader(FileLoader):
         :return: A pandas DataFrame containing the contents of the file as specified in the configuration.
         :rtype: pd.DataFrame
         """
-        file_path = configuration.file_path
-        if pancham_configuration is not None and pancham_configuration.source_dir is not None:
-            file_path = f"{pancham_configuration.source_dir}/{file_path}"
+        file_paths = configuration.file_path
+        data = []
 
-        return self.read_file(file_path, sheet = configuration.sheet)
+        if type(file_paths) is str:
+            file_paths = [file_paths]
+
+        for file_path in file_paths:
+            if pancham_configuration is not None and pancham_configuration.source_dir is not None:
+                file_path = f"{pancham_configuration.source_dir}/{file_path}"
+
+            frame = self.read_file(file_path, sheet = configuration.sheet)
+            data.append(frame)
+
+        return pd.concat(data)
 
     def read_file(self, filename: str, **kwargs) -> pd.DataFrame:
         """
