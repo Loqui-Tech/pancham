@@ -25,6 +25,7 @@ flowchart LR;
 ### Supported Source Files
 
 - Excel
+- SQL
 
 ### Supported Output
 

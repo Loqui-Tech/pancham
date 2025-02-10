@@ -53,7 +53,6 @@ class DataFrameLoader:
         :rtype: pd.DataFrame
         """
 
-        self.reporter.report_start(configuration)
         source_df = self.__load_file(configuration)
         renamed_df = source_df.rename(columns=configuration.renames)
 
@@ -74,7 +73,6 @@ class DataFrameLoader:
             output[key] = output[key].astype(value)
 
         self.__validate_schema(output, configuration)
-        self.reporter.report_end(configuration, output)
 
         return output
 

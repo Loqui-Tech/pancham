@@ -1,5 +1,8 @@
+from typing import Iterator
+
 import pandas as pd
 
+from .reporter import get_reporter
 from .pancham_configuration import PanchamConfiguration
 from .data_frame_configuration import DataFrameConfiguration
 
@@ -27,7 +30,17 @@ class FileLoader:
         :return: A pandas DataFrame containing the data from the file.
         :rtype: pd.DataFrame
         """
-        pass
+        reporter = get_reporter()
+        data = []
+
+        for file_path in self.reduce_file_paths(configuration, pancham_configuration):
+            reporter.report_start(file_path)
+
+            frame = self.read_file(file_path, sheet = configuration.sheet)
+            data.append(frame)
+            reporter.report_end(file_path, frame)
+
+        return pd.concat(data)
 
     def read_file(self, filename: str, **kwargs) -> pd.DataFrame:
         """
@@ -43,6 +56,36 @@ class FileLoader:
         """
         pass
 
+    def reduce_file_paths(self, configuration: DataFrameConfiguration, pancham_configuration: PanchamConfiguration|None) -> Iterator[str]:
+        """
+        Reduces file paths according to a given configuration. It utilizes a specified
+        source directory, if provided, to prepend to each file path found within the
+        configuration. The `configuration` can contain paths in string or list format.
+        The method ensures that each file path is processed with the required source
+        prepended, if applicable.
+
+        :param configuration: A configuration object containing the file path(s) to
+            process; can be a single file path (string) or a list of file paths.
+        :type configuration: DataFrameConfiguration
+        :param pancham_configuration: Optional additional configuration object that
+            may include a source directory to prepend to each file path.
+        :type pancham_configuration: PanchamConfiguration | None
+        :return: An iterator over the processed file paths with the source directory
+            prepended (if provided).
+        :rtype: iter[str]
+        """
+        def prepend_source(file_path: str) -> str:
+            if pancham_configuration is not None and pancham_configuration.source_dir is not None:
+                return f"{pancham_configuration.source_dir}/{file_path}"
+            return file_path
+
+        if type(configuration.file_path) is str:
+            yield prepend_source(configuration.file_path)
+
+        if type(configuration.file_path) is list:
+            for file_path in configuration.file_path:
+                yield prepend_source(file_path)
+
 
 class ExcelFileLoader(FileLoader):
     """
@@ -55,36 +98,6 @@ class ExcelFileLoader(FileLoader):
     :ivar default_sheet: Name of the default sheet to use if not specified.
     :type default_sheet: str
     """
-
-    def read_file_from_configuration(self, configuration: DataFrameConfiguration, pancham_configuration: PanchamConfiguration|None = None) -> pd.DataFrame:
-        """
-        Reads a file based on the provided configuration and returns its content as a pandas DataFrame.
-
-        This method utilizes the file path and optionally the sheet name from the provided configuration
-        to read the corresponding file. It is assumed that the configuration object contains all the
-        necessary details about the file's location and format. The actual reading is delegated to
-        another method which handles the file input.
-
-        :param pancham_configuration:
-        :param configuration: The configuration object containing the file path and optional sheet name.
-        :type configuration: DataFrameConfiguration
-        :return: A pandas DataFrame containing the contents of the file as specified in the configuration.
-        :rtype: pd.DataFrame
-        """
-        file_paths = configuration.file_path
-        data = []
-
-        if type(file_paths) is str:
-            file_paths = [file_paths]
-
-        for file_path in file_paths:
-            if pancham_configuration is not None and pancham_configuration.source_dir is not None:
-                file_path = f"{pancham_configuration.source_dir}/{file_path}"
-
-            frame = self.read_file(file_path, sheet = configuration.sheet)
-            data.append(frame)
-
-        return pd.concat(data)
 
     def read_file(self, filename: str, **kwargs) -> pd.DataFrame:
         """
@@ -106,5 +119,4 @@ class ExcelFileLoader(FileLoader):
         if "sheet" not in kwargs:
             raise ValueError("Sheet name must be provided for Excel files.")
 
-        print(filename)
         return pd.read_excel(filename, sheet_name=kwargs["sheet"])

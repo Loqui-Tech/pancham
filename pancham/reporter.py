@@ -11,12 +11,10 @@ class Reporter:
     for enhanced observability.
     """
 
-    def report_start(self, configuration: DataFrameConfiguration):
+    def report_start(self, file_path: str):
         """
         Reports the start of a process based on the given configuration.
 
-        :param configuration: Configuration details provided as a DataFrameConfiguration
-            object.
         :return: None
         """
         pass
@@ -34,7 +32,7 @@ class Reporter:
         """
         pass
 
-    def report_end(self, configuration: DataFrameConfiguration, data: pd.DataFrame):
+    def report_end(self, file_path: str, data: pd.DataFrame):
         """
         Generates a report based on the provided configuration and data at the end of a
         specific processing routine. This function is called to finalize and encapsulate
@@ -125,14 +123,14 @@ class PrintReporter(Reporter):
         super().__init__()
         self.debug = debug
 
-    def report_start(self, configuration: DataFrameConfiguration):
-        print(f"Starting processing for {configuration.file_path}")
+    def report_start(self, file_path: str):
+        print(f"Starting processing for {file_path}")
 
     def report_error(self, error: Exception):
         print(f"Error processing file: {error}")
 
-    def report_end(self, configuration: DataFrameConfiguration, data: pd.DataFrame):
-        print(f"Finished processing for {configuration.file_path} - {len(data)} rows")
+    def report_end(self, file_path: str, data: pd.DataFrame):
+        print(f"Finished processing for {file_path} - {len(data)} rows")
 
     def report_configuration(self, configuration: DataFrameConfiguration):
         print(f"Loading configuration for {len(configuration.fields)} fields")
@@ -146,13 +144,17 @@ class PrintReporter(Reporter):
 
 __reporter: Reporter|None = None
 
-def get_reporter(debug: bool = False) -> Reporter:
+def get_reporter(debug: bool = False, reporter: Reporter|None = None) -> Reporter:
     """
     Get the reporter instance.
     :param debug:
     :return:
     """
     global __reporter
+
+    if reporter is not None:
+        __reporter = reporter
+
     if __reporter is None:
         __reporter = PrintReporter(debug)
     return __reporter

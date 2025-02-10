@@ -72,6 +72,20 @@ class PanchamConfiguration:
         """
         pass
 
+    @property
+    def reporter_name(self) -> str:
+        """
+        Provides access to the reporter's name.
+
+        This property retrieves the name of the reporter associated with an instance.
+        The reporter name is a read-only attribute and can be used to identify
+        or log relevant information related to the reporter.
+
+        :return: The name of the reporter.
+        :rtype: str
+        """
+        pass
+
 class OrderedPanchamConfiguration(PanchamConfiguration):
 
     def __init__(self, config_file_path: str|None):
@@ -94,6 +108,10 @@ class OrderedPanchamConfiguration(PanchamConfiguration):
     @property
     def disable_schema_validation(self) -> bool:
         return self.__get_config_item("disable_schema_validation", "PANCHAM_DEBUG_DISABLE_SCHEMA_VALIDATION", "debug.disable_schema_validation")
+
+    @property
+    def reporter_name(self) -> str:
+        return self.__get_config_item("reporter_name", "PANCHAM_DEBUG_REPORTER", "debug.reporter")
 
     def __get_config_item(self, name: str, env_var: str|None = None, config_name: str|None = None) -> str|bool|None:
         """
