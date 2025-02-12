@@ -14,6 +14,7 @@ class DataFrameConfigurationLoader:
 
         data = self.load_file(filename)
         sheet: str|None = None
+        key: str|None = None
 
         if "file_path" not in data or "file_type" not in data:
             raise ValueError(f"file_path and file_type are required fields in {filename}")
@@ -21,14 +22,17 @@ class DataFrameConfigurationLoader:
         if data["file_type"] == "xlsx" and "sheet" in data:
             sheet = data["sheet"]
 
-        configuration = self.__load_section(data, "main", sheet=sheet)
+        if data['file_type'] == 'yaml' and 'key' in data:
+            key = data['key']
+
+        configuration = self.__load_section(data, "main", sheet=sheet, key=key)
         if "pre" in data:
             for d in data["pre"]:
-                configuration.pre_run_configuration.append(self.__load_section(data, d['name']))
+                configuration.pre_run_configuration.append(self.__load_section(d, d['name']))
 
         if "post" in data:
             for d in data["post"]:
-                configuration.post_run_configuration.append(self.__load_section(data, d['name']))
+                configuration.post_run_configuration.append(self.__load_section(d, d['name']))
 
         return configuration
 
@@ -46,15 +50,15 @@ class DataFrameConfigurationLoader:
         """
         pass
 
-    def __load_section(self, input_data: dict, label: str, sheet: str|None = None) -> DataFrameConfiguration:
+    def __load_section(self, data: dict, label: str, sheet: str|None = None, key: str|None = None) -> DataFrameConfiguration:
         """
         Dataframes are loaded in sections, allowing the pre and post steps to be their own configuration that
         is loaded using the same methods
 
-        :param input_data: A dictionary containing configuration data needed for defining the DataFrame
+        :param data: A dictionary containing configuration data needed for defining the DataFrame
             and its associated fields. Must include a "file_path" and "file_type" for "main" label or
             nested label-specific details when not "main".
-        :type input_data: dict
+        :type data: dict
         :param label: A string indicating the label for the section to process. Allows identifying
             the required part of the input data.
         :type label: str
@@ -67,9 +71,8 @@ class DataFrameConfigurationLoader:
         :rtype: DataFrameConfiguration
         :raises ValueError: If a field in the input data cannot be parsed by any available field parser.
         """
-        data = input_data
         if label == 'main':
-            configuration = DataFrameConfiguration(data["file_path"], data["file_type"], sheet=sheet)
+            configuration = DataFrameConfiguration(data["file_path"], data["file_type"], sheet=sheet, key=key)
         else:
             configuration = DataFrameConfiguration(label, label)
 

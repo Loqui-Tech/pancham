@@ -1,7 +1,7 @@
 import os
 import pytest
 
-from pancham.file_loader import ExcelFileLoader
+from pancham.file_loader import ExcelFileLoader, YamlFileLoader
 
 
 class TestExcelFileLoader():
@@ -28,3 +28,12 @@ class TestExcelFileLoader():
 
         with pytest.raises(FileNotFoundError):
             loader.read_file(filename, sheet = 'Sheet1')
+
+    def test_yaml_file_loader(self):
+        filename = os.path.dirname(os.path.realpath(__file__)) + "/../example/orders.yaml"
+
+        loader = YamlFileLoader()
+        data = loader.read_file(filename, key = 'orders')
+
+        assert len(data) == 2
+        assert data.iloc[0]['name'] == 'A'

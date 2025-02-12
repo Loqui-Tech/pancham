@@ -101,7 +101,22 @@ class DataFrameLoader:
         return output
 
     def __load_file(self, configuration: DataFrameConfiguration) -> pd.DataFrame:
+        """
+        Loads a data file based on its specified file type and associated configuration details
+        using a corresponding file loader.
 
+        This method determines the appropriate loader for the specified file type as configured
+        in the `file_loaders` dictionary. If the file type is not supported, a `ValueError` is
+        raised. The appropriate loader's `read_file_from_configuration` method is then invoked to
+        load the file, leveraging the configuration provided.
+
+        :param configuration: Configuration object containing details necessary to identify
+            and load the file, including file type and related properties.
+        :type configuration: DataFrameConfiguration
+        :return: A pandas DataFrame object representing the loaded data.
+        :rtype: pd.DataFrame
+        :raises ValueError: If the specified file type is not supported within `file_loaders`.
+        """
 
         file_type = configuration.file_type
 

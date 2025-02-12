@@ -1,6 +1,7 @@
 from typing import Iterator
 
 import pandas as pd
+import yaml
 
 from .reporter import get_reporter
 from .pancham_configuration import PanchamConfiguration
@@ -120,3 +121,16 @@ class ExcelFileLoader(FileLoader):
             raise ValueError("Sheet name must be provided for Excel files.")
 
         return pd.read_excel(filename, sheet_name=kwargs["sheet"])
+
+class YamlFileLoader(FileLoader):
+
+    def read_file(self, filename: str, **kwargs) -> pd.DataFrame:
+        if "key" not in kwargs:
+            raise ValueError("Key must be provided for Yaml files.")
+
+        with open(filename, 'r') as file:
+            data = yaml.safe_load(file)
+            if kwargs["key"] not in data:
+                raise ValueError(f"{kwargs['key']} not in {filename}")
+
+            return pd.DataFrame(data[kwargs["key"]])
