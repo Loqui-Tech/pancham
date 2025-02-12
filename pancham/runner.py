@@ -1,3 +1,4 @@
+from .output_manager import OutputManager
 from .configuration.database_match_field_parser import DatabaseMatchFieldParser
 from .configuration.datetime_field_parser import DateTimeFieldParser
 from .configuration.part_text_extractor_parser import PartTextExtractorParser
@@ -49,9 +50,10 @@ class PanchamRunner:
         self.loaded_outputs: dict[str, OutputWriter] = {}
 
         if outputs is None:
-            self.outputs = {}
+            self.outputs = OutputManager(pancham_configuration, {}, reporter)
         else:
-            self.outputs = outputs
+            self.outputs = OutputManager(pancham_configuration, outputs, reporter)
+
         if file_loaders is None:
             self.file_loaders = DEFAULT_LOADERS
         else:
@@ -101,41 +103,10 @@ class PanchamRunner:
         loader = DataFrameLoader(self.file_loaders, self.reporter, self.pancham_configuration)
         data = loader.load(configuration)
 
-        for output in configuration.output:
-            output_writer = self.__get_output(output)
-            output_writer.write(data, output)
+        self.outputs.write_output(data, configuration)
 
+        for post_run_configuration in configuration.post_run_configuration:
+            post_run_data = loader.process_dataframe(data, post_run_configuration)
 
-    def __get_output(self, output_config: dict) -> OutputWriter:
-        """
-        Retrieves or creates an output writer based on the specified output configuration.
-
-        This method checks whether the requested output type is available in the predefined
-        outputs or has been previously loaded. If the output type is not found, it attempts
-        to initialize the output writer for the specified type (e.g., database). If the
-        requested output type is not supported, an exception is raised.
-
-        :param output_config: Configuration dictionary specifying the output type. Must
-                              include the `output_type` key.
-        :type output_config: dict
-        :return: An instance of OutputWriter corresponding to the output type.
-        :rtype: OutputWriter
-        :raises ValueError: If the requested output type is not supported.
-        """
-        output_type = output_config['output_type']
-
-        if output_type in self.outputs:
-            return self.outputs[output_type]
-
-        if output_type in self.loaded_outputs:
-            return self.loaded_outputs[output_type]
-
-        if output_type == 'database':
-            initialize_db_engine(self.pancham_configuration, self.reporter)
-            self.loaded_outputs[output_type] = DatabaseOutputWriter()
-            return self.loaded_outputs[output_type]
-
-        raise ValueError(f'Unsupported output type: {output_type}')
-
-
+            self.outputs.write_output(post_run_data, post_run_configuration)
 

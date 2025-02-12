@@ -54,11 +54,35 @@ class DataFrameLoader:
         """
 
         source_df = self.__load_file(configuration)
+
+        return self.process_dataframe(source_df, configuration)
+
+    def process_dataframe(self, source_df: pd.DataFrame, configuration: DataFrameConfiguration) -> pd.DataFrame:
+        """
+        Processes a Pandas DataFrame based on a set of configuration rules.
+
+        This method takes a source DataFrame and applies a series of transformations
+        outlined in the given configuration. These transformations include renaming
+        columns, applying dynamic field functions, handling suppressed errors during
+        field processing, filtering specific output fields, casting data types, and
+        validating the resulting output schema. The result is a processed DataFrame
+        suitable for further analysis or usage.
+
+        :param source_df: The source DataFrame to be processed.
+        :param configuration: An instance of `DataFrameConfiguration` containing
+            renaming instructions, dynamic field definitions, output field filters,
+            type casting rules, and schema validation settings.
+        :return: A transformed DataFrame adhering to the configuration rules.
+        :rtype: pd.DataFrame
+        """
         renamed_df = source_df.rename(columns=configuration.renames)
 
         for field in configuration.dynamic_fields:
             try:
-                renamed_df[field.name] = renamed_df.apply(field.func, axis=1)
+                if field.has_df_func():
+                    renamed_df = field.df_func(renamed_df)
+                else:
+                    renamed_df[field.name] = renamed_df.apply(field.func, axis=1)
             except Exception as e:
                 if field.suppress_errors:
                     self.reporter.report_error(e)

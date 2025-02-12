@@ -112,7 +112,7 @@ class FieldParser:
         """
         return self.has_name(field) and self.is_function(field) and function_key in field[self.FUNCTION_KEY]
 
-    def build_func_field(self, field: dict, func: Callable[[dict], int|str|None|bool|pd.Series]) -> DataFrameField:
+    def build_func_field(self, field: dict, func: Callable[[dict], int|str|None|bool|pd.Series|list]) -> DataFrameField:
         """
         Generates a DataFrameField instance, combining the attributes of a provided
         field dictionary along with a user-defined transformation function. This

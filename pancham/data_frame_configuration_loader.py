@@ -21,7 +21,57 @@ class DataFrameConfigurationLoader:
         if data["file_type"] == "xlsx" and "sheet" in data:
             sheet = data["sheet"]
 
-        configuration = DataFrameConfiguration(data["file_path"], data["file_type"], sheet=sheet)
+        configuration = self.__load_section(data, "main", sheet=sheet)
+        if "pre" in data:
+            for d in data["pre"]:
+                configuration.pre_run_configuration.append(self.__load_section(data, d['name']))
+
+        if "post" in data:
+            for d in data["post"]:
+                configuration.post_run_configuration.append(self.__load_section(data, d['name']))
+
+        return configuration
+
+    def load_file(self, filename: str) -> dict:
+        """
+        Loads the content of a given file and returns the data as a dictionary. The file
+        is typically expected to contain structured data in a format such as JSON or YAML.
+
+        :param filename: Name of the file to be loaded. The file should exist at the
+            specified path and must be readable.
+        :type filename: str
+
+        :return: A dictionary containing the data loaded from the file.
+        :rtype: dict
+        """
+        pass
+
+    def __load_section(self, input_data: dict, label: str, sheet: str|None = None) -> DataFrameConfiguration:
+        """
+        Dataframes are loaded in sections, allowing the pre and post steps to be their own configuration that
+        is loaded using the same methods
+
+        :param input_data: A dictionary containing configuration data needed for defining the DataFrame
+            and its associated fields. Must include a "file_path" and "file_type" for "main" label or
+            nested label-specific details when not "main".
+        :type input_data: dict
+        :param label: A string indicating the label for the section to process. Allows identifying
+            the required part of the input data.
+        :type label: str
+        :param sheet: Optional sheet identifier for file-based input if relevant (e.g., Excel files).
+            Determines a particular sheet to pull data from when parsing input.
+        :type sheet: str | None
+        :return: A configured `DataFrameConfiguration` object instantiated based on input_data and label,
+            populated with fields parsed by supported parsers, and associated output configurations if specified
+            and applicable.
+        :rtype: DataFrameConfiguration
+        :raises ValueError: If a field in the input data cannot be parsed by any available field parser.
+        """
+        data = input_data
+        if label == 'main':
+            configuration = DataFrameConfiguration(data["file_path"], data["file_type"], sheet=sheet)
+        else:
+            configuration = DataFrameConfiguration(label, label)
 
         for f in data['fields']:
             has_parsed = False
@@ -41,20 +91,6 @@ class DataFrameConfigurationLoader:
                     configuration.add_output(c.to_output_configuration(data))
 
         return configuration
-
-    def load_file(self, filename: str) -> dict:
-        """
-        Loads the content of a given file and returns the data as a dictionary. The file
-        is typically expected to contain structured data in a format such as JSON or YAML.
-
-        :param filename: Name of the file to be loaded. The file should exist at the
-            specified path and must be readable.
-        :type filename: str
-
-        :return: A dictionary containing the data loaded from the file.
-        :rtype: dict
-        """
-        pass
 
 
 class YamlDataFrameConfigurationLoader(DataFrameConfigurationLoader):

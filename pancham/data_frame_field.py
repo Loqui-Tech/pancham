@@ -3,13 +3,13 @@ import pandas as pd
 
 class DataFrameField:
     """
-    Represents a field in a DataFrame with specific properties and behavior.
+    Provides configuration for a field or change within the dataframe.
 
-    This class is used to define and represent a field/column in a pandas DataFrame.
-    It provides customization options such as naming, type specification,
-    nullable constraints, optional processing functions, and indexing preferences.
-    The intent of this class is to act as a metadata descriptor or configuration
-    entity that can enrich the DataFrame with more semantics or validation logic.
+    There are 3 types of field that will be available:
+        1. Renamed field - These are fields that are in the source data and just get renamed
+        2. Func fields - These are fields that use a function in the dataframe apply method to create a new field
+        3. Dataframe func fields - These return a new data frame and can make changes like exploding or deduplicating the
+        entire dataframe.
 
     :ivar name: Name of the field, typically used to reference it programmatically.
     :type name: str
@@ -39,7 +39,8 @@ class DataFrameField:
             nullable: bool = True,
             func: Callable[[dict], int|str|None|bool|pd.Series]|None = None,
             suppress_errors: bool = False,
-            cast_type: bool = False
+            cast_type: bool = False,
+            df_func: Callable[[pd.DataFrame], pd.DataFrame] | None = None,
     ) -> None:
         self.name = name
         self.source_name = source_name
@@ -48,9 +49,25 @@ class DataFrameField:
         self.func = func
         self.suppress_errors = suppress_errors
         self.cast_type = cast_type
+        self.df_func = df_func
 
     def is_dynamic(self) -> bool:
-        return self.func is not None
+        return self.func is not None or self.df_func is not None
+
+    def has_df_func(self) -> bool:
+        """
+        Checks if the object has a defined dataframe function.
+
+        This method evaluates whether the attribute `df_func` within the object is
+        not set to `None`. It serves as an identifier to determine if the object
+        has a valid dataframe function assigned. Useful for ensuring that the
+        required dataframe functionality exists prior to performing operations
+        relying on it.
+
+        :return: Indicates whether the dataframe function is defined.
+        :rtype: bool
+        """
+        return self.df_func is not None
 
     def __str__(self) -> str:
         return f"Name: {self.name}, Source Name: {self.source_name}, Type: {self.field_type}, Nullable: {self.nullable}"

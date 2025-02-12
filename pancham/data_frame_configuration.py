@@ -33,6 +33,8 @@ class DataFrameConfiguration:
 
         self.fields: list[DataFrameField] = []
         self.output: list[dict] = []
+        self.pre_run_configuration: list[DataFrameConfiguration] = []
+        self.post_run_configuration: list[DataFrameConfiguration] = []
 
     def add_field(
             self,
