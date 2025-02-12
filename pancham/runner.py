@@ -1,6 +1,7 @@
 from .output_manager import OutputManager
 from .configuration.database_match_field_parser import DatabaseMatchFieldParser
 from .configuration.datetime_field_parser import DateTimeFieldParser
+from .configuration.database_fixed_field_parser import DatabaseFixedFieldParser
 from .configuration.part_text_extractor_parser import PartTextExtractorParser
 from .configuration.static_field_parser import StaticFieldParser
 from .configuration.to_int_field_parser import ToIntFieldParser
@@ -24,6 +25,8 @@ DEFAULT_LOADERS = {
     'yaml': YamlFileLoader()
 }
 DEFAULT_REPORTER = PrintReporter()
+
+
 DEFAULT_FIELD_PARSERS = [
     TextFieldParser(),
     MatchFieldParser(),
@@ -31,7 +34,8 @@ DEFAULT_FIELD_PARSERS = [
     ToIntFieldParser(),
     PartTextExtractorParser(),
     StaticFieldParser(),
-    DatabaseMatchFieldParser()
+    DatabaseMatchFieldParser(),
+    DatabaseFixedFieldParser()
 ]
 DEFAULT_OUTPUTS = [
     DatabaseOutput()
