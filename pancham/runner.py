@@ -3,6 +3,8 @@ from .configuration.database_match_field_parser import DatabaseMatchFieldParser
 from .configuration.datetime_field_parser import DateTimeFieldParser
 from .configuration.database_fixed_field_parser import DatabaseFixedFieldParser
 from .configuration.part_text_extractor_parser import PartTextExtractorParser
+from .configuration.explode_field_parser import ExplodeFieldParser
+from .configuration.split_field_parser import SplitFieldParser
 from .configuration.static_field_parser import StaticFieldParser
 from .configuration.to_int_field_parser import ToIntFieldParser
 from .configuration.field_parser import FieldParser
@@ -26,7 +28,6 @@ DEFAULT_LOADERS = {
 }
 DEFAULT_REPORTER = PrintReporter()
 
-
 DEFAULT_FIELD_PARSERS = [
     TextFieldParser(),
     MatchFieldParser(),
@@ -35,7 +36,9 @@ DEFAULT_FIELD_PARSERS = [
     PartTextExtractorParser(),
     StaticFieldParser(),
     DatabaseMatchFieldParser(),
-    DatabaseFixedFieldParser()
+    DatabaseFixedFieldParser(),
+    SplitFieldParser(),
+    ExplodeFieldParser()
 ]
 DEFAULT_OUTPUTS = [
     DatabaseOutput()
