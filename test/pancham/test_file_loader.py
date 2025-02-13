@@ -1,6 +1,7 @@
 import os
 import pytest
 
+from pancham.data_frame_configuration import DataFrameConfiguration
 from pancham.file_loader import ExcelFileLoader, YamlFileLoader
 
 
@@ -37,3 +38,21 @@ class TestExcelFileLoader():
 
         assert len(data) == 2
         assert data.iloc[0]['name'] == 'A'
+
+    def test_read_from_configuration(self):
+        filename = os.path.dirname(os.path.realpath(__file__)) + "/../example/orders.xlsx"
+        configuration = DataFrameConfiguration(filename, 'xlsx', sheet='Sheet1')
+
+        loader = ExcelFileLoader()
+        data = loader.read_file_from_configuration(configuration)
+
+        assert len(data) == 10
+
+    def test_read_from_yaml_configuration(self):
+        filename = os.path.dirname(os.path.realpath(__file__)) + "/../example/orders.yaml"
+        configuration = DataFrameConfiguration(filename, 'yaml', key='orders')
+
+        loader = YamlFileLoader()
+        data = loader.read_file_from_configuration(configuration)
+
+        assert len(data) == 2
