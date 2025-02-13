@@ -1,5 +1,6 @@
 import yaml
 
+from .data_frame_configuration import MergeConfiguration
 from .configuration.field_parser import FieldParser
 from .data_frame_configuration import DataFrameConfiguration
 from .output_configuration import OutputConfiguration
@@ -74,7 +75,11 @@ class DataFrameConfigurationLoader:
         if label == 'main':
             configuration = DataFrameConfiguration(data["file_path"], data["file_type"], sheet=sheet, key=key)
         else:
-            configuration = DataFrameConfiguration(label, label)
+            merge_configuration = None
+            if 'merge' in data:
+                merge_dict = data['merge']
+                merge_configuration = MergeConfiguration(merge_dict.get('type', 'processed'), merge_dict.get('source_key', None), merge_dict.get('processed_key', None))
+            configuration = DataFrameConfiguration(label, label, merge_configuration=merge_configuration)
 
         for f in data['fields']:
             has_parsed = False

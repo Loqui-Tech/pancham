@@ -2,10 +2,65 @@ import numpy as np
 import pandas as pd
 from pandera.errors import SchemaError
 
+from .data_frame_configuration import MergeConfiguration
 from .pancham_configuration import PanchamConfiguration
 from .data_frame_configuration import DataFrameConfiguration
 from .file_loader import FileLoader
 from .reporter import Reporter
+
+class DataFrameOutput:
+    """
+    Represents a container for storing and handling data in a source and
+    processed format using pandas DataFrames.
+
+    This class is designed to manage two pandas DataFrames: one as the
+    original dataset (source) and another that represents the dataset after
+    being processed (processed). Its purpose is to provide an organized
+    structure for handling data transformation workflows.
+
+    :ivar source: The original pandas DataFrame containing raw data before
+        processing.
+    :type source: pd.DataFrame
+    :ivar processed: The pandas DataFrame containing the data after being
+        processed.
+    :type processed: pd.DataFrame
+    """
+
+    def __init__(self, source: pd.DataFrame, processed: pd.DataFrame):
+        self.source = source
+        self.processed = processed
+
+    def get_required_dataframe(self, merge_configuration: MergeConfiguration) -> pd.DataFrame:
+        """
+        Determines and retrieves the required DataFrame based on the specified
+        merge configuration. The function decides which DataFrame to return or
+        handle merging logic accordingly.
+
+        If the `merge_configuration` is None, it returns a copy of the
+        `processed` DataFrame. When the `required_dataframe` attribute is
+        'source', a copy of the `source` DataFrame is returned. If
+        `required_dataframe` is 'merged', and both `processed_key` and
+        `source_key` are provided, the function performs a left merge
+        operation between `source` and `processed` DataFrames. Otherwise,
+        it defaults to returning a copy of the `processed` DataFrame.
+
+        :param merge_configuration: Configuration object specifying which
+            DataFrame to return or how to merge existing ones
+        :type merge_configuration: MergeConfiguration
+        :return: The resolved DataFrame based on the conditions provided in
+            merge_configuration
+        :rtype: pd.DataFrame
+        """
+        if merge_configuration is None:
+            return self.processed.copy()
+
+        if merge_configuration.required_dataframe == 'source':
+            return self.source.copy()
+
+        if merge_configuration.required_dataframe == 'merged' and merge_configuration.processed_key is not None and merge_configuration.source_key is not None:
+            return self.source.merge(self.processed, how='left', left_on=merge_configuration.source_key, right_on=merge_configuration.processed_key)
+
+        return self.processed.copy()
 
 class DataFrameLoader:
     """
@@ -35,7 +90,7 @@ class DataFrameLoader:
     def load(
             self,
             configuration: DataFrameConfiguration
-    ) -> pd.DataFrame:
+    ) -> DataFrameOutput:
         """
         Loads and processes data as per the given configuration.
 
@@ -55,7 +110,9 @@ class DataFrameLoader:
 
         source_df = self.__load_file(configuration)
 
-        return self.process_dataframe(source_df, configuration)
+        processed = self.process_dataframe(source_df, configuration)
+
+        return DataFrameOutput(source_df, processed)
 
     def process_dataframe(self, source_df: pd.DataFrame, configuration: DataFrameConfiguration) -> pd.DataFrame:
         """

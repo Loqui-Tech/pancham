@@ -4,6 +4,21 @@ import pandera as pa
 
 from .data_frame_field import DataFrameField
 
+class MergeConfiguration:
+    """
+    Represents the configuration for merging dataframes.
+
+    This class is used to define the necessary parameters for merging two
+    dataframes, including specifying the name of the required dataframe and
+    the column names to use for joining on the left and right dataframes.
+
+   """
+
+    def __init__(self, required_dataframe: str, source_key: str|None = None, processed_key: str|None = None):
+        self.required_dataframe = required_dataframe
+        self.source_key = source_key
+        self.processed_key = processed_key
+
 class DataFrameConfiguration:
     """
     Represents a configuration for managing and processing data in a DataFrame.
@@ -26,11 +41,18 @@ class DataFrameConfiguration:
     :type output: list[dict]
     """
 
-    def __init__(self, file_path: str|list[str], file_type: str, sheet: str|None = None, key: str|None = None):
+    def __init__(self,
+                 file_path: str|list[str],
+                 file_type: str,
+                 sheet: str|None = None,
+                 key: str|None = None,
+                 merge_configuration: MergeConfiguration|None = None,
+                 ):
         self.file_path = file_path
         self.file_type = file_type
         self.sheet = sheet
         self.key = key
+        self.merge_configuration = merge_configuration
 
         self.fields: list[DataFrameField] = []
         self.output: list[dict] = []

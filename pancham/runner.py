@@ -111,10 +111,11 @@ class PanchamRunner:
         loader = DataFrameLoader(self.file_loaders, self.reporter, self.pancham_configuration)
         data = loader.load(configuration)
 
-        self.outputs.write_output(data, configuration)
+        self.outputs.write_output(data.processed, configuration)
 
         for post_run_configuration in configuration.post_run_configuration:
-            post_run_data = loader.process_dataframe(data, post_run_configuration)
+            input_data = data.get_required_dataframe(post_run_configuration.merge_configuration)
+            post_run_data = loader.process_dataframe(input, post_run_configuration)
 
             self.outputs.write_output(post_run_data, post_run_configuration)
 
