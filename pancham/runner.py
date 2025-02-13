@@ -115,7 +115,7 @@ class PanchamRunner:
 
         for post_run_configuration in configuration.post_run_configuration:
             input_data = data.get_required_dataframe(post_run_configuration.merge_configuration)
-            post_run_data = loader.process_dataframe(input, post_run_configuration)
+            post_run_data = loader.process_dataframe(input_data, post_run_configuration)
 
             self.outputs.write_output(post_run_data, post_run_configuration)
 
