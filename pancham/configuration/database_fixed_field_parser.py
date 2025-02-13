@@ -9,11 +9,10 @@ class DatabaseFixedFieldParser(FieldParser):
     Configuration:
 
     func:
-        database_match:
+        database_value:
             table_name: <Name of the table to search>
             search_column: <Name of the column to search>
             value_column: <Name of the column to find the value>
-            search_cast: <Optional, str or int, set if we need to cast the search column>
             value_cast: <Optional, str or int, set if we need to cast the value column>
 
     :ivar FUNCTION_ID: Identifier for the 'database_match' function.
@@ -24,8 +23,6 @@ class DatabaseFixedFieldParser(FieldParser):
     :type SEARCH_COLUMN_KEY: str
     :ivar VALUE_COLUMN_KEY: Key denoting the column in the table used for value retrieval.
     :type VALUE_COLUMN_KEY: str
-    :ivar SEARCH_CAST_VALUE_KEY: Key specifying the cast type for search column values.
-    :type SEARCH_CAST_VALUE_KEY: str
     :ivar VALUE_CAST_VALUE_KEY: Key specifying the cast type for value column values.
     :type VALUE_CAST_VALUE_KEY: str
     """
@@ -34,7 +31,6 @@ class DatabaseFixedFieldParser(FieldParser):
     TABLE_NAME_KEY = "table_name"
     SEARCH_COLUMN_KEY = "search_column"
     VALUE_COLUMN_KEY = "value_column"
-    SEARCH_CAST_VALUE_KEY = "search_cast"
     VALUE_CAST_VALUE_KEY = "value_cast"
     VALUE_KEY = "value"
 
