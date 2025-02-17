@@ -5,10 +5,12 @@ from .configuration.database_fixed_field_parser import DatabaseFixedFieldParser
 from .configuration.part_text_extractor_parser import PartTextExtractorParser
 from .configuration.explode_field_parser import ExplodeFieldParser
 from .configuration.split_field_parser import SplitFieldParser
+from .configuration.database_multi_field_search_parser import DatabaseMultiFieldSearchParser
 from .configuration.static_field_parser import StaticFieldParser
 from .configuration.to_int_field_parser import ToIntFieldParser
 from .configuration.field_parser import FieldParser
 from .configuration.match_field_parser import MatchFieldParser
+from .configuration.concat_field_parser import ConcatFieldParser
 from .configuration.text_field_parser import TextFieldParser
 from .data_frame_configuration import DataFrameConfiguration
 from .data_frame_loader import DataFrameLoader
@@ -16,7 +18,7 @@ from .data_frame_configuration_loader import YamlDataFrameConfigurationLoader
 from .database.database_engine import initialize_db_engine
 from .database.sql_file_loader import SqlFileLoader
 from .database.database_output import DatabaseOutput
-from .file_loader import FileLoader, ExcelFileLoader, YamlFileLoader
+from .file_loader import FileLoader, ExcelFileLoader, YamlFileLoader, CsvFileLoader
 from .output_configuration import OutputWriter, OutputConfiguration
 from .pancham_configuration import PanchamConfiguration
 from .reporter import Reporter, PrintReporter
@@ -24,7 +26,8 @@ from .reporter import Reporter, PrintReporter
 DEFAULT_LOADERS = {
     'xlsx': ExcelFileLoader(),
     'sql_file': SqlFileLoader(),
-    'yaml': YamlFileLoader()
+    'yaml': YamlFileLoader(),
+    'csv': CsvFileLoader()
 }
 DEFAULT_REPORTER = PrintReporter()
 
@@ -38,7 +41,9 @@ DEFAULT_FIELD_PARSERS = [
     DatabaseMatchFieldParser(),
     DatabaseFixedFieldParser(),
     SplitFieldParser(),
-    ExplodeFieldParser()
+    ExplodeFieldParser(),
+    ConcatFieldParser(),
+    DatabaseMultiFieldSearchParser()
 ]
 DEFAULT_OUTPUTS = [
     DatabaseOutput()

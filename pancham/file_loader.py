@@ -134,3 +134,19 @@ class YamlFileLoader(FileLoader):
                 raise ValueError(f"{kwargs['key']} not in {filename}")
 
             return pd.DataFrame(data[kwargs["key"]])
+
+class CsvFileLoader(FileLoader):
+    """
+    Handles loading and reading CSV files.
+
+    This class provides functionality to read CSV files and convert them into
+    pandas DataFrame objects. It is a specialized implementation of the
+    FileLoader interface specifically for CSV file formats.
+
+    :ivar supported_extension: A string indicating the supported file extension
+        for this loader (e.g., '.csv').
+    :type supported_extension: str
+    """
+
+    def read_file(self, filename: str, **kwargs) -> pd.DataFrame:
+        return pd.read_csv(filename)

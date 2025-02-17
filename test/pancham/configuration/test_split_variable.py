@@ -1,7 +1,4 @@
-import pandas as pd
-
 from pancham.configuration.split_field_parser import SplitFieldParser
-
 
 class TestSplitVariable:
 

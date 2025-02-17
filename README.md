@@ -26,6 +26,8 @@ flowchart LR;
 
 - Excel
 - SQL
+- YAML
+- CSV
 
 ### Supported Output
 

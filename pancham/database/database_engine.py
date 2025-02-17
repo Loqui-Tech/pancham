@@ -48,7 +48,8 @@ class DatabaseEngine:
         :type exists: Literal["replace", "append"]
         :return: None
         """
-        self.reporter.report_output(data, table_name)
+        if self.reporter:
+            self.reporter.report_output(data, table_name)
 
         with self.engine.connect() as conn:
             data.to_sql(table_name, conn, if_exists=exists, index=False)
@@ -71,10 +72,10 @@ def initialize_db_engine(config: PanchamConfiguration, reporter: Reporter):
     :return: None
     :rtype: NoneType
     """
-    global db_engine
+    global db_engine, META
 
-    if db_engine is None:
-        db_engine = DatabaseEngine(config, reporter)
+    db_engine = DatabaseEngine(config, reporter)
+    META = MetaData()
 
 def get_db_engine() -> DatabaseEngine:
     """
