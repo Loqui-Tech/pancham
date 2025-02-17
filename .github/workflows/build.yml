@@ -116,6 +116,7 @@ jobs:
           MYSQL_PASSWORD: panchame
           MYSQL_DATABASE: pancham
           MYSQL_USER: pancham
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
     steps:
     - uses: actions/checkout@v4
     - name: Set up Python ${{ matrix.python-version }}
