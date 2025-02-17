@@ -110,6 +110,8 @@ jobs:
     services:
       postgres:
         image: mysql
+        ports:
+          - 3306:3306
         env:
           MYSQL_PASSWORD: panchame
           MYSQL_DATABASE: pancham
@@ -126,7 +128,7 @@ jobs:
         pip install -r requirements.txt
     - name: Test with pytest
       env:
-        PC_DB: "mysql://pancham:pancham@mysql:3306/pancham"
+        PC_DB: "mysql+mysqldb://pancham:pancham@localhost:3306/pancham"
       run: |
         pytest
 
