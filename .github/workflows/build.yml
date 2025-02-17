@@ -90,7 +90,7 @@ jobs:
         pip install -r requirements.txt
     - name: Test with pytest
       env:
-        PC_DB: "postgresql://postres:postgres@postgres:5432/pancham"
+        PC_DB: "postgresql://postgres:postgres@postgres:5432/pancham"
       run: |
         pytest
 
