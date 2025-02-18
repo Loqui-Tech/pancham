@@ -115,6 +115,7 @@ jobs:
         env:
           MYSQL_PASSWORD: panchame
           MYSQL_DATABASE: pancham
+          MYSQL_ROOT_PASSWORD: pancham
           MYSQL_USER: pancham
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
     steps:
