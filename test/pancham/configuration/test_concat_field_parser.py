@@ -128,3 +128,27 @@ class TestConcatFieldParser:
 
         assert out.name == 'a'
         assert out.func(data) == 'Hello World'
+
+
+    def test_run_concat_with_empty_values_and_trim_all_and_number(self):
+        paser = ConcatFieldParser()
+        field = {
+            'name': 'a',
+            'func': {
+                'concat': {
+                    'fields': ['a', 'b', 'c'],
+                    'trim_all': True
+                }
+            }
+        }
+
+        data = {
+            'a': 'Hello',
+            'b': 123.45,
+            'c': '    '
+        }
+
+        out = paser.parse_field(field)
+
+        assert out.name == 'a'
+        assert out.func(data) == 'Hello'

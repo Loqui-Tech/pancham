@@ -10,8 +10,8 @@ permissions:
   contents: read
 
 env:
-  PANCHAM_TAG: "0.0.48"
-  PANCHAM_VERSION: "0.0.48dev"
+  PANCHAM_TAG: "0.1.1"
+  PANCHAM_VERSION: "0.1.1dev"
 
 jobs:
   test:

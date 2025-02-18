@@ -36,6 +36,9 @@ class ConcatFieldParser(FieldParser):
             values = []
             for f in concat_field_keys:
                 field_value = data[f]
+                if type(field_value) is not str:
+                    continue
+
                 if trim_all:
                     field_value = field_value.strip()
                 values.append(field_value)
