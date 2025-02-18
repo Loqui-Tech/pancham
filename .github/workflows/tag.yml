@@ -125,6 +125,7 @@ jobs:
         name: release-dists
         with:
           path: dist/
+          name: release-dists
 
   cli-test:
     runs-on: ubuntu-latest
