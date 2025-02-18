@@ -1,6 +1,6 @@
-from configuration.field_parser import FieldParser
-from data_frame_field import DataFrameField
-from database.multi_column_database_search import MultiColumnDatabaseSearch
+from .field_parser import FieldParser
+from pancham.data_frame_field import DataFrameField
+from pancham.database.multi_column_database_search import MultiColumnDatabaseSearch
 
 class DatabaseMultiFieldSearchParser(FieldParser):
     """
