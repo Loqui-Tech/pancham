@@ -136,12 +136,17 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: 3.12
+      - name: Get release
+        id: get_release
+        uses: bruceadams/get-release@v1.3.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
       - name: Download a single artifact
         uses: actions/download-artifact@v4
         with:
-          name: pancham-${{ env.PANCHAM_VERSION }}
+          name: pancham-${{ steps.get_release.outputs.tag_name }}
       - name: Install
-        run: pip install pancham-${{ env.PANCHAM_TAG }}.dev0-py3-none-any.whl
+        run: pip install pancham-${{ steps.get_release.outputs.tag_name }}.dev0-py3-none-any.whl
       - name: Run
         run: pancham example/order_configuration.yml example/config.yaml
         working-directory: test
