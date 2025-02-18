@@ -146,7 +146,7 @@ jobs:
         with:
           name: pancham-${{ steps.get_release.outputs.tag_name }}
       - name: Install
-        run: pip install pancham-${{ steps.get_release.outputs.tag_name }}.py3-none-any.whl
+        run: pip install pancham-${{ steps.get_release.outputs.tag_name }}-py3-none-any.whl
       - name: Run
         run: pancham example/order_configuration.yml example/config.yaml
         working-directory: test
