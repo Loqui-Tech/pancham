@@ -1,0 +1,159 @@
+name: Build application
+
+on:
+  release:
+    types:
+      - published
+
+permissions:
+  contents: read
+
+env:
+  PANCHAM_TAG: ${{ github.ref }}
+  PANCHAM_VERSION: ${{ github.ref }}
+
+jobs:
+  test:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version:
+          - "3.11"
+          - "3.12"
+          - "3.13"
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pylint
+    - name: Test with pytest
+      run: |
+        pytest --cov-report term --cov-report xml:coverage.xml --cov=pancham
+
+  dependency-review:
+    runs-on: ubuntu-latest
+    needs:
+      - test
+    steps:
+      - name: 'Checkout Repository'
+        uses: actions/checkout@v4
+      - name: 'Dependency Review'
+        uses: actions/dependency-review-action@v4
+        with:
+          base-ref: ${{ github.event.pull_request.base.sha || 'main' }}
+          head-ref: ${{ github.event.pull_request.head.sha || github.ref }}
+
+  pgtest:
+    runs-on: ubuntu-latest
+    needs:
+      - dependency-review
+    strategy:
+      matrix:
+        python-version:
+          - "3.11"
+          - "3.12"
+          - "3.13"
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: pancham
+          POSTGRES_USER: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: Test with pytest
+      env:
+        PC_DB: "postgresql+psycopg2://postgres:postgres@localhost:5432/pancham"
+      run: |
+        pytest
+
+  build:
+    runs-on: ubuntu-latest
+    needs:
+      - pgtest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.12
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Build
+        run: python -m build
+      - uses: actions/upload-artifact@v4
+        name: Publish
+        with:
+          path: dist/*.whl
+          name: pancham-${{ env.PANCHAM_VERSION }}
+      - uses: actions/upload-artifact@v4
+        name: Publish
+        with:
+          path: dist/*.tar.gz
+          name: pancham-achive-${{ env.PANCHAM_VERSION }}
+      - uses: actions/upload-artifact@v4
+        name: release-dists
+        with:
+          path: dist/
+
+  cli-test:
+    runs-on: ubuntu-latest
+    needs:
+      - build
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.12
+      - name: Download a single artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: pancham-${{ env.PANCHAM_VERSION }}
+      - name: Install
+        run: pip install pancham-${{ env.PANCHAM_TAG }}.dev0-py3-none-any.whl
+      - name: Run
+        run: pancham example/order_configuration.yml example/config.yaml
+        working-directory: test
+        env:
+          PANCHAM_DATABASE_CONNECTION: "sqlite:///:memory:"
+
+  publish:
+    runs-on: ubuntu-latest
+    needs:
+      - cli-test
+    steps:
+    - name: Download
+      uses: actions/download-artifact@v4
+      with:
+        name: release-dists
+        path: dist/
+    - name: Publish release distributions to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1

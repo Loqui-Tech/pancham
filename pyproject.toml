@@ -17,6 +17,9 @@ requires-python = ">=3.11"
 [project.scripts]
 pancham = "pancham.__main__:app"
 
+[project.urls]
+Homepage = "https://github.com/Loqui-Tech/pancham"
+
 [tool.setuptools.packages]
 find = {}
 
