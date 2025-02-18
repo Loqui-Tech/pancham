@@ -8,10 +8,6 @@ on:
 permissions:
   contents: read
 
-env:
-  PANCHAM_TAG: ${{ github.ref }}
-  PANCHAM_VERSION: ${{ github.ref }}
-
 jobs:
   test:
 
@@ -106,18 +102,25 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+      - name: Get release
+        id: get_release
+        uses: bruceadams/get-release@v1.3.2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
       - name: Build
         run: python -m build
+        env:
+          PANCHAM_VERSION: ${{ steps.get_release.outputs.tag_name }}
       - uses: actions/upload-artifact@v4
         name: Publish
         with:
           path: dist/*.whl
-          name: pancham-${{ env.PANCHAM_VERSION }}
+          name: pancham-${{ steps.get_release.outputs.tag_name }}
       - uses: actions/upload-artifact@v4
         name: Publish
         with:
           path: dist/*.tar.gz
-          name: pancham-achive-${{ env.PANCHAM_VERSION }}
+          name: pancham-achive-${{ steps.get_release.outputs.tag_name }}
       - uses: actions/upload-artifact@v4
         name: release-dists
         with:
