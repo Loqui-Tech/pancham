@@ -35,9 +35,17 @@ class FileLoader:
         data = []
 
         for file_path in self.reduce_file_paths(configuration, pancham_configuration):
+            sheet = configuration.sheet
+            key = configuration.key
+
+            if type(file_path) is dict:
+                file_path = file_path['path']
+                sheet = file_path.get('sheet', None)
+                key = file_path.get('key', None)
+
             reporter.report_start(file_path)
 
-            frame = self.read_file(file_path, sheet = configuration.sheet, key = configuration.key)
+            frame = self.read_file(file_path, sheet = sheet, key = key)
             data.append(frame)
             reporter.report_end(file_path, frame)
 

@@ -187,7 +187,11 @@ class DataFrameConfiguration:
         :return: A list of strings containing the `name` property of each field in `fields`.
         :rtype: list[str]
         """
-        return list(map(lambda x: x.name, self.fields))
+        output = []
+        for field in self.fields:
+            if not field.has_df_func():
+                output.append(field.name)
+        return output
 
     @property
     def schema(self) -> pa.DataFrameSchema:
