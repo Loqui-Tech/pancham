@@ -37,17 +37,18 @@ class FileLoader:
         for file_path in self.reduce_file_paths(configuration, pancham_configuration):
             sheet = configuration.sheet
             key = configuration.key
+            path = file_path
 
             if type(file_path) is dict:
-                file_path = file_path['path']
+                path = file_path['path']
                 sheet = file_path.get('sheet', None)
                 key = file_path.get('key', None)
 
-            reporter.report_start(file_path)
+            reporter.report_start(path)
 
-            frame = self.read_file(file_path, sheet = sheet, key = key)
+            frame = self.read_file(path, sheet = sheet, key = key)
             data.append(frame)
-            reporter.report_end(file_path, frame)
+            reporter.report_end(path, frame)
 
         return pd.concat(data)
 
@@ -65,7 +66,7 @@ class FileLoader:
         """
         pass
 
-    def reduce_file_paths(self, configuration: DataFrameConfiguration, pancham_configuration: PanchamConfiguration|None) -> Iterator[str]:
+    def reduce_file_paths(self, configuration: DataFrameConfiguration, pancham_configuration: PanchamConfiguration|None) -> Iterator[str|dict[str, str]]:
         """
         Reduces file paths according to a given configuration. It utilizes a specified
         source directory, if provided, to prepend to each file path found within the
