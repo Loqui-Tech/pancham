@@ -8,7 +8,7 @@ class PartTextExtractorParser(FieldParser):
 
     func:
         split_extract:
-            spliter: <String to split around e.g. , or ' '>
+            splitter: <String to split around e.g. , or ' '>
             return_index: <Int Index of the string to return>
             split_limit: <Optional Int Limit the number of splits>
             remove: <Optional list of strings to be removed from the source string>
@@ -52,6 +52,9 @@ class PartTextExtractorParser(FieldParser):
                 raise ValueError('Splitter and return index required')
 
             raw_input = input[field[self.SOURCE_NAME_KEY]]
+
+            if type(raw_input) != str:
+                return None
 
             clean_input = raw_input.strip()
 

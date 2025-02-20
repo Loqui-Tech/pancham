@@ -27,7 +27,6 @@ class SplitFieldParser(FieldParser):
         split_char = properties["split_char"]
         remove_pattern = properties.get("remove_pattern", None)
         source_name = properties[FieldParser.SOURCE_NAME_KEY]
-
         field[self.FIELD_TYPE_KEY] = list[str]
 
         def extract(data: dict) -> list[str]:
