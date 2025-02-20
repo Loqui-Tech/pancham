@@ -111,10 +111,10 @@ class TestSplitVariable:
         }
 
         data = {
-            'input': 'a,b;#3;b'
+            'input': 'abc,Def;#1234'
         }
 
         split_field_parser = SplitFieldParser()
         output = split_field_parser.parse_field(config).func(data)
 
-        assert output[0] == '3'
+        assert output[0] == '1234'
