@@ -50,7 +50,7 @@ class DatabaseMultiFieldSearchParser(FieldParser):
                 if search_option["type"] == "static":
                     search_values[column] = search_option[self.VALUE_COLUMN_KEY]
                 elif search_option["type"] == "field":
-                    search_values[column] = data[search_option[self.SOURCE_NAME_KEY]]
+                    search_values[column] = data[self.get_source_name(field)]
                 else:
                     raise ValueError(f"Unsupported search type: {search_option['type']}")
 

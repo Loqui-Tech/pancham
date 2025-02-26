@@ -138,3 +138,30 @@ class FieldParser:
             cast_type=field.get(self.CAST_KEY, False) is True
         )
 
+    def get_source_name(self, field: dict) -> str|None:
+        """
+        Retrieves the source name from the given field dictionary, based on a specified key structure.
+
+        This method is designed to extract the source name by checking whether the
+        key defined as SOURCE_NAME_KEY exists within the structure determined by
+        FUNCTION_KEY in the provided field dictionary. If the key does not directly
+        exist within the initial level of the FUNCTION_KEY, it searches deeper into
+        the values of the FUNCTION_KEY to locate the SOURCE_NAME_KEY.
+
+        :param field: The dictionary containing a potential hierarchical structure
+            where the source name might be located.
+        :type field: dict
+        :return: The source name if found, otherwise None.
+        :rtype: str | None
+        """
+
+        if self.SOURCE_NAME_KEY in field[self.FUNCTION_KEY]:
+           return field[self.SOURCE_NAME_KEY]
+
+        for func in field[self.FUNCTION_KEY].values():
+            if self.SOURCE_NAME_KEY in func:
+                return func[self.SOURCE_NAME_KEY]
+
+        return None
+
+

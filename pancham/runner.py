@@ -87,6 +87,30 @@ class PanchamRunner:
         else:
             self.outputs_configuration = outputs_configuration
 
+    def run_all(self):
+        """
+        Executes the primary function for processing all specified configurations.
+
+        Summary:
+        This method orchestrates the loading of configuration files, reporting their
+        details, and executing an operation based on the loaded configuration. The
+        process leverages a `YamlDataFrameConfigurationLoader` to parse and transform
+        YAML-based configurations into usable formats. Each configuration file is
+        subsequently passed to a reporter for documentation purposes, and then
+        handled via the `run()` method.
+
+        :param self: Represents the instance of the class.
+        :raises Exception: An error raised if any configuration file fails to load
+            or process accordingly.
+        :return: None
+        """
+        configuration_loader = YamlDataFrameConfigurationLoader(field_parsers=self.field_parsers, output_configuration=self.outputs_configuration)
+
+        configuration_files = list(map(lambda f: configuration_loader.load(f), self.pancham_configuration.mapping_files))
+
+        for configuration_file in configuration_files:
+            self.run(configuration_file)
+
     def load_and_run(self, configuration_file: str):
         configuration_loader = YamlDataFrameConfigurationLoader(field_parsers=self.field_parsers, output_configuration=self.outputs_configuration)
         configuration = configuration_loader.load(configuration_file)

@@ -23,11 +23,6 @@ class ToIntFieldParser(FieldParser):
         return self.has_function_key(field, self.function_id)
 
     def parse_field(self, field: dict) -> DataFrameField:
-        properties = field[self.FUNCTION_KEY][self.function_id]
-
-        if self.SOURCE_NAME_KEY not in properties:
-            raise ValueError('Source name not set')
-
         return DataFrameField(
             name=field['name'],
             nullable=self.is_nullable(field),
@@ -38,7 +33,7 @@ class ToIntFieldParser(FieldParser):
         )
 
     def __to_int(self, field: dict, values: dict):
-        source = field[self.FUNCTION_KEY][self.function_id][self.SOURCE_NAME_KEY]
+        source = self.get_source_name(field)
 
         try:
             return int(values[source])

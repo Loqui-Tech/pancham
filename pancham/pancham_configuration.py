@@ -40,7 +40,7 @@ class PanchamConfiguration:
         :return: A string representing the path of the source directory.
         :rtype: str
         """
-        pass
+        return ""
 
     @property
     def debug_status(self) -> bool:
@@ -52,7 +52,7 @@ class PanchamConfiguration:
         :return: The debug status of the instance. Returns `False` if debugging mode is not
           enabled.
         """
-        pass
+        return False
 
 
     @property
@@ -70,7 +70,7 @@ class PanchamConfiguration:
             otherwise False.
         :rtype: bool
         """
-        pass
+        return False
 
     @property
     def reporter_name(self) -> str:
@@ -84,7 +84,19 @@ class PanchamConfiguration:
         :return: The name of the reporter.
         :rtype: str
         """
-        pass
+        return ""
+
+    @property
+    def mapping_files(self) -> list[str]:
+        """
+        Provides access to the list of mapping files. This property returns a list of strings
+        that represent the file paths or identifiers for the mapped files.
+
+        :return: The list of filenames or paths for the mapping files.
+        :rtype: list[str]
+        """
+
+        return []
 
 class OrderedPanchamConfiguration(PanchamConfiguration):
 
@@ -112,6 +124,16 @@ class OrderedPanchamConfiguration(PanchamConfiguration):
     @property
     def reporter_name(self) -> str:
         return self.__get_config_item("reporter_name", "PANCHAM_DEBUG_REPORTER", "debug.reporter")
+
+    @property
+    def mapping_files(self) -> list[str]:
+        """
+        Get the list of mapping files
+
+        If mapping files are used, they must be in the configuration file and not in the
+        :return:
+        """
+        return self.config_data.get("mapping_files", [])
 
     def __get_config_item(self, name: str, env_var: str|None = None, config_name: str|None = None) -> str|bool|None:
         """

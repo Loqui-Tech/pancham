@@ -44,15 +44,19 @@ class DataFrameConfiguration:
     def __init__(self,
                  file_path: str|list[str],
                  file_type: str,
+                 name: str,
                  sheet: str|None = None,
                  key: str|None = None,
                  merge_configuration: MergeConfiguration|None = None,
+                 depends_on: list[str]|None = None,
                  ):
         self.file_path = file_path
         self.file_type = file_type
+        self.name = name
         self.sheet = sheet
         self.key = key
         self.merge_configuration = merge_configuration
+        self.depends_on = depends_on
 
         self.fields: list[DataFrameField] = []
         self.output: list[dict] = []

@@ -51,7 +51,7 @@ class PartTextExtractorParser(FieldParser):
             if self.SPLITTER not in properties or self.RETURN_INDEX not in properties:
                 raise ValueError('Splitter and return index required')
 
-            raw_input = input[field[self.SOURCE_NAME_KEY]]
+            raw_input = input[self.get_source_name(field)]
 
             if type(raw_input) != str:
                 return None

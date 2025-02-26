@@ -28,6 +28,6 @@ class ExplodeFieldParser(FieldParser):
             name = field['name'],
             field_type=field[self.FIELD_TYPE_KEY],
             nullable=self.is_nullable(field),
-            source_name=properties[self.SOURCE_NAME_KEY],
+            source_name=self.get_source_name(field),
             df_func=lambda d: d.explode(properties[self.SOURCE_NAME_KEY]),
         )

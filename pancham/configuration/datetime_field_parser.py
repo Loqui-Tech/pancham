@@ -21,5 +21,5 @@ class DateTimeFieldParser(FieldParser):
             field_type=datetime.datetime,
             nullable=self.is_nullable(field),
             source_name=None,
-            func=lambda x: pd.to_datetime(x[field[self.SOURCE_NAME_KEY]], format=format)
+            func=lambda x: pd.to_datetime(x[self.get_source_name(field)], format=format)
         )
