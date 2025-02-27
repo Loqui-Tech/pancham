@@ -19,7 +19,7 @@ class TestDataFrameLoader:
 
     def test_load_example_data(self):
         loader = DataFrameLoader({'xlsx': ExcelFileLoader()}, PrintReporter())
-        configuration = DataFrameConfiguration(self.filename, 'xlsx', sheet='Sheet1')
+        configuration = DataFrameConfiguration(self.filename, 'xlsx', 'a', sheet='Sheet1')
         configuration.add_field('Order', 'Order Id', int)
         configuration.add_field('Date', 'Rec Date', datetime.datetime)
         configuration.add_dynamic_field('Sent', field_type=bool, func=lambda row: row['Disp.'] == 'X')
@@ -37,7 +37,7 @@ class TestDataFrameLoader:
 
     def test_load_example_data_with_static_field(self):
         loader = DataFrameLoader({'xlsx': ExcelFileLoader()}, PrintReporter())
-        configuration = DataFrameConfiguration(self.filename, 'xlsx', sheet='Sheet1')
+        configuration = DataFrameConfiguration(self.filename, 'xlsx', 'a', sheet='Sheet1')
         configuration.add_field('Order', 'Order Id', int)
         configuration.add_dynamic_field('Sent', field_type=bool, func=lambda row: row['Disp.'] == 'X')
         configuration.add_dynamic_field('Static', field_type=str, func=lambda row: 'abc')
@@ -54,7 +54,7 @@ class TestDataFrameLoader:
 
     def test_load_example_data_with_schema_validation(self):
         loader = DataFrameLoader({'xlsx': ExcelFileLoader()}, PrintReporter())
-        configuration = DataFrameConfiguration(self.filename, 'xlsx', sheet='Sheet1')
+        configuration = DataFrameConfiguration(self.filename, 'xlsx', 'a', sheet='Sheet1')
         configuration.add_field('Order', 'Order Id', int)
         configuration.add_field('Date', 'Rec Date', int)
 
@@ -64,7 +64,7 @@ class TestDataFrameLoader:
     def test_load_example_data_with_schema_validation_and_validation_disabled(self):
         pancham_configuration = StaticPanchamConfiguration('', False, '', True)
         loader = DataFrameLoader({'xlsx': ExcelFileLoader()}, PrintReporter(), pancham_configuration=pancham_configuration)
-        configuration = DataFrameConfiguration(self.filename, 'xlsx', sheet='Sheet1')
+        configuration = DataFrameConfiguration(self.filename, 'xlsx', 'a', sheet='Sheet1')
         configuration.add_field('Order', 'Order Id', int)
         configuration.add_field('Date', 'Rec Date', int)
 

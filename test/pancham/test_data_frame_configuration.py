@@ -42,4 +42,4 @@ class TestDataFrameConfiguration:
         assert len(config.renames) == 0
 
     def __build(self) -> DataFrameConfiguration:
-        return DataFrameConfiguration('a', 'xlsx')
+        return DataFrameConfiguration('a', 'xlsx', 'a')

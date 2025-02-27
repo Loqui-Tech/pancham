@@ -41,7 +41,7 @@ class TestExcelFileLoader():
 
     def test_read_from_configuration(self):
         filename = os.path.dirname(os.path.realpath(__file__)) + "/../example/orders.xlsx"
-        configuration = DataFrameConfiguration(filename, 'xlsx', sheet='Sheet1')
+        configuration = DataFrameConfiguration(filename, 'xlsx', 'a', sheet='Sheet1')
 
         loader = ExcelFileLoader()
         data = loader.read_file_from_configuration(configuration)
@@ -50,7 +50,7 @@ class TestExcelFileLoader():
 
     def test_read_from_yaml_configuration(self):
         filename = os.path.dirname(os.path.realpath(__file__)) + "/../example/orders.yaml"
-        configuration = DataFrameConfiguration(filename, 'yaml', key='orders')
+        configuration = DataFrameConfiguration(filename, 'yaml', 'a', key='orders')
 
         loader = YamlFileLoader()
         data = loader.read_file_from_configuration(configuration)

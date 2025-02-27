@@ -23,6 +23,9 @@ class ToIntFieldParser(FieldParser):
         return self.has_function_key(field, self.function_id)
 
     def parse_field(self, field: dict) -> DataFrameField:
+        if self.get_source_name(field) is None:
+            raise ValueError("Source not set")
+
         return DataFrameField(
             name=field['name'],
             nullable=self.is_nullable(field),

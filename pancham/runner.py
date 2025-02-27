@@ -1,3 +1,4 @@
+from configuration.remove_field_parser import RemoveFieldParser
 from .output_manager import OutputManager
 from .configuration.database_match_field_parser import DatabaseMatchFieldParser
 from .configuration.datetime_field_parser import DateTimeFieldParser
@@ -43,7 +44,8 @@ DEFAULT_FIELD_PARSERS = [
     SplitFieldParser(),
     ExplodeFieldParser(),
     ConcatFieldParser(),
-    DatabaseMultiFieldSearchParser()
+    DatabaseMultiFieldSearchParser(),
+    RemoveFieldParser()
 ]
 DEFAULT_OUTPUTS = [
     DatabaseOutput()

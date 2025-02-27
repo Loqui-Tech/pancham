@@ -155,12 +155,13 @@ class FieldParser:
         :rtype: str | None
         """
 
-        if self.SOURCE_NAME_KEY in field[self.FUNCTION_KEY]:
+        if self.SOURCE_NAME_KEY in field:
            return field[self.SOURCE_NAME_KEY]
 
-        for func in field[self.FUNCTION_KEY].values():
-            if self.SOURCE_NAME_KEY in func:
-                return func[self.SOURCE_NAME_KEY]
+        if self.FUNCTION_KEY in field:
+            for func in field[self.FUNCTION_KEY].values():
+                if func is not None and self.SOURCE_NAME_KEY in func:
+                    return func[self.SOURCE_NAME_KEY]
 
         return None
 
