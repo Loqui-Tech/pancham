@@ -53,7 +53,7 @@ class PartTextExtractorParser(FieldParser):
 
             raw_input = input[self.get_source_name(field)]
 
-            if type(raw_input) != str:
+            if not isinstance(raw_input, str):
                 return None
 
             clean_input = raw_input.strip()

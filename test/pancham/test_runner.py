@@ -2,7 +2,7 @@ import datetime
 import os
 
 import pytest
-from sqlalchemy import Table, MetaData, select, Integer, Column, DateTime
+from sqlalchemy import Table, MetaData, select, Integer, Column, DateTime, Boolean
 
 from pancham.database.database_engine import get_db_engine, initialize_db_engine
 from pancham.pancham_configuration import PanchamConfiguration
@@ -34,7 +34,7 @@ class TestRunner:
     async def test_runner(self):
         initialize_db_engine(Config(), PrintReporter())
         metadata = MetaData()
-        Table('order', metadata, Column('Order', Integer), Column('Date', DateTime), Column('Sent', Integer))
+        Table('order', metadata, Column('Order', Integer), Column('Date', DateTime), Column('Sent', Boolean))
         metadata.create_all(get_db_engine().engine)
 
         runner = PanchamRunner(Config())
