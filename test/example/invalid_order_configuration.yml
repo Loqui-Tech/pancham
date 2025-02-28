@@ -1,0 +1,21 @@
+name: order
+sheet: Sheet1
+output:
+  - output_type: database
+    table: order
+fields:
+  - name: Order
+    source_name: Order Id
+    field_type: int
+    nullable: false
+  - name: Date
+    source_name: Rec Date
+    nullable: false
+    func:
+      datetime:
+  - name: Sent
+    field_type: bool
+    func:
+      eq:
+        source_name: Disp.
+        match: 'X'

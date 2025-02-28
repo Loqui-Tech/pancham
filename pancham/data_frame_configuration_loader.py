@@ -72,14 +72,7 @@ class DataFrameConfigurationLoader:
         :rtype: DataFrameConfiguration
         :raises ValueError: If a field in the input data cannot be parsed by any available field parser.
         """
-        if label == 'main':
-            configuration = DataFrameConfiguration(data["file_path"], data["file_type"], name=data['name'], sheet=sheet, key=key, depends_on=data.get('depends_on', None))
-        else:
-            merge_configuration = None
-            if 'merge' in data:
-                merge_dict = data['merge']
-                merge_configuration = MergeConfiguration(merge_dict.get('type', 'processed'), merge_dict.get('source_key', None), merge_dict.get('processed_key', None))
-            configuration = DataFrameConfiguration(label, label, name=data['name'], merge_configuration=merge_configuration)
+        configuration = self.__load_base_configuration(data, label, sheet=sheet, key=key)
 
         for f in data['fields']:
             has_parsed = False
@@ -99,6 +92,36 @@ class DataFrameConfigurationLoader:
                     configuration.add_output(c.to_output_configuration(data))
 
         return configuration
+
+    def __load_base_configuration(self, data: dict, label: str, sheet: str|None = None, key: str|None = None) -> DataFrameConfiguration:
+        """
+        Load the base configuration for a DataFrame. Depending on the label, it initializes
+        the appropriate DataFrameConfiguration object using the passed parameters. When
+        the label is 'main', it utilizes the file-related data for configuration; for other
+        labels, it evaluates additional merge configurations if provided.
+
+        :param data: A dictionary containing input data configuration. It may include keys
+                     like 'file_path', 'file_type', 'name', and 'depends_on' for defining
+                     the DataFrame structure, as well as an optional 'merge' key which must
+                     contain sub-keys if merge configuration is required.
+        :param label: A string identifying the label of the configuration. It dictates
+                      the configuration behavior, particularly whether merge configurations
+                      are applicable or not.
+        :param sheet: An optional string denoting the sheet name for configurations related
+                      to spreadsheet files.
+        :param key: An optional string representing the unique key identifier relevant to
+                    the configuration.
+        :return: A DataFrameConfiguration object initialized based on the provided
+                 configuration data and label.
+        """
+        if label == 'main':
+            return DataFrameConfiguration(data["file_path"], data["file_type"], name=data['name'], sheet=sheet, key=key, depends_on=data.get('depends_on', None))
+
+        merge_configuration = None
+        if 'merge' in data:
+            merge_dict = data['merge']
+            merge_configuration = MergeConfiguration(merge_dict.get('type', 'processed'), merge_dict.get('source_key', None), merge_dict.get('processed_key', None))
+        return DataFrameConfiguration(label, label, name=data['name'], merge_configuration=merge_configuration)
 
 
 class YamlDataFrameConfigurationLoader(DataFrameConfigurationLoader):
