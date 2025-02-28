@@ -1,13 +1,14 @@
 from typing import Annotated, Optional
 
 import typer
+from async_typer import AsyncTyper
 
 from .reporter_lib.halo_reporter import HaloReporter
 from .reporter import get_reporter
 from .runner import PanchamRunner
 from .pancham_configuration import OrderedPanchamConfiguration
 
-app = typer.Typer()
+app = AsyncTyper()
 
 @app.command()
 async def run(

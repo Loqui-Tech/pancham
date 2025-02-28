@@ -10,7 +10,8 @@ dependencies = [
     'pyyaml',
     'typer',
     'python-benedict',
-    'halo'
+    'halo',
+    'async-typer'
 ]
 requires-python = ">=3.11"
 
