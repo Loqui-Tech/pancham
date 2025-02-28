@@ -1,7 +1,6 @@
 from typing import Annotated, Optional
 
 import typer
-import asyncio
 
 from .reporter_lib.halo_reporter import HaloReporter
 from .reporter import get_reporter
@@ -11,7 +10,7 @@ from .pancham_configuration import OrderedPanchamConfiguration
 app = typer.Typer()
 
 @app.command()
-def run(
+async def run(
         configuration: Annotated[str, typer.Argument(help = "Path to the Pancham configuration file")],
         data_configuration: Annotated[Optional[str], typer.Argument(help = "Path to the data mapping if individual files are being used")] = None
 ):
@@ -25,6 +24,6 @@ def run(
     runner = PanchamRunner(pancham_configuration, reporter = reporter)
 
     if len(pancham_configuration.mapping_files) == 0:
-        asyncio.get_event_loop().run_until_complete(runner.load_and_run(data_configuration))
+        await runner.load_and_run(data_configuration)
     else:
-        asyncio.get_event_loop().run_until_complete(runner.run_all())
+        await runner.run_all()
