@@ -25,6 +25,6 @@ def run(
     runner = PanchamRunner(pancham_configuration, reporter = reporter)
 
     if len(pancham_configuration.mapping_files) == 0:
-        asyncio.run(runner.load_and_run(data_configuration))
+        asyncio.get_event_loop().run_until_complete(runner.load_and_run(data_configuration))
     else:
-        asyncio.run(runner.run_all())
+        asyncio.get_event_loop().run_until_complete(runner.run_all())
