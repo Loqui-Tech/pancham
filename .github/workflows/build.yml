@@ -141,7 +141,7 @@ jobs:
       - name: Install
         run: pip install pancham-${{ env.PANCHAM_TAG }}.dev0-py3-none-any.whl
       - name: Run
-        run: pancham example/order_configuration.yml example/config.yaml
+        run: pancham example/config.yaml example/order_configuration.yml
         working-directory: test
         env:
           PANCHAM_DATABASE_CONNECTION: "sqlite:///:memory:"
