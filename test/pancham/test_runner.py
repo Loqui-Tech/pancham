@@ -1,11 +1,13 @@
 import datetime
 import os
 
-from sqlalchemy import Table, MetaData, select
+import pytest
+from sqlalchemy import Table, MetaData, select, Integer, Column
 
-from pancham.database.database_engine import get_db_engine
+from pancham.database.database_engine import get_db_engine, initialize_db_engine
 from pancham.pancham_configuration import PanchamConfiguration
 from pancham.runner import PanchamRunner
+from pancham.reporter import PrintReporter
 
 
 class Config(PanchamConfiguration):
@@ -28,10 +30,15 @@ class TestRunner:
 
     config_file = os.path.dirname(os.path.realpath(__file__)) + "/../example/order_configuration.yml"
 
-    def test_runner(self):
-        runner = PanchamRunner(Config())
+    @pytest.mark.asyncio
+    async def test_runner(self):
+        initialize_db_engine(Config(), PrintReporter())
+        metadata = MetaData()
+        Table('order', metadata, Column('Order', Integer), Column('Date', Integer), Column('Sent', Integer))
+        metadata.create_all(get_db_engine().engine)
 
-        runner.load_and_run(configuration_file=self.config_file)
+        runner = PanchamRunner(Config())
+        await runner.load_and_run(configuration_file=self.config_file)
 
         with get_db_engine().engine.connect() as conn:
             table = Table('order', MetaData(), autoload_with=conn)

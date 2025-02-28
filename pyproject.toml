@@ -27,6 +27,7 @@ find = {}
 pythonpath = [
     './pancham'
 ]
+asyncio_mode="auto"
 
 [build-system]
 requires = ["setuptools"]

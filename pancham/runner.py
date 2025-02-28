@@ -1,7 +1,9 @@
-from configuration.remove_field_parser import RemoveFieldParser
+import asyncio
+
 from .output_manager import OutputManager
 from .configuration.database_match_field_parser import DatabaseMatchFieldParser
 from .configuration.datetime_field_parser import DateTimeFieldParser
+from .configuration.remove_field_parser import RemoveFieldParser
 from .configuration.database_fixed_field_parser import DatabaseFixedFieldParser
 from .configuration.part_text_extractor_parser import PartTextExtractorParser
 from .configuration.explode_field_parser import ExplodeFieldParser
@@ -89,7 +91,7 @@ class PanchamRunner:
         else:
             self.outputs_configuration = outputs_configuration
 
-    def run_all(self):
+    async def run_all(self):
         """
         Executes the primary function for processing all specified configurations.
 
@@ -106,22 +108,36 @@ class PanchamRunner:
             or process accordingly.
         :return: None
         """
+        completed = []
+
+        async def start_migration(configuration_file: DataFrameConfiguration):
+            for dep in configuration_file.depends_on:
+                dep_completed = False
+
+                while not dep_completed:
+                    if dep in completed:
+                        dep_completed = True
+                    else:
+                        await asyncio.sleep(20)
+
+            await self.run(configuration_file)
+            completed.append(configuration_file.name)
+
         configuration_loader = YamlDataFrameConfigurationLoader(field_parsers=self.field_parsers, output_configuration=self.outputs_configuration)
+        loaders = list(map(lambda f: configuration_loader.load(f), self.pancham_configuration.mapping_files))
 
-        configuration_files = list(map(lambda f: configuration_loader.load(f), self.pancham_configuration.mapping_files))
+        await asyncio.gather(*list(map(lambda f: start_migration(f), loaders)))
 
-        for configuration_file in configuration_files:
-            self.run(configuration_file)
 
-    def load_and_run(self, configuration_file: str):
+    async def load_and_run(self, configuration_file: str):
         configuration_loader = YamlDataFrameConfigurationLoader(field_parsers=self.field_parsers, output_configuration=self.outputs_configuration)
         configuration = configuration_loader.load(configuration_file)
 
         self.reporter.report_configuration(configuration)
 
-        self.run(configuration)
+        await self.run(configuration)
 
-    def run(self, configuration: DataFrameConfiguration):
+    async def run(self, configuration: DataFrameConfiguration):
         """
         Executes the data loading and writing process based on the provided configuration.
 
