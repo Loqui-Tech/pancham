@@ -1,3 +1,4 @@
+import pytest
 from sqlalchemy import MetaData, Table, Column, String
 import pandas as pd
 
@@ -39,3 +40,69 @@ class TestMultiColumnDatabaseSearch:
 
         second_value = search.get_mapped_id({'email': 'a@example.com', 'dept': 'B'})
         assert second_value == '3'
+
+    def test_build_static_search(self):
+        data = dict()
+        search_options = [
+            {"type": "static", "value": "abc", "search_column": "dept"}
+        ]
+
+        search = MultiColumnDatabaseSearch('mc_search', 'order_id')
+        search_values = search.build_search_values(data, search_options)
+
+        assert search_values == {'dept': 'abc'}
+
+    def test_build_invalid_search(self):
+        data = dict()
+        search_options = [
+            {"type": "other", "value": "abc", "search_column": "dept"}
+        ]
+
+        search = MultiColumnDatabaseSearch('mc_search', 'order_id')
+
+        with pytest.raises(ValueError):
+            search.build_search_values(data, search_options)
+
+    def test_build_field_search(self):
+        data = {
+            "abc": "xyz"
+        }
+        search_options = [
+            {"type": "field", "source_name": "abc", "search_column": "dept"}
+        ]
+
+        search = MultiColumnDatabaseSearch('mc_search', 'order_id')
+        search_values = search.build_search_values(data, search_options)
+
+        assert search_values == {'dept': 'xyz'}
+
+    def test_build_split_field_search(self):
+        data = {
+            "abc": "Smith, Bob"
+        }
+        search_options = [
+            {
+                "type": "split",
+                "source_name": "abc",
+                "split_char": ",",
+                "matches":  [
+                    {
+                        "field_index": 1,
+                        "search_column": "first_name"
+                    },
+                    {
+                        "field_index": 0,
+                        "search_column": "last_name"
+                    }
+                ]
+
+            }
+        ]
+
+        search = MultiColumnDatabaseSearch('mc_search', 'order_id')
+        search_values = search.build_search_values(data, search_options)
+
+        assert search_values == {'first_name': 'Bob', 'last_name': 'Smith'}
+
+
+

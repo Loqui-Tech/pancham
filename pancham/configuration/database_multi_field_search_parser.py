@@ -44,17 +44,8 @@ class DatabaseMultiFieldSearchParser(FieldParser):
         search_options = field_properties[self.SEARCH_KEY]
 
         def map_value(data: dict) -> str:
-            search_values = {}
-            for search_option in search_options:
-                column = search_option[self.SEARCH_COLUMN_KEY]
-                if search_option["type"] == "static":
-                    search_values[column] = search_option[self.VALUE_COLUMN_KEY]
-                elif search_option["type"] == "field":
-                    search_values[column] = data[self.get_source_name(field)]
-                else:
-                    raise ValueError(f"Unsupported search type: {search_option['type']}")
-
             search = MultiColumnDatabaseSearch(table_name, value_column)
+            search_values = search.build_search_values(data, search_options)
 
             return search.get_mapped_id(search_values)
 
