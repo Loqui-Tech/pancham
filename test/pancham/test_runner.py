@@ -30,15 +30,14 @@ class TestRunner:
 
     config_file = os.path.dirname(os.path.realpath(__file__)) + "/../example/order_configuration.yml"
 
-    @pytest.mark.asyncio
-    async def test_runner(self):
+    def test_runner(self):
         initialize_db_engine(Config(), PrintReporter())
         metadata = MetaData()
         Table('order', metadata, Column('Order', Integer), Column('Date', DateTime), Column('Sent', Boolean))
         metadata.create_all(get_db_engine().engine)
 
         runner = PanchamRunner(Config())
-        await runner.load_and_run(configuration_file=self.config_file)
+        runner.load_and_run(configuration_file=self.config_file)
 
         with get_db_engine().engine.connect() as conn:
             table = Table('order', MetaData(), autoload_with=conn)
