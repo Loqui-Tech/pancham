@@ -10,7 +10,7 @@ from .pancham_configuration import OrderedPanchamConfiguration
 
 app = AsyncTyper()
 
-@app.command()
+@app.async_command()
 async def run(
         configuration: Annotated[str, typer.Argument(help = "Path to the Pancham configuration file")],
         data_configuration: Annotated[Optional[str], typer.Argument(help = "Path to the data mapping if individual files are being used")] = None
