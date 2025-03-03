@@ -1,6 +1,6 @@
 import re
 
-def remove_and_split(value: str, split_char: str, remove_pattern: str|None=None) -> list[str]:
+def remove_and_split(value: str, split_char: str, remove_pattern: str|None=None) -> list[str|int|float]:
     if remove_pattern is not None and type(value) is str:
         value = re.sub(remove_pattern, "", value)
 

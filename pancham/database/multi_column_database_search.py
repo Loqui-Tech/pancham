@@ -1,3 +1,5 @@
+import math
+
 from sqlalchemy import Table, select
 
 from pancham.configuration.field_parser import FieldParser
@@ -36,6 +38,9 @@ class MultiColumnDatabaseSearch:
             Returns None if no matches are found.
         :rtype: str | int | None
         """
+
+        if len(search) == 0:
+            return None
 
         with get_db_engine().engine.connect() as conn:
             data_table = Table(self.table_name, META, autoload_with=conn)
@@ -95,6 +100,17 @@ class MultiColumnDatabaseSearch:
 
                 for match in search_option["matches"]:
                     field_index = match["field_index"]
+                    if len(fields) <= field_index:
+                        continue
+
+                    field_value = fields[field_index]
+
+                    if field_value is None:
+                        continue
+
+                    if (isinstance(field_value, int) or isinstance(field_value, float)) and math.isnan(field_value):
+                        continue
+
                     column = match[self.SEARCH_COLUMN_KEY]
                     search_values[column] = fields[field_index]
 

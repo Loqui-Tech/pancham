@@ -41,6 +41,12 @@ class TestMultiColumnDatabaseSearch:
         second_value = search.get_mapped_id({'email': 'a@example.com', 'dept': 'B'})
         assert second_value == '3'
 
+    def test_search_empty_options(self):
+        search = MultiColumnDatabaseSearch('mc_search', 'order_id')
+
+        value = search.get_mapped_id({})
+        assert value is None
+
     def test_build_static_search(self):
         data = dict()
         search_options = [
@@ -104,5 +110,36 @@ class TestMultiColumnDatabaseSearch:
 
         assert search_values == {'first_name': 'Bob', 'last_name': 'Smith'}
 
+    def test_build_split_field_search_with_invalid_matches(self):
+        data = {
+            "abc": "Smith, Bob"
+        }
+        search_options = [
+            {
+                "type": "split",
+                "source_name": "abc",
+                "split_char": ",",
+                "matches":  [
+                    {
+                        "field_index": 1,
+                        "search_column": "first_name"
+                    },
+                    {
+                        "field_index": 0,
+                        "search_column": "last_name"
+                    },
+                    {
+                        "field_index": 2,
+                        "search_column": "other_name"
+                    }
+                ]
+
+            }
+        ]
+
+        search = MultiColumnDatabaseSearch('mc_search', 'order_id')
+        search_values = search.build_search_values(data, search_options)
+
+        assert search_values == {'first_name': 'Bob', 'last_name': 'Smith'}
 
 
