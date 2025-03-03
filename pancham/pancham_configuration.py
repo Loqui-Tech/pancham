@@ -133,7 +133,8 @@ class OrderedPanchamConfiguration(PanchamConfiguration):
         If mapping files are used, they must be in the configuration file and not in the
         :return:
         """
-        return self.config_data.get("mapping_files", [])
+        data = self.__get_config_file_data()
+        return data.get("mapping_files", [])
 
     def __get_config_item(self, name: str, env_var: str|None = None, config_name: str|None = None) -> str|bool|None:
         """
