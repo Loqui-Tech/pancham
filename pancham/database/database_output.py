@@ -40,7 +40,7 @@ class DatabaseOutput(OutputConfiguration):
         return True
 
     def to_output_configuration(self, configuration: dict) -> dict:
-        f"""
+        """
         Return the output configuration block for this object
        
         Will return:
@@ -59,6 +59,29 @@ class DatabaseOutput(OutputConfiguration):
 class DatabaseOutputWriter(OutputWriter):
 
     def write(self, data: pd.DataFrame, configuration: dict):
+        """
+        Write data from a pandas DataFrame to a database table using the specified
+        configuration. The function optionally filters the DataFrame columns
+        based on a list of column names provided in the configuration.
+
+        :param data: A pandas DataFrame representing the data to be written
+            to the database.
+        :type data: pandas.DataFrame
+        :param configuration: A dictionary containing configuration details
+            for writing the DataFrame. Possible keys include:
+            - "columns": List of column names to filter the DataFrame.
+            - "table": Name of the destination database table.
+        :type configuration: dict
+        :return: None
+        """
         if 'columns' in configuration:
             data = data[configuration['columns']]
+
+        if 'merge_key' in configuration:
+            on_missing = configuration.get('on_missing', 'ignore')
+            merge_key = configuration['merge_key']
+
+            for _, row in data.iterrows():
+                get_db_engine().merge_row(row, configuration['table'], merge_key, on_missing)
+
         get_db_engine().write_df(data, configuration['table'])

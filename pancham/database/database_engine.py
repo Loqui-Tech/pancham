@@ -1,5 +1,5 @@
 import pandas as pd
-from sqlalchemy import create_engine, Engine, MetaData
+from sqlalchemy import create_engine, Engine, MetaData, Table
 from typing_extensions import Literal
 
 from pancham.pancham_configuration import PanchamConfiguration
@@ -53,6 +53,44 @@ class DatabaseEngine:
 
         with self.engine.connect() as conn:
             data.to_sql(table_name, conn, if_exists=exists, index=False)
+
+    def merge_row(self, row: pd.Series, table_name: str, merge_key: str, on_missing: Literal['append', 'ignore'] = 'append'):
+        """
+        Merges a given row into a database table. If an existing record with a matching
+        merge key exists, it updates the record with non-null fields from the given row.
+        If no match is found and `on_missing` is set to 'append', a new record is added.
+        Raises an error if multiple records are found with the same merge key.
+
+        :param row: A dictionary representing the row to merge into the table. The keys
+            should correspond to the column names in the target table.
+        :param table_name: The name of the database table to operate on.
+        :param merge_key: The column name serving as the unique key for determining matches.
+        :param on_missing: A flag indicating the behavior when no matching record
+            exists in the table. Use 'append' to insert a new record or 'ignore'
+            to skip the operation without any changes. Default is 'append'.
+        :return: None
+        """
+        with self.engine.connect() as conn:
+            table = Table(table_name, META, autoload_with=conn)
+            existing_record_query = table.select().where(table.c[merge_key] == row[merge_key])
+            existing_record = conn.execute(existing_record_query).fetchall()
+
+            if len(existing_record) == 0 and on_missing == 'append' :
+                insert_query = table.insert().values(**row)
+                conn.execute(insert_query)
+                conn.commit()
+
+            if len(existing_record) == 1:
+                non_null_row = dict(filter(lambda x: x[1] is not None, row.items()))
+                update_query = table.update().where(table.c[merge_key] == row[merge_key]).values(**non_null_row)
+                conn.execute(update_query)
+                conn.commit()
+
+            if len(existing_record) > 1:
+                raise ValueError(f"Merge key {merge_key} is not a unique key.")
+
+
+
 
 db_engine: DatabaseEngine|None = None
 
