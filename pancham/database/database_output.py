@@ -79,9 +79,10 @@ class DatabaseOutputWriter(OutputWriter):
 
         if 'merge_key' in configuration:
             on_missing = configuration.get('on_missing', 'ignore')
+            merge_data_type = configuration.get('merge_data_type', None)
             merge_key = configuration['merge_key']
 
             for _, row in data.iterrows():
-                get_db_engine().merge_row(row, configuration['table'], merge_key, on_missing)
+                get_db_engine().merge_row(row, configuration['table'], merge_key, on_missing, merge_data_type)
 
         get_db_engine().write_df(data, configuration['table'])
