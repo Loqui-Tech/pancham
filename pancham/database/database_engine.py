@@ -1,5 +1,6 @@
 import pandas as pd
 from sqlalchemy import create_engine, Engine, MetaData, Table, cast, Integer, String
+from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 from typing_extensions import Literal
 
 from pancham.pancham_configuration import PanchamConfiguration
@@ -54,7 +55,14 @@ class DatabaseEngine:
         with self.engine.connect() as conn:
             data.to_sql(table_name, conn, if_exists=exists, index=False)
 
-    def merge_row(self, row: pd.Series, table_name: str, merge_key: str, on_missing: Literal['append', 'ignore'] = 'append', merge_data_type: Literal['int', 'str'] | None = None):
+    def merge_row(self,
+                  row: pd.Series,
+                  table_name: str,
+                  merge_key: str,
+                  on_missing: Literal['append', 'ignore'] = 'append',
+                  merge_data_type: Literal['int', 'str'] | None = None,
+                  use_native: Literal['sqlite'] | None = None
+                  ):
         """
         Merges a given row into a database table. If an existing record with a matching
         merge key exists, it updates the record with non-null fields from the given row.
@@ -72,6 +80,18 @@ class DatabaseEngine:
         """
         with self.engine.connect() as conn:
             table = Table(table_name, META, autoload_with=conn)
+
+            if use_native == 'sqlite':
+                query = sqlite_insert(table).values(**row)
+
+                upsert_row = {}
+                for k, v in row.items():
+                    upsert_row[k] = query.excluded[k]
+
+                query = query.on_conflict_do_update(index_elements=[merge_key], set_=upsert_row)
+                conn.execute(query)
+                conn.commit()
+                return
 
             existing_record_query = table.select()
 

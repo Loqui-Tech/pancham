@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from sqlalchemy import MetaData, Table, Column, String, Integer
+from sqlalchemy import MetaData, Table, Column, String, Integer, UniqueConstraint
 
 from database.database_engine import DatabaseEngine, get_db_engine, initialize_db_engine
 from pancham.pancham_configuration import PanchamConfiguration
@@ -199,3 +199,32 @@ class TestDatabaseEngine:
 
         with pytest.raises(ValueError):
             db_engine.merge_row(update, table_name, 'email', on_missing='ignore')
+
+
+    def test_merge_data_with_sqlite(self):
+        table_name = 'customer8'
+        config = MockConfig()
+        db_engine = DatabaseEngine(config, PrintReporter())
+        meta = MetaData()
+        customer = Table(table_name, meta, Column("email", String), Column("customer_name", String), UniqueConstraint('email', name='email_unique_constraint'))
+
+        meta.create_all(db_engine.engine)
+
+        data = pd.DataFrame({'email': ['a@example.com', 'b@example.com']})
+
+        db_engine.write_df(data, table_name)
+
+        update = pd.Series(data={'email': 'b@example.com', 'customer_name': 'Bob'}, index=['email', 'customer_name'])
+        update2 = pd.Series(data={'email': 'c@example.com', 'customer_name': 'Chris'}, index=['email', 'customer_name'])
+
+        db_engine.merge_row(update, table_name, 'email', on_missing='ignore', use_native='sqlite')
+        db_engine.merge_row(update2, table_name, 'email', on_missing='ignore', use_native='sqlite')
+
+        select = customer.select()
+
+        with db_engine.engine.connect() as conn:
+            result = conn.execute(select).fetchall()
+
+            assert len(result) == 3
+            assert result[1][0] == 'b@example.com'
+            assert result[1][1] == 'Bob'
