@@ -85,5 +85,6 @@ class DatabaseOutputWriter(OutputWriter):
 
             for _, row in data.iterrows():
                 get_db_engine().merge_row(row, configuration['table'], merge_key, on_missing, merge_data_type, native)
+            return
 
         get_db_engine().write_df(data, configuration['table'])
