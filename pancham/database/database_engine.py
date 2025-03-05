@@ -1,5 +1,5 @@
 import pandas as pd
-from sqlalchemy import create_engine, Engine, MetaData, Table
+from sqlalchemy import create_engine, Engine, MetaData, Table, cast, Integer, String
 from typing_extensions import Literal
 
 from pancham.pancham_configuration import PanchamConfiguration
@@ -54,7 +54,7 @@ class DatabaseEngine:
         with self.engine.connect() as conn:
             data.to_sql(table_name, conn, if_exists=exists, index=False)
 
-    def merge_row(self, row: pd.Series, table_name: str, merge_key: str, on_missing: Literal['append', 'ignore'] = 'append'):
+    def merge_row(self, row: pd.Series, table_name: str, merge_key: str, on_missing: Literal['append', 'ignore'] = 'append', merge_data_type: Literal['int', 'str'] | None = None):
         """
         Merges a given row into a database table. If an existing record with a matching
         merge key exists, it updates the record with non-null fields from the given row.
@@ -72,7 +72,16 @@ class DatabaseEngine:
         """
         with self.engine.connect() as conn:
             table = Table(table_name, META, autoload_with=conn)
-            existing_record_query = table.select().where(table.c[merge_key] == row[merge_key])
+
+            existing_record_query = table.select()
+
+            if merge_data_type == 'int':
+                existing_record_query = existing_record_query.where(cast(table.c[merge_key], Integer) == cast(row[merge_key], Integer))
+            elif merge_data_type == 'str':
+                existing_record_query = existing_record_query.where(cast(table.c[merge_key], String) == cast(row[merge_key], String))
+            else:
+                existing_record_query = existing_record_query.where(table.c[merge_key] == row[merge_key])
+
             existing_record = conn.execute(existing_record_query).fetchall()
 
             if len(existing_record) == 0 and on_missing == 'append' :
