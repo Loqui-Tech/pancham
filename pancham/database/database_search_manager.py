@@ -1,9 +1,20 @@
+import hashlib
+import json
+
 from .caching_database_search import DatabaseSearch, FilteredCachingDatabaseSearch, CachingDatabaseSearch
 from .populating_database_search import PopulatingDatabaseSearch
 
 __managed_db_cache: dict[str, DatabaseSearch] = {}
 
-def get_database_search(table_name: str, search_col: str, value_col: str, filter: dict[str, str]|None =None, cast_search: None | str = None, cast_value: None | str = None, populate: bool = False) -> DatabaseSearch:
+def get_database_search(
+        table_name: str,
+        search_col: str,
+        value_col: str,
+        filter: dict[str, str]|None = None,
+        cast_search: None | str = None,
+        cast_value: None | str = None,
+        populate: bool = False
+) -> DatabaseSearch:
     """
     Retrieve a cached instance of `CachingDatabaseSearch` for querying a database table.
 
@@ -12,6 +23,7 @@ def get_database_search(table_name: str, search_col: str, value_col: str, filter
     casting corresponds to a unique cache key. If no matching instance exists in the cache,
     a new `CachingDatabaseSearch` instance is created, stored in the cache, and returned.
 
+    :param filter: Filters to be added to the query
     :param table_name: The name of the database table to query.
     :param search_col: The column name in the database table used for search criteria.
     :param value_col: The column name in the database table from which values will be retrieved.
@@ -22,7 +34,12 @@ def get_database_search(table_name: str, search_col: str, value_col: str, filter
     """
     global __managed_db_cache
 
-    db_key = f"{table_name}_{search_col}_{value_col}_{cast_search}_{cast_value}"
+    filter_key = ''
+    if filter is not None:
+        filter_key = json.dumps(filter, sort_keys=True)
+
+    db_key_str = f"{table_name}_{search_col}_{value_col}_{cast_search}_{cast_value}_{populate}_{filter_key}"
+    db_key = hashlib.md5(db_key_str.encode()).hexdigest()
 
     if db_key not in __managed_db_cache:
         if populate:
