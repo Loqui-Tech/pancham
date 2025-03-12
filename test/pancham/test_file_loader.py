@@ -2,7 +2,7 @@ import os
 import pytest
 
 from pancham.data_frame_configuration import DataFrameConfiguration
-from pancham.file_loader import ExcelFileLoader, YamlFileLoader
+from pancham.file_loader import ExcelFileLoader, YamlFileLoader, JsonFileLoader
 
 
 class TestExcelFileLoader():
@@ -53,6 +53,24 @@ class TestExcelFileLoader():
         configuration = DataFrameConfiguration(filename, 'yaml', 'a', key='orders')
 
         loader = YamlFileLoader()
+        data = loader.read_file_from_configuration(configuration)
+
+        assert len(data) == 2
+
+    def test_read_from_json_configuration(self):
+        filename = os.path.dirname(os.path.realpath(__file__)) + "/../example/orders.json"
+        configuration = DataFrameConfiguration(filename, 'json', 'a')
+
+        loader = JsonFileLoader()
+        data = loader.read_file_from_configuration(configuration)
+
+        assert len(data) == 2
+
+    def test_read_from_json_configuration_and_key(self):
+        filename = os.path.dirname(os.path.realpath(__file__)) + "/../example/orders_import.json"
+        configuration = DataFrameConfiguration(filename, 'json', 'a', key='import')
+
+        loader = JsonFileLoader()
         data = loader.read_file_from_configuration(configuration)
 
         assert len(data) == 2

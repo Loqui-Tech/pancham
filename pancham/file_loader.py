@@ -1,3 +1,4 @@
+import json
 from typing import Iterator
 
 import pandas as pd
@@ -143,6 +144,20 @@ class YamlFileLoader(FileLoader):
                 raise ValueError(f"{kwargs['key']} not in {filename}")
 
             return pd.DataFrame(data[kwargs["key"]])
+
+class JsonFileLoader(FileLoader):
+
+    def read_file(self, filename: str, **kwargs) -> pd.DataFrame:
+        if "key" not in kwargs or kwargs["key"] is None:
+            return pd.read_json(filename)
+
+        with open(filename, 'r') as file:
+            data = json.load(file)
+
+            keyed_data = data[kwargs["key"]]
+
+            return pd.DataFrame(keyed_data)
+
 
 class CsvFileLoader(FileLoader):
     """

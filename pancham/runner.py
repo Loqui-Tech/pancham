@@ -19,7 +19,7 @@ from .data_frame_configuration_loader import YamlDataFrameConfigurationLoader
 from .database.database_engine import initialize_db_engine
 from .database.sql_file_loader import SqlFileLoader
 from .database.database_output import DatabaseOutput
-from .file_loader import FileLoader, ExcelFileLoader, YamlFileLoader, CsvFileLoader
+from .file_loader import FileLoader, ExcelFileLoader, YamlFileLoader, CsvFileLoader, JsonFileLoader
 from .output_configuration import OutputWriter, OutputConfiguration
 from .pancham_configuration import PanchamConfiguration
 from .reporter import Reporter, PrintReporter
@@ -28,7 +28,8 @@ DEFAULT_LOADERS = {
     'xlsx': ExcelFileLoader(),
     'sql_file': SqlFileLoader(),
     'yaml': YamlFileLoader(),
-    'csv': CsvFileLoader()
+    'csv': CsvFileLoader(),
+    'json': JsonFileLoader()
 }
 DEFAULT_REPORTER = PrintReporter()
 
