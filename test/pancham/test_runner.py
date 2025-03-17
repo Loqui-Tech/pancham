@@ -1,8 +1,7 @@
 import datetime
 import os
 
-import pytest
-from sqlalchemy import Table, MetaData, select, Integer, Column, DateTime, Boolean
+from sqlalchemy import Table, MetaData, select, Integer, Column, DateTime, Boolean, String
 
 from pancham.database.database_engine import get_db_engine, initialize_db_engine
 from pancham.pancham_configuration import PanchamConfiguration
@@ -52,4 +51,26 @@ class TestRunner:
             assert result[1][0] == 2
             assert result[1][1] == datetime.datetime(2024, 12, 23)
             assert result[1][2] is False
+
+    def test_json_runner(self):
+        json_file = os.path.dirname(os.path.realpath(__file__)) + "/../example/json_order_configuration.yml"
+        initialize_db_engine(Config(), PrintReporter())
+        metadata = MetaData()
+        Table('order10', metadata, Column('customer_id', Integer), Column('customer_name', String))
+        metadata.create_all(get_db_engine().engine)
+
+        runner = PanchamRunner(Config())
+        runner.load_and_run(configuration_file=json_file)
+
+        with get_db_engine().engine.connect() as conn:
+            table = Table('order10', MetaData(), autoload_with=conn)
+
+            query = select(table.c['customer_id', 'customer_name'])
+            result = conn.execute(query).fetchall()
+
+            assert result[0][0] == 1
+            assert result[0][1] == "A"
+
+            assert result[1][0] == 1
+            assert result[1][1] == "B"
 

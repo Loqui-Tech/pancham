@@ -163,6 +163,7 @@ class PanchamRunner:
         initialize_db_engine(self.pancham_configuration, self.reporter)
         loader = DataFrameLoader(self.file_loaders, self.reporter, self.pancham_configuration)
         data = loader.load(configuration)
+        print(data)
 
         self.outputs.write_output(data.processed, configuration)
 

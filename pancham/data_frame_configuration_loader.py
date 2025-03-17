@@ -23,7 +23,7 @@ class DataFrameConfigurationLoader:
         if data["file_type"] == "xlsx" and "sheet" in data:
             sheet = data["sheet"]
 
-        if data['file_type'] == 'yaml' and 'key' in data:
+        if (data['file_type'] == 'yaml' or data['file_type'] == 'json') and 'key' in data:
             key = data['key']
 
         configuration = self.__load_section(data, "main", sheet=sheet, key=key)

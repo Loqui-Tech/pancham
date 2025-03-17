@@ -67,8 +67,8 @@ class TestExcelFileLoader():
         assert len(data) == 2
 
     def test_read_from_json_configuration_and_key(self):
-        filename = os.path.dirname(os.path.realpath(__file__)) + "/../example/orders_import.json"
-        configuration = DataFrameConfiguration(filename, 'json', 'a', key='import')
+        filename = os.path.dirname(os.path.realpath(__file__)) + "/../example/orders.json"
+        configuration = DataFrameConfiguration(filename, 'json', 'a', key='orders')
 
         loader = JsonFileLoader()
         data = loader.read_file_from_configuration(configuration)
