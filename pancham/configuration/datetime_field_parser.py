@@ -14,13 +14,14 @@ class DateTimeFieldParser(FieldParser):
 
     def parse_field(self, field: dict) -> DataFrameField:
         format = '%d/%m/%Y'
+        on_error: Literal['coerce', 'ignore', 'raise'] = 'raise'
 
         if type(field[self.FUNCTION_KEY][self.FUNCTION_ID]) is dict:
             format = field[self.FUNCTION_KEY][self.FUNCTION_ID].get('format', '%d/%m/%Y')
 
-        on_error: Literal['coerce', 'ignore', 'raise'] = field.get('on_error', 'raise')
-        if on_error not in ['coerce', 'ignore', 'raise']:
-            on_error = 'raise'
+            on_error = field[self.FUNCTION_KEY][self.FUNCTION_ID].get('on_error', 'raise')
+            if on_error not in ['coerce', 'ignore', 'raise']:
+                on_error = 'raise'
 
         return DataFrameField(
             name = field['name'],
