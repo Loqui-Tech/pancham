@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 import pandas as pd
 
-from file_loader_configuration import FileLoaderConfiguration
+from .file_loader_configuration import FileLoaderConfiguration
 
 
 @dataclass
