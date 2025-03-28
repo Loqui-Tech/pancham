@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from pandera.errors import SchemaError
 
-from file_loader_configuration import FileLoaderConfiguration
+from .file_loader_configuration import FileLoaderConfiguration
 from .data_frame_configuration import MergeConfiguration
 from .pancham_configuration import PanchamConfiguration
 from .data_frame_configuration import DataFrameConfiguration
