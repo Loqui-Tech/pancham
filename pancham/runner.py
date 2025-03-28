@@ -1,4 +1,4 @@
-from validation_field import ValidationStep, ValidationInput
+from .validation_field import ValidationStep, ValidationInput
 from .validation.not_null_validation import NotNullValidation
 from .output_manager import OutputManager
 from .configuration.database_match_field_parser import DatabaseMatchFieldParser

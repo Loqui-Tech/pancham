@@ -1,6 +1,6 @@
 import yaml
 
-from validation_field import ValidationStep, ValidationField, ValidationRule, ValidationStepConfiguration
+from .validation_field import ValidationField, ValidationRule, ValidationStepConfiguration
 from .data_frame_configuration import MergeConfiguration
 from .configuration.field_parser import FieldParser
 from .data_frame_configuration import DataFrameConfiguration
