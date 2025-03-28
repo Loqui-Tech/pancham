@@ -126,6 +126,8 @@ class PanchamRunner:
             self.run(l)
             self.run_validation(l)
 
+        self.reporter.report_validation_failure()
+
     def load_and_run(self, configuration_file: str):
         configuration_loader = YamlDataFrameConfigurationLoader(field_parsers=self.field_parsers, output_configuration=self.outputs_configuration)
         configuration = configuration_loader.load(configuration_file)
