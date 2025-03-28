@@ -104,7 +104,7 @@ class ValidationRule:
         self.validation = validation
 
 @dataclass()
-class ValidationField(FileLoaderConfiguration):
+class ValidationField:
 
     name: str
     rules: list[ValidationRule]

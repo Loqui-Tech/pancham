@@ -136,6 +136,7 @@ class PanchamRunner:
 
         self.run(configuration)
         self.run_validation(configuration)
+        self.reporter.report_validation_failure()
 
     def run(self, configuration: DataFrameConfiguration):
         """
@@ -181,10 +182,10 @@ class PanchamRunner:
         :return: None
         """
 
-        for validation in configuration.validation_rules:
-            loader = DataFrameLoader(self.file_loaders, self.reporter, self.pancham_configuration)
-            data = loader.load_file(validation)
+        loader = DataFrameLoader(self.file_loaders, self.reporter, self.pancham_configuration)
+        data = loader.load_file(configuration)
 
+        for validation in configuration.validation_rules:
             for rule in validation.rules:
                   for loaded_rule in self.validation_rules:
                       if loaded_rule.get_name() == rule.name:

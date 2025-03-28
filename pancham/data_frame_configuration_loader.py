@@ -79,6 +79,9 @@ class DataFrameConfigurationLoader:
         """
         configuration = self.__load_base_configuration(data, label, sheet=sheet, key=key)
 
+        if configuration.name.startswith('test') and 'fields' not in data:
+            return configuration
+
         for f in data['fields']:
             has_parsed = False
             for parser in self.field_parsers:
@@ -156,10 +159,6 @@ class DataFrameConfigurationLoader:
 
         return ValidationField(
             name = data['name'],
-            file_type=data['file_type'],
-            file_path=data['file_path'],
-            key=data.get('key', None),
-            sheet=data.get('sheet', None),
             rules=rules
         )
 
