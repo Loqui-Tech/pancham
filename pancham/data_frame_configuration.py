@@ -2,6 +2,8 @@ from typing import Self, Type
 
 import pandera as pa
 
+from .file_loader_configuration import FileLoaderConfiguration
+from .validation_field import ValidationField
 from .data_frame_field import DataFrameField
 
 class MergeConfiguration:
@@ -19,7 +21,7 @@ class MergeConfiguration:
         self.source_key = source_key
         self.processed_key = processed_key
 
-class DataFrameConfiguration:
+class DataFrameConfiguration(FileLoaderConfiguration):
     """
     Represents a configuration for managing and processing data in a DataFrame.
 
@@ -59,6 +61,7 @@ class DataFrameConfiguration:
         self.depends_on = depends_on
 
         self.fields: list[DataFrameField] = []
+        self.validation_rules: list[ValidationField] = []
         self.output: list[dict] = []
         self.pre_run_configuration: list[DataFrameConfiguration] = []
         self.post_run_configuration: list[DataFrameConfiguration] = []

@@ -1,5 +1,6 @@
 import pandas as pd
 
+from .validation_field import ValidationFailure
 from .data_frame_configuration import DataFrameConfiguration
 
 class Reporter:
@@ -102,6 +103,33 @@ class Reporter:
         """
         pass
 
+    def save_validation_failure(self, validation_failure: ValidationFailure):
+        """
+        Saves a validation failure for further processing.
+
+        This method is responsible for storing an instance of the ValidationFailure
+        class for later use. It can be utilized to log, analyze, or handle
+        failed validation cases systematically.
+
+        :param validation_failure: An instance of ValidationFailure containing
+            details about the failed validation.
+        :type validation_failure: ValidationFailure
+        """
+        pass
+
+    def report_validation_failure(self):
+        """
+        Reports validation failure encountered during processing.
+
+        This function is typically invoked when a validation check fails
+        and the system needs to log or handle the failure accordingly. It
+        does not accept any arguments, and its behavior is dictated by the
+        implementation within the function.
+
+        :return: None
+        """
+        pass
+
 class PrintReporter(Reporter):
     """
     A reporter class for printing updates during file processing.
@@ -122,6 +150,8 @@ class PrintReporter(Reporter):
     def __init__(self, debug: bool = False):
         super().__init__()
         self.debug = debug
+        self.validation_failures: list[ValidationFailure] = []
+
 
     def report_start(self, file_path: str):
         print(f"Starting processing for {file_path}")
@@ -141,6 +171,16 @@ class PrintReporter(Reporter):
     def report_debug(self, debug_message: str):
         if self.debug:
             print(f"DEBUG: {debug_message}")
+
+    def save_validation_failure(self, validation_failure: ValidationFailure):
+        self.validation_failures.append(validation_failure)
+
+    def report_validation_failure(self):
+        print(f"{len(self.validation_failures)} validation failures encountered:")
+
+        for v in self.validation_failures:
+            print(f" - {v}")
+
 
 __reporter: Reporter|None = None
 

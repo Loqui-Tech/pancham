@@ -23,10 +23,19 @@ class DateTimeFieldParser(FieldParser):
             if on_error not in ['coerce', 'ignore', 'raise']:
                 on_error = 'raise'
 
+        def parse_datetime(data: dict) -> datetime.datetime|None:
+            try:
+                return pd.to_datetime(data[self.get_source_name(field)], format=format)
+            except ValueError as e:
+                if on_error == 'ignore':
+                    return None
+                else:
+                    raise e
+
         return DataFrameField(
             name = field['name'],
             field_type=datetime.datetime,
             nullable=self.is_nullable(field),
             source_name=None,
-            func=lambda x: pd.to_datetime(x[self.get_source_name(field)], format=format, errors=on_error)
+            func=parse_datetime
         )

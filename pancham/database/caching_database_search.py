@@ -21,6 +21,38 @@ class DatabaseSearch:
         pass
 
 
+    def cast_value(self, value: any, cast_to: None|str) -> str|int:
+        """
+        Converts a given value to a specified type (string or integer) if applicable.
+        The function checks the type to cast to, converts the value accordingly, and returns
+        the cast value. If no type casting is indicated, the function returns the value
+        unchanged.
+
+        :param value: The input value to be cast.
+        :type value: any
+
+        :param cast_to: The desired type casting for the value ("str" or "int") or None
+                        if no casting is required.
+        :type cast_to: None | str
+
+        :return: The value cast to the specified type or the original value if no
+                 casting is requested.
+        :rtype: str | int | any
+        """
+        reporter = get_reporter()
+        if cast_to == 'str':
+            reporter.report_debug(f"Casting {value} to string")
+            return str(value)
+
+        if cast_to == 'int':
+            reporter.report_debug(f"Casting {value} to int")
+            return int(value)
+
+        reporter.report_debug(f"No cast to value set - {cast_to}")
+
+        return value
+
+
 class CachingDatabaseSearch(DatabaseSearch):
     """
     Implements a caching mechanism for querying and retrieving data from a
@@ -61,7 +93,7 @@ class CachingDatabaseSearch(DatabaseSearch):
         self.search_col = search_col
         self.value_col = value_col
         self.cast_search = cast_search
-        self.cast_value = cast_value
+        self.cast_value_type = cast_value
         self.cached_data = {}
 
     def get_mapped_id(self, search_value: str|int) -> str|int|None:
@@ -117,42 +149,11 @@ class CachingDatabaseSearch(DatabaseSearch):
             res = conn.execute(query).fetchall()
 
             for row in res:
-                key = self.__cast_value(row[0], self.cast_search)
-                value = self.__cast_value(row[1], self.cast_value)
+                key = self.cast_value(row[0], self.cast_search)
+                value = self.cast_value(row[1], self.cast_value_type)
                 self.cached_data[key] = value
 
         return self.cached_data
-
-    def __cast_value(self, value: any, cast_to: None|str) -> str|int:
-        """
-        Converts a given value to a specified type (string or integer) if applicable.
-        The function checks the type to cast to, converts the value accordingly, and returns
-        the cast value. If no type casting is indicated, the function returns the value
-        unchanged.
-
-        :param value: The input value to be cast.
-        :type value: any
-
-        :param cast_to: The desired type casting for the value ("str" or "int") or None
-                        if no casting is required.
-        :type cast_to: None | str
-
-        :return: The value cast to the specified type or the original value if no
-                 casting is requested.
-        :rtype: str | int | any
-        """
-        reporter = get_reporter()
-        if cast_to == 'str':
-            reporter.report_debug(f"Casting {value} to string")
-            return str(value)
-
-        if cast_to == 'int':
-            reporter.report_debug(f"Casting {value} to int")
-            return int(value)
-
-        reporter.report_debug(f"No cast to value set - {cast_to}")
-
-        return value
 
 class FilteredCachingDatabaseSearch(CachingDatabaseSearch):
     """

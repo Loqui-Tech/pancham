@@ -4,6 +4,7 @@ from typing import Iterator
 import pandas as pd
 import yaml
 
+from .file_loader_configuration import FileLoaderConfiguration
 from .reporter import get_reporter
 from .pancham_configuration import PanchamConfiguration
 from .data_frame_configuration import DataFrameConfiguration
@@ -17,7 +18,7 @@ class FileLoader:
     handle a type of file
     """
 
-    def read_file_from_configuration(self, configuration: DataFrameConfiguration, pancham_configuration: PanchamConfiguration|None = None) -> pd.DataFrame:
+    def read_file_from_configuration(self, configuration: FileLoaderConfiguration, pancham_configuration: PanchamConfiguration | None = None) -> pd.DataFrame:
         """
         Reads and processes a file based on the given configuration.
 
@@ -67,7 +68,7 @@ class FileLoader:
         """
         pass
 
-    def reduce_file_paths(self, configuration: DataFrameConfiguration, pancham_configuration: PanchamConfiguration|None) -> Iterator[str|dict[str, str]]:
+    def reduce_file_paths(self, configuration: FileLoaderConfiguration, pancham_configuration: PanchamConfiguration | None) -> Iterator[str | dict[str, str]]:
         """
         Reduces file paths according to a given configuration. It utilizes a specified
         source directory, if provided, to prepend to each file path found within the

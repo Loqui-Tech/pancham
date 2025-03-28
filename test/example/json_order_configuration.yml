@@ -14,3 +14,14 @@ fields:
     source_name: customer
     nullable: false
     field_type: int
+
+validation:
+  - file_type: json
+    name: validation
+    file_path: example/orders.json
+    key: orders
+    rules:
+      - name: valid customer name
+        test_field: customer_name
+        validation:
+          - name: notnull

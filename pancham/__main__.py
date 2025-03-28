@@ -1,7 +1,6 @@
 from typing import Annotated, Optional
 
 import typer
-from async_typer import AsyncTyper
 
 from .reporter_lib.halo_reporter import HaloReporter
 from .reporter import get_reporter
@@ -24,7 +23,7 @@ def run(
 
     runner = PanchamRunner(pancham_configuration, reporter = reporter)
 
-    if len(pancham_configuration.mapping_files) == 0:
+    if data_configuration is not None:
         runner.load_and_run(data_configuration)
     else:
         runner.run_all()

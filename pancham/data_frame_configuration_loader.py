@@ -1,5 +1,6 @@
 import yaml
 
+from validation_field import ValidationStep, ValidationField, ValidationRule, ValidationStepConfiguration
 from .data_frame_configuration import MergeConfiguration
 from .configuration.field_parser import FieldParser
 from .data_frame_configuration import DataFrameConfiguration
@@ -34,6 +35,10 @@ class DataFrameConfigurationLoader:
         if "post" in data:
             for d in data["post"]:
                 configuration.post_run_configuration.append(self.__load_section(d, d['name']))
+
+        if "validation" in data:
+            for v in data['validation']:
+                configuration.validation_rules.append(self.__load_validation_configuration(v))
 
         return configuration
 
@@ -122,6 +127,41 @@ class DataFrameConfigurationLoader:
             merge_dict = data['merge']
             merge_configuration = MergeConfiguration(merge_dict.get('type', 'processed'), merge_dict.get('source_key', None), merge_dict.get('processed_key', None))
         return DataFrameConfiguration(label, label, name=data['name'], merge_configuration=merge_configuration)
+
+    def __load_validation_configuration(self, data: dict) -> ValidationField:
+        """
+        Loads and processes a validation configuration from the provided data dictionary. The function
+        parses the validation configuration structure, extracts relevant information, and maps it
+        into corresponding configuration objects such as validation rules and validation fields.
+        The resulting object encapsulates all validation details for further consumption.
+
+        :param data: A dictionary containing validation configuration details. Expected keys include
+            'name', 'file_type', 'file_path', 'key', 'sheet', and 'rules'.
+        :type data: dict
+
+        :return: A `ValidationField` object configured with the provided validation rules and details.
+        :rtype: ValidationField
+        """
+        rules = []
+
+        if 'rules' in data:
+            for r in data['rules']:
+                steps = []
+
+                if 'validation' in r:
+                    for v in r['validation']:
+                        steps.append(ValidationStepConfiguration(v['name']))
+
+                rule = ValidationRule(r['name'], r['test_field'], validation=steps)
+
+        return ValidationField(
+            name = data['name'],
+            file_type=data['file_type'],
+            file_path=data['file_path'],
+            key=data.get('key', None),
+            sheet=data.get('sheet', None),
+            rules=rules
+        )
 
 
 class YamlDataFrameConfigurationLoader(DataFrameConfigurationLoader):

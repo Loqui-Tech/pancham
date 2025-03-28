@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from pandera.errors import SchemaError
 
+from file_loader_configuration import FileLoaderConfiguration
 from .data_frame_configuration import MergeConfiguration
 from .pancham_configuration import PanchamConfiguration
 from .data_frame_configuration import DataFrameConfiguration
@@ -108,7 +109,7 @@ class DataFrameLoader:
         :rtype: pd.DataFrame
         """
 
-        source_df = self.__load_file(configuration)
+        source_df = self.load_file(configuration)
 
         processed = self.process_dataframe(source_df, configuration)
 
@@ -157,7 +158,7 @@ class DataFrameLoader:
 
         return output
 
-    def __load_file(self, configuration: DataFrameConfiguration) -> pd.DataFrame:
+    def load_file(self, configuration: FileLoaderConfiguration) -> pd.DataFrame:
         """
         Loads a data file based on its specified file type and associated configuration details
         using a corresponding file loader.

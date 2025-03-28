@@ -11,7 +11,8 @@ dependencies = [
     'typer',
     'python-benedict',
     'halo',
-    'async-typer'
+    'async-typer',
+    'phonenumbers'
 ]
 requires-python = ">=3.11"
 

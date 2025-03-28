@@ -1,3 +1,5 @@
+from validation_field import ValidationStep, ValidationInput
+from .validation.not_null_validation import NotNullValidation
 from .output_manager import OutputManager
 from .configuration.database_match_field_parser import DatabaseMatchFieldParser
 from .configuration.datetime_field_parser import DateTimeFieldParser
@@ -51,6 +53,9 @@ DEFAULT_FIELD_PARSERS = [
 DEFAULT_OUTPUTS = [
     DatabaseOutput()
 ]
+DEFAULT_VALIDATION_RULES = [
+    NotNullValidation()
+]
 
 class PanchamRunner:
 
@@ -60,7 +65,8 @@ class PanchamRunner:
                  outputs: dict[str, OutputWriter]|None = None,
                  reporter: Reporter | None = None,
                  field_parsers: list[FieldParser] | None = None,
-                 outputs_configuration: list[OutputConfiguration] | None = None
+                 outputs_configuration: list[OutputConfiguration] | None = None,
+                 validation_rules: list[ValidationStep] | None = None
                 ):
         self.pancham_configuration = pancham_configuration
         self.loaded_outputs: dict[str, OutputWriter] = {}
@@ -90,6 +96,11 @@ class PanchamRunner:
         else:
             self.outputs_configuration = outputs_configuration
 
+        if validation_rules is None:
+            self.validation_rules = DEFAULT_VALIDATION_RULES
+        else:
+            self.validation_rules = validation_rules
+
     def run_all(self):
         """
         Executes the primary function for processing all specified configurations.
@@ -113,27 +124,7 @@ class PanchamRunner:
         for l in loaders:
             self.reporter.report_configuration(l)
             self.run(l)
-
-            # completed = []
-            #
-            # def start_migration(configuration_file: DataFrameConfiguration):
-            #     for dep in configuration_file.depends_on:
-            #         dep_completed = False
-            #
-            #         while not dep_completed:
-            #             if dep in completed:
-            #                 dep_completed = True
-            #             else:
-            #                 asyncio.sleep(20)
-            #
-            #     self.run(configuration_file)
-            #     completed.append(configuration_file.name)
-            #
-            # configuration_loader = YamlDataFrameConfigurationLoader(field_parsers=self.field_parsers, output_configuration=self.outputs_configuration)
-            # loaders = list(map(lambda f: configuration_loader.load(f), self.pancham_configuration.mapping_files))
-            #
-            # asyncio.gather(*list(map(lambda f: start_migration(f), loaders)))
-
+            self.run_validation(l)
 
     def load_and_run(self, configuration_file: str):
         configuration_loader = YamlDataFrameConfigurationLoader(field_parsers=self.field_parsers, output_configuration=self.outputs_configuration)
@@ -142,6 +133,7 @@ class PanchamRunner:
         self.reporter.report_configuration(configuration)
 
         self.run(configuration)
+        self.run_validation(configuration)
 
     def run(self, configuration: DataFrameConfiguration):
         """
@@ -160,10 +152,11 @@ class PanchamRunner:
 
         :return: None
         """
+        if configuration.name.startswith('test'):
+            return
         initialize_db_engine(self.pancham_configuration, self.reporter)
         loader = DataFrameLoader(self.file_loaders, self.reporter, self.pancham_configuration)
         data = loader.load(configuration)
-        print(data)
 
         self.outputs.write_output(data.processed, configuration)
 
@@ -172,4 +165,31 @@ class PanchamRunner:
             post_run_data = loader.process_dataframe(input_data, post_run_configuration)
 
             self.outputs.write_output(post_run_data, post_run_configuration)
+
+    def run_validation(self, configuration: DataFrameConfiguration):
+        """
+        Executes validation checks on a given data configuration based on predefined
+        validation rules. This function processes each validation rule within the
+        provided configuration, loads the corresponding file data for each validation
+        set, and runs validations to identify failures that are subsequently reported.
+
+        :param configuration: Validation configuration containing the rules to check
+            and the associated data requirements.
+        :type configuration: DataFrameConfiguration
+        :return: None
+        """
+
+        for validation in configuration.validation_rules:
+            loader = DataFrameLoader(self.file_loaders, self.reporter, self.pancham_configuration)
+            data = loader.load_file(validation)
+
+            for rule in validation.rules:
+                  for loaded_rule in self.validation_rules:
+                      if loaded_rule.get_name() == rule.name:
+                          validation_input = ValidationInput(rule.name, rule.test_field, data)
+                          failures = loaded_rule.validate(validation_input)
+
+                          for failure in failures:
+                              self.reporter.save_validation_failure(failure)
+
 
