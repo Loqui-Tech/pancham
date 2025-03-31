@@ -155,9 +155,9 @@ class PanchamRunner:
 
         :return: None
         """
+        initialize_db_engine(self.pancham_configuration, self.reporter)
         if configuration.name.startswith('test'):
             return
-        initialize_db_engine(self.pancham_configuration, self.reporter)
         loader = DataFrameLoader(self.file_loaders, self.reporter, self.pancham_configuration)
         data = loader.load(configuration)
 
