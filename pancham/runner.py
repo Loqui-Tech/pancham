@@ -1,3 +1,4 @@
+from .validation.one_of_validation import OneOfValidation
 from .validation_field import ValidationStep, ValidationInput
 from .validation.not_null_validation import NotNullValidation
 from .output_manager import OutputManager
@@ -54,7 +55,8 @@ DEFAULT_OUTPUTS = [
     DatabaseOutput()
 ]
 DEFAULT_VALIDATION_RULES = [
-    NotNullValidation()
+    NotNullValidation(),
+    OneOfValidation()
 ]
 
 class PanchamRunner:
@@ -185,14 +187,18 @@ class PanchamRunner:
         loader = DataFrameLoader(self.file_loaders, self.reporter, self.pancham_configuration)
         data = loader.load_file(configuration)
 
+        # Loop the validation objects in the configuration
         for validation in configuration.validation_rules:
-            for rule in validation.rules:
-                  for loaded_rule in self.validation_rules:
-                      if loaded_rule.get_name() == rule.name:
-                          validation_input = ValidationInput(rule.name, rule.test_field, data)
-                          failures = loaded_rule.validate(validation_input)
 
-                          for failure in failures:
-                              self.reporter.save_validation_failure(failure)
+            # Loop the available rules to find one we can apply to this
+            for loaded_rule in self.validation_rules:
+
+                # If the names match then execute it
+                if loaded_rule.get_name() == validation.name:
+                    validation_input = ValidationInput(validation.name, data, validation.rule)
+                    failures = loaded_rule.validate(validation_input)
+
+                    for failure in failures:
+                        self.reporter.save_validation_failure(failure)
 
 

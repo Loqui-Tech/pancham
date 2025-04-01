@@ -1,6 +1,6 @@
 import yaml
 
-from .validation_field import ValidationField, ValidationRule, ValidationStepConfiguration
+from .validation_field import ValidationField, ValidationRule
 from .data_frame_configuration import MergeConfiguration
 from .configuration.field_parser import FieldParser
 from .data_frame_configuration import DataFrameConfiguration
@@ -145,21 +145,15 @@ class DataFrameConfigurationLoader:
         :return: A `ValidationField` object configured with the provided validation rules and details.
         :rtype: ValidationField
         """
-        rules = []
+        rule: ValidationRule|None = None
 
-        if 'rules' in data:
-            for r in data['rules']:
-                steps = []
-
-                if 'validation' in r:
-                    for v in r['validation']:
-                        steps.append(ValidationStepConfiguration(v['name']))
-
-                rule = ValidationRule(r['name'], r['test_field'], validation=steps)
+        if 'rule' in data:
+            rule_config = data['rule']
+            rule = ValidationRule(rule_config['test_field'], rule_config.get('id_field', None), rule_config.get('properties', {}))
 
         return ValidationField(
             name = data['name'],
-            rules=rules
+            rule=rule
         )
 
 

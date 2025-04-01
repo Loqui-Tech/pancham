@@ -17,16 +17,16 @@ class NotNullValidation(ValidationStep):
 
     def validate(self, input: ValidationInput) -> list[ValidationFailure]:
         test_data = input.test_data
-        null_values = test_data[test_data[input.test_field].isnull()]
+        test_field = input.rule.test_field
+        null_values = test_data[test_data[test_field].isnull()]
 
         validation_failures = []
-        if len(null_values.iloc) > 0:
-            for index, row in null_values.iterrows():
-                failure = ValidationFailure(
-                    failed_id=row[input.join_key],
-                    test_name=self.get_name(),
-                    message=f"value for {input.test_field} is null.")
-                validation_failures.append(failure)
+        for index, row in null_values.iterrows():
+            failure = ValidationFailure(
+                failed_id=row[input.rule.id_field],
+                test_name=self.get_name(),
+                message=f"value for {test_field} is null.")
+            validation_failures.append(failure)
 
         return validation_failures
 

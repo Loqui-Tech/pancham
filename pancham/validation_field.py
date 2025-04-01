@@ -2,8 +2,6 @@ from dataclasses import dataclass
 
 import pandas as pd
 
-from .file_loader_configuration import FileLoaderConfiguration
-
 
 @dataclass
 class ValidationFailure:
@@ -26,6 +24,14 @@ class ValidationFailure:
     test_name: str
     message: str
 
+
+@dataclass()
+class ValidationRule:
+    test_field: str | int
+    id_field: str | int
+    properties: dict[str, str | int | bool | list[str] | None] | None = None
+
+
 @dataclass
 class ValidationInput:
     """
@@ -40,18 +46,12 @@ class ValidationInput:
     :type name: str
     :ivar test_field: A field used for testing, can be a string or integer.
     :type test_field: str or int
-    :ivar join_key: Key used for joining datasets, can be a string or integer.
-    :type join_key: str or int
     :ivar test_data: The DataFrame containing data to be tested.
     :type test_data: pd.DataFrame
-    :ivar source_data: The DataFrame containing source data, if available.
-    :type source_data: pd.DataFrame or None
     """
     name: str
-    test_field: str | int
     test_data: pd.DataFrame
-    join_key: str | int = None
-    source_data: pd.DataFrame | None = None
+    rule: ValidationRule
 
 class ValidationStep:
 
@@ -61,6 +61,7 @@ class ValidationStep:
         failures. This function is expected to perform various checks and criteria matching
         on the input and collect all failures that occur during the validation process.
 
+        :param configuration:
         :param input: The ValidationInput object containing the data and parameters to be
             validated. It encapsulates all necessary information for the validation process.
         :type input: ValidationInput
@@ -84,27 +85,9 @@ class ValidationStep:
         """
         pass
 
-@dataclass
-class ValidationStepConfiguration:
-
-    name: str
-
-class ValidationRule:
-
-    def __init__(
-            self,
-            name: str,
-            test_field: str|int,
-            validation: list[ValidationStepConfiguration],
-            join_key: str|int = None
-    ):
-        self.name = name
-        self.test_field = test_field
-        self.join_key = join_key
-        self.validation = validation
 
 @dataclass()
 class ValidationField:
 
     name: str
-    rules: list[ValidationRule]
+    rule: ValidationRule
