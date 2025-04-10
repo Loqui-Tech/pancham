@@ -1,3 +1,4 @@
+from .validation.matching_validation import MatchingValidation
 from .validation.not_all_null_validation import NotAllNullValidation
 from .validation.one_of_validation import OneOfValidation
 from .validation_field import ValidationStep, ValidationInput
@@ -58,7 +59,8 @@ DEFAULT_OUTPUTS = [
 DEFAULT_VALIDATION_RULES = [
     NotNullValidation(),
     OneOfValidation(),
-    NotAllNullValidation()
+    NotAllNullValidation(),
+    MatchingValidation()
 ]
 
 class PanchamRunner:
