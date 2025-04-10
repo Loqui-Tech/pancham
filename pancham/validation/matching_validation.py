@@ -20,9 +20,9 @@ class MatchingValidation(ValidationStep):
                  are found.
         :rtype: list[ValidationFailure]
         """
-        search_field = input.properties.get("search_field")
-        search_value = input.properties.get("search_value")
-        expected_value = input.properties.get("expected_value")
+        search_field = input.rule.properties.get("search_field")
+        search_value = input.rule.properties.get("search_value")
+        expected_value = input.rule.properties.get("expected_value")
         test_field = input.rule.test_field
 
         # Find the row in test_data where search_field matches search_value
@@ -31,7 +31,7 @@ class MatchingValidation(ValidationStep):
         validation_failures = []
         if matching_row.empty:
             failure = ValidationFailure(
-                failed_id=None,
+                failed_id=expected_value,
                 test_name=self.get_name(),
                 message=f"No matching row found for {search_field} = {search_value}."
             )
