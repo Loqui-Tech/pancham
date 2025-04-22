@@ -93,7 +93,7 @@ class DataFrameLoader:
     def load(
             self,
             configuration: DataFrameConfiguration
-    ) -> DataFrameOutput:
+    ) -> Iterator[DataFrameOutput]:
         """
         Loads and processes data as per the given configuration.
 
@@ -110,12 +110,9 @@ class DataFrameLoader:
         :return: A fully processed and validated pandas DataFrame.
         :rtype: pd.DataFrame
         """
-        output = None
         for source_df in self.load_file(configuration):
             processed = self.process_dataframe(source_df, configuration)
-            output = DataFrameOutput(source_df, processed)
-
-        return output
+            yield DataFrameOutput(source_df, processed)
 
     def process_dataframe(self, source_df: pd.DataFrame, configuration: DataFrameConfiguration) -> pd.DataFrame:
         """

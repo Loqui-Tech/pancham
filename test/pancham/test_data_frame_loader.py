@@ -24,7 +24,7 @@ class TestDataFrameLoader:
         configuration.add_field('Date', 'Rec Date', datetime.datetime)
         configuration.add_dynamic_field('Sent', field_type=bool, func=lambda row: row['Disp.'] == 'X')
 
-        data = loader.load(configuration).processed
+        data = next(loader.load(configuration)).processed
 
         assert len(data) == 10
         assert data.loc[0, 'Order'] == 1
@@ -42,7 +42,7 @@ class TestDataFrameLoader:
         configuration.add_dynamic_field('Sent', field_type=bool, func=lambda row: row['Disp.'] == 'X')
         configuration.add_dynamic_field('Static', field_type=str, func=lambda row: 'abc')
 
-        data = loader.load(configuration).processed
+        data = next(loader.load(configuration)).processed
 
         assert len(data) == 10
         assert data.loc[0, 'Order'] == 1
@@ -59,7 +59,7 @@ class TestDataFrameLoader:
         configuration.add_field('Date', 'Rec Date', int)
 
         with pytest.raises(SchemaError):
-            loader.load(configuration)
+            next(loader.load(configuration))
 
     def test_load_example_data_with_schema_validation_and_validation_disabled(self):
         pancham_configuration = StaticPanchamConfiguration('', False, '', True)
@@ -68,7 +68,7 @@ class TestDataFrameLoader:
         configuration.add_field('Order', 'Order Id', int)
         configuration.add_field('Date', 'Rec Date', int)
 
-        data = loader.load(configuration).processed
+        data = next(loader.load(configuration)).processed
 
         assert len(data) == 10
         assert data.loc[0, 'Order'] == 1
