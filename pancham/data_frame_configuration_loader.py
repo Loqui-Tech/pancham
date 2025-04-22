@@ -23,7 +23,7 @@ class DataFrameConfigurationLoader:
 
         if data["file_type"] == "xlsx" and "sheet" in data:
             sheet = data["sheet"]
-            
+
         if (data['file_type'] == 'yaml' or data['file_type'] == 'json') and 'key' in data:
             key = data['key']
 
@@ -40,7 +40,7 @@ class DataFrameConfigurationLoader:
             for v in data['validation']:
                 configuration.validation_rules.append(self.__load_validation_configuration(v))
 
-        if data['use_iterator'] is True:
+        if data.get('use_iterator', False) is True:
             configuration.use_iterator = True
 
         return configuration
