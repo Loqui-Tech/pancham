@@ -191,20 +191,20 @@ class PanchamRunner:
         """
 
         loader = DataFrameLoader(self.file_loaders, self.reporter, self.pancham_configuration)
-        data = loader.load_file(configuration)
+        for data in loader.load_file(configuration):
 
-        # Loop the validation objects in the configuration
-        for validation in configuration.validation_rules:
+            # Loop the validation objects in the configuration
+            for validation in configuration.validation_rules:
 
-            # Loop the available rules to find one we can apply to this
-            for loaded_rule in self.validation_rules:
+                # Loop the available rules to find one we can apply to this
+                for loaded_rule in self.validation_rules:
 
-                # If the names match then execute it
-                if loaded_rule.get_name() == validation.name:
-                    validation_input = ValidationInput(validation.name, data, validation.rule)
-                    failures = loaded_rule.validate(validation_input)
+                    # If the rule names matches, then execute it
+                    if loaded_rule.get_name() == validation.name:
+                        validation_input = ValidationInput(validation.name, data, validation.rule)
+                        failures = loaded_rule.validate(validation_input)
 
-                    for failure in failures:
-                        self.reporter.save_validation_failure(failure)
+                        for failure in failures:
+                            self.reporter.save_validation_failure(failure)
 
 

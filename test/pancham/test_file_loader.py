@@ -44,7 +44,7 @@ class TestExcelFileLoader():
         configuration = DataFrameConfiguration(filename, 'xlsx', 'a', sheet='Sheet1')
 
         loader = ExcelFileLoader()
-        data = loader.read_file_from_configuration(configuration)
+        data = next(loader.read_file_from_configuration(configuration))
 
         assert len(data) == 10
 
@@ -53,7 +53,7 @@ class TestExcelFileLoader():
         configuration = DataFrameConfiguration(filename, 'yaml', 'a', key='orders')
 
         loader = YamlFileLoader()
-        data = loader.read_file_from_configuration(configuration)
+        data = next(loader.read_file_from_configuration(configuration))
 
         assert len(data) == 2
 
@@ -62,7 +62,8 @@ class TestExcelFileLoader():
         configuration = DataFrameConfiguration(filename, 'json', 'a')
 
         loader = JsonFileLoader()
-        data = loader.read_file_from_configuration(configuration)
+        iter = loader.read_file_from_configuration(configuration)
+        data = list(iter)[0]
 
         assert len(data) == 2
 
@@ -71,6 +72,6 @@ class TestExcelFileLoader():
         configuration = DataFrameConfiguration(filename, 'json', 'a', key='orders')
 
         loader = JsonFileLoader()
-        data = loader.read_file_from_configuration(configuration)
+        data = next(loader.read_file_from_configuration(configuration))
 
         assert len(data) == 2

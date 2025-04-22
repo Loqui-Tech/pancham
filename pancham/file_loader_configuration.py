@@ -24,3 +24,4 @@ class FileLoaderConfiguration:
     key: Optional[str] = None
     file_path: str|list[str] = None
     file_type: str = None
+    use_iterator: bool = False

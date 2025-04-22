@@ -3,6 +3,7 @@ from typing import Iterator
 
 import pandas as pd
 import yaml
+from jsonstraw import read_json_chunk
 
 from .file_loader_configuration import FileLoaderConfiguration
 from .reporter import get_reporter
@@ -18,7 +19,7 @@ class FileLoader:
     handle a type of file
     """
 
-    def read_file_from_configuration(self, configuration: FileLoaderConfiguration, pancham_configuration: PanchamConfiguration | None = None) -> pd.DataFrame:
+    def read_file_from_configuration(self, configuration: FileLoaderConfiguration, pancham_configuration: PanchamConfiguration | None = None) -> Iterator[pd.DataFrame]:
         """
         Reads and processes a file based on the given configuration.
 
@@ -27,6 +28,7 @@ class FileLoader:
         the necessary details such as file path, format, and other processing
         instructions.
 
+        :param pancham_configuration:
         :param configuration: Configuration object containing the details needed
             to locate and process the file.
         :type configuration: DataFrameConfiguration
@@ -35,6 +37,7 @@ class FileLoader:
         """
         reporter = get_reporter()
         data = []
+        will_use_iterator = configuration.use_iterator is True and self.can_yield()
 
         for file_path in self.reduce_file_paths(configuration, pancham_configuration):
             sheet = configuration.sheet
@@ -48,11 +51,16 @@ class FileLoader:
 
             reporter.report_start(path)
 
-            frame = self.read_file(path, sheet = sheet, key = key)
-            data.append(frame)
-            reporter.report_end(path, frame)
+            if will_use_iterator:
+                yield from self.yield_file(path, sheet = sheet, key = key)
+            else:
+                frame = self.read_file(path, sheet = sheet, key = key)
+                data.append(frame)
+                reporter.report_end(path, frame)
 
-        return pd.concat(data)
+        if not will_use_iterator:
+            data = pd.concat(data)
+            yield data
 
     def read_file(self, filename: str, **kwargs) -> pd.DataFrame:
         """
@@ -65,6 +73,28 @@ class FileLoader:
         :param kwargs: Additional parameters to customize how the file is read.
         :return: A pandas DataFrame containing the data from the file.
         :rtype: pd.DataFrame
+        """
+        pass
+
+    def can_yield(self) -> bool:
+        """
+        Return true if the class can yield an interator instead of return a single data frame
+        :return: True if the yield file method is available
+        """
+        return False
+
+    def yield_file(self, filename: str, **kwargs) -> Iterator[pd.DataFrame]:
+        """
+        Yield DataFrames from a file, processing its contents as per the provided
+        configuration parameters. This method is intended to allow efficient,
+        incremental processing of large datasets by handling data in a streaming
+        fashion.
+
+        :param filename: The path to the file to be processed.
+        :param kwargs: Additional configuration parameters to customize how the file
+            should be processed.
+        :return: An iterator that yields pandas DataFrames, each representing a
+            portion of the processed file contents.
         """
         pass
 
@@ -158,6 +188,13 @@ class JsonFileLoader(FileLoader):
             keyed_data = data[kwargs["key"]]
 
             return pd.DataFrame(keyed_data)
+
+    def can_yield(self) -> bool:
+        return True
+
+    def yield_file(self, filename: str, **kwargs) -> Iterator[pd.DataFrame]:
+        for data in read_json_chunk(filename, key=kwargs.get("key", None)):
+            yield pd.DataFrame(data)
 
 
 class CsvFileLoader(FileLoader):

@@ -1,3 +1,5 @@
+from typing import Iterable, Iterator
+
 import numpy as np
 import pandas as pd
 from pandera.errors import SchemaError
@@ -108,12 +110,12 @@ class DataFrameLoader:
         :return: A fully processed and validated pandas DataFrame.
         :rtype: pd.DataFrame
         """
+        output = None
+        for source_df in self.load_file(configuration):
+            processed = self.process_dataframe(source_df, configuration)
+            output = DataFrameOutput(source_df, processed)
 
-        source_df = self.load_file(configuration)
-
-        processed = self.process_dataframe(source_df, configuration)
-
-        return DataFrameOutput(source_df, processed)
+        return output
 
     def process_dataframe(self, source_df: pd.DataFrame, configuration: DataFrameConfiguration) -> pd.DataFrame:
         """
@@ -158,7 +160,7 @@ class DataFrameLoader:
 
         return output
 
-    def load_file(self, configuration: FileLoaderConfiguration) -> pd.DataFrame:
+    def load_file(self, configuration: FileLoaderConfiguration) -> Iterator[pd.DataFrame]:
         """
         Loads a data file based on its specified file type and associated configuration details
         using a corresponding file loader.
@@ -172,7 +174,7 @@ class DataFrameLoader:
             and load the file, including file type and related properties.
         :type configuration: DataFrameConfiguration
         :return: A pandas DataFrame object representing the loaded data.
-        :rtype: pd.DataFrame
+        :rtype: Iterator of pd.DataFrame
         :raises ValueError: If the specified file type is not supported within `file_loaders`.
         """
 
@@ -182,7 +184,8 @@ class DataFrameLoader:
             raise ValueError(f'Unsupported file type: {file_type}')
 
         loader = self.file_loaders[file_type]
-        return loader.read_file_from_configuration(configuration, self.pancham_configuration)
+
+        yield from loader.read_file_from_configuration(configuration, self.pancham_configuration)
 
     def __validate_schema(self, output: pd.DataFrame, configuration: DataFrameConfiguration):
         """
