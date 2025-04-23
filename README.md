@@ -21,6 +21,7 @@ flowchart LR;
 - Validate data types and not-null columns
 - Apply python functions to transform values
 - Return data as a Pandas DataFrame
+- Write data to a database
 
 ### Supported Source Files
 
@@ -28,6 +29,7 @@ flowchart LR;
 - SQL
 - YAML
 - CSV
+- JSON
 
 ### Supported Output
 
@@ -36,14 +38,10 @@ flowchart LR;
 
 Additional sources and output formats will be added with time.
 
-## Example
+## Usage
 
-```python
-loader = DataFrameLoader({FileType.EXCEL_XLSX: ExcelFileLoader()}, PrintReporter())
-configuration = DataFrameConfiguration(self.filename, FileType.EXCEL_XLSX, sheet='Sheet1')
-configuration.add_field('Order', 'Order Id', int)
-configuration.add_field('Date', 'Rec Date', datetime.datetime)
-configuration.add_dynamic_field('Sent', field_type=bool, func=lambda row: row['Disp.'] == 'X')
+The most common approach is to use a mapping file.
 
-data = loader.load(configuration)
+```yaml
+
 ```
