@@ -25,3 +25,4 @@ class FileLoaderConfiguration:
     file_path: str|list[str] = None
     file_type: str = None
     use_iterator: bool = False
+    chunk_size: int = 100000

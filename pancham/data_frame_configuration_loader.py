@@ -42,6 +42,7 @@ class DataFrameConfigurationLoader:
 
         if data.get('use_iterator', False) is True:
             configuration.use_iterator = True
+            configuration.chunk_size = data.get('chunk_size', 100000)
 
         return configuration
 
