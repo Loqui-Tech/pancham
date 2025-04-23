@@ -179,6 +179,9 @@ class YamlFileLoader(FileLoader):
 class JsonFileLoader(FileLoader):
 
     def read_file(self, filename: str, **kwargs) -> pd.DataFrame:
+        reporter = get_reporter()
+
+        reporter.report_debug("Loading json file")
         if "key" not in kwargs or kwargs["key"] is None:
             return pd.read_json(filename)
 
@@ -194,6 +197,7 @@ class JsonFileLoader(FileLoader):
 
     def yield_file(self, filename: str, **kwargs) -> Iterator[pd.DataFrame]:
         reporter = get_reporter()
+        reporter.report_debug("Starting Json chunk load")
         for data in read_json_chunk(filename, key=kwargs.get("key", None), chunk_size=kwargs.get('chunk_size', 1000)):
             df = pd.DataFrame(data)
             reporter.report_debug(f"Loading iterator - size {len(data)}")

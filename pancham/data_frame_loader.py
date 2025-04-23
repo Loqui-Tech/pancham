@@ -110,6 +110,7 @@ class DataFrameLoader:
         :return: A fully processed and validated pandas DataFrame.
         :rtype: pd.DataFrame
         """
+        self.reporter.report_debug("Starting load")
         for source_df in self.load_file(configuration):
             processed = self.process_dataframe(source_df, configuration)
             yield DataFrameOutput(source_df, processed)

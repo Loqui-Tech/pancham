@@ -22,7 +22,7 @@ def run(
     else:
         reporter = get_reporter(pancham_configuration.debug_status)
 
-    print(f"Reporter enabled - {pancham_configuration.debug_status}")
+    print(f"Reporter enabled - Debug = {pancham_configuration.debug_status}")
     runner = PanchamRunner(pancham_configuration, reporter = reporter)
 
     if data_configuration is not None:
