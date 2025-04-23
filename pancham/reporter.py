@@ -195,7 +195,8 @@ def get_reporter(debug: bool = False, reporter: Reporter|None = None) -> Reporte
     if reporter is not None:
         __reporter = reporter
 
-    if __reporter is None:
+    if not isinstance(__reporter, Reporter):
         __reporter = PrintReporter(debug)
+
     return __reporter
 

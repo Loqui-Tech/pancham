@@ -196,8 +196,8 @@ class JsonFileLoader(FileLoader):
         reporter = get_reporter()
         for data in read_json_chunk(filename, key=kwargs.get("key", None)):
             df = pd.DataFrame(data)
-            reporter.debug(f"Loading iterator - size {len(data)}")
-            reporter.debug(df)
+            reporter.report_debug(f"Loading iterator - size {len(data)}")
+            reporter.report_debug(df)
             yield df
 
 
