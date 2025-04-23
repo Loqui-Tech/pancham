@@ -1,0 +1,28 @@
+name: order
+file_type: json
+file_path: example/orders.json
+key: orders
+use_iterator: true
+output:
+  - output_type: database
+    table: jsoniter
+fields:
+  - name: customer_name
+    source_name: name
+    field_type: str
+    nullable: false
+  - name: customer_id
+    source_name: customer
+    nullable: false
+    field_type: int
+
+validation:
+  - file_type: json
+    name: validation
+    file_path: example/orders.json
+    key: orders
+    rules:
+      - name: valid customer name
+        test_field: customer_name
+        validation:
+          - name: notnull

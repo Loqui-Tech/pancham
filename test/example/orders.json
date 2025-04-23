@@ -7,6 +7,22 @@
     {
       "name": "B",
       "customer": 1
+    },
+    {
+      "name": "C",
+      "customer": 2
+    },
+    {
+      "name": "D",
+      "customer": 3
+    },
+    {
+      "name": "E",
+      "customer": 1
+    },
+    {
+      "name": "F",
+      "customer": 2
     }
   ]
 }

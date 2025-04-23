@@ -65,7 +65,7 @@ class TestExcelFileLoader():
         iter = loader.read_file_from_configuration(configuration)
         data = list(iter)[0]
 
-        assert len(data) == 2
+        assert len(data) == 6
 
     def test_read_from_json_configuration_and_key(self):
         filename = os.path.dirname(os.path.realpath(__file__)) + "/../example/orders.json"
@@ -74,4 +74,4 @@ class TestExcelFileLoader():
         loader = JsonFileLoader()
         data = next(loader.read_file_from_configuration(configuration))
 
-        assert len(data) == 2
+        assert len(data) == 6

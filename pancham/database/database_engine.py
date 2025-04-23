@@ -119,8 +119,6 @@ class DatabaseEngine:
                 raise ValueError(f"Merge key {merge_key} is not a unique key.")
 
 
-
-
 db_engine: DatabaseEngine|None = None
 
 def initialize_db_engine(config: PanchamConfiguration, reporter: Reporter):

@@ -194,7 +194,8 @@ class JsonFileLoader(FileLoader):
 
     def yield_file(self, filename: str, **kwargs) -> Iterator[pd.DataFrame]:
         for data in read_json_chunk(filename, key=kwargs.get("key", None)):
-            yield pd.DataFrame(data)
+            df = pd.DataFrame(data)
+            yield df
 
 
 class CsvFileLoader(FileLoader):
