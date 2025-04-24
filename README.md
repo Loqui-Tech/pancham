@@ -42,3 +42,35 @@ Additional sources and output formats will be added with time.
 
 The most common approach is to use a mapping file.
 
+```yaml
+name: example
+file_type: yaml
+file_path: source/customer.yml
+key: customer
+output:
+  - table: customers
+    output_type: database
+fields:
+  - name: id
+    source_name: customer_id
+    field_type: str
+    nullable: false
+  - name: status
+    source_name: account_status
+    field_type: str
+    nullable: false
+```
+
+This simple mapping file expects to be able to load a source file called `customer.yml` with the following content:
+
+```yaml
+customer:
+    - customer_id: 123
+      account_status: active
+    - customer_id: 456
+      account_status: on_hold
+```
+
+The pipeline wll read the input file and populate a database that you can then query.
+
+The final part is the pancham configuration.
