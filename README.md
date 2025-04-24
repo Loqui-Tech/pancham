@@ -42,6 +42,3 @@ Additional sources and output formats will be added with time.
 
 The most common approach is to use a mapping file.
 
-```yaml
-
-```
