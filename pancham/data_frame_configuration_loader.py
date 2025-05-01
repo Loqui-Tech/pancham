@@ -23,22 +23,11 @@ class DataFrameConfigurationLoader:
         key: str|None = self.__get_configuration_for_file_type(data, 'key', ['json', 'yaml'])
         configuration = self.__load_section(data, "main", sheet=sheet, key=key)
 
-<<<<<<< HEAD
-        if "post" in data:
-            for d in data["post"]:
-                configuration.post_run_configuration.append(self.__load_section(d, d['name']))
-
-        if "drop_duplicates" in data:
-            configuration.drop_duplicates = data['drop_duplicates']
-
-        if "validation" in data:
-            for v in data['validation']:
-                configuration.validation_rules.append(self.__load_validation_configuration(v))
-=======
         self.__load_additional_fields(data, configuration, 'pre')
         self.__load_additional_fields(data, configuration, 'post')
         self.__load_additional_fields(data, configuration, 'validation')
->>>>>>> b9193cdc15afda72a03e305e47f6a70839ac3ba4
+
+        configuration.drop_duplicates = data.get('drop_duplicates', None)
 
         if data.get('use_iterator', False) is True:
             configuration.use_iterator = True

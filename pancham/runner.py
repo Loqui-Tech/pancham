@@ -182,11 +182,7 @@ class PanchamRunner:
             return
         
         loader = DataFrameLoader(self.file_loaders, self.reporter, self.pancham_configuration)
-<<<<<<< HEAD
-
-=======
         self.reporter.report_debug("Loader created")
->>>>>>> b9193cdc15afda72a03e305e47f6a70839ac3ba4
         for data in loader.load(configuration):
             self.reporter.report_debug(f'Writing data {len(data.processed)}')
             self.outputs.write_output(data.processed, configuration)
