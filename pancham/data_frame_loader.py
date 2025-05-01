@@ -111,7 +111,12 @@ class DataFrameLoader:
         :rtype: pd.DataFrame
         """
         for source_df in self.load_file(configuration):
-            processed = self.process_dataframe(source_df, configuration)
+            if configuration.drop_duplicates is None:
+                prepared_df = source_df.copy()
+            else:
+                prepared_df = source_df.drop_duplicates(subset=configuration.drop_duplicates)
+
+            processed = self.process_dataframe(prepared_df, configuration)
             yield DataFrameOutput(source_df, processed)
 
     def process_dataframe(self, source_df: pd.DataFrame, configuration: DataFrameConfiguration) -> pd.DataFrame:

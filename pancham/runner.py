@@ -136,6 +136,24 @@ class PanchamRunner:
 
         self.reporter.report_validation_failure()
 
+    def run_all_tests(self):
+        """
+        Executes all tests by loading configuration data from YAML files,
+        validating the data, and then reporting the validation failures.
+
+        :raises ValidationError: If validation fails for any of the configurations.
+        :raises ConfigurationLoadError: If there is an error in loading the YAML configuration.
+        :raises ReportError: If there is an issue generating the validation failure report.
+        :return: None
+        """
+        configuration_loader = YamlDataFrameConfigurationLoader(field_parsers=self.field_parsers, output_configuration=self.outputs_configuration)
+        loaders = list(map(lambda f: configuration_loader.load(f), self.pancham_configuration.test_files))
+
+        for l in loaders:
+            self.run_validation(l)
+
+        self.reporter.report_validation_failure()
+
     def load_and_run(self, configuration_file: str):
         configuration_loader = YamlDataFrameConfigurationLoader(field_parsers=self.field_parsers, output_configuration=self.outputs_configuration)
         configuration = configuration_loader.load(configuration_file)
@@ -167,6 +185,7 @@ class PanchamRunner:
         if configuration.name.startswith('test'):
             return
         loader = DataFrameLoader(self.file_loaders, self.reporter, self.pancham_configuration)
+
         for data in loader.load(configuration):
             self.outputs.write_output(data.processed, configuration)
 

@@ -12,7 +12,8 @@ app = typer.Typer()
 @app.command()
 def run(
         configuration: Annotated[str, typer.Argument(help = "Path to the Pancham configuration file")],
-        data_configuration: Annotated[Optional[str], typer.Argument(help = "Path to the data mapping if individual files are being used")] = None
+        data_configuration: Annotated[Optional[str], typer.Argument(help = "Path to the data mapping if individual files are being used")] = None,
+        test: Annotated[bool, typer.Option(help="Run all the tests")] = False
 ):
     pancham_configuration = OrderedPanchamConfiguration(configuration)
 
@@ -26,4 +27,7 @@ def run(
     if data_configuration is not None:
         runner.load_and_run(data_configuration)
     else:
-        runner.run_all()
+        if test:
+            runner.run_all_tests()
+        else:
+            runner.run_all()

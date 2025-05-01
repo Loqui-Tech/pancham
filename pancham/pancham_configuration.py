@@ -98,6 +98,17 @@ class PanchamConfiguration:
 
         return []
 
+    @property
+    def test_files(self) -> list[str]:
+        """
+        This property retrieves the list of test files. It returns an empty list
+        if no test files are defined.
+
+        :return: A list containing the names of test files.
+        :rtype: list[str]
+        """
+        return []
+
 class OrderedPanchamConfiguration(PanchamConfiguration):
 
     def __init__(self, config_file_path: str|None):
@@ -135,6 +146,20 @@ class OrderedPanchamConfiguration(PanchamConfiguration):
         """
         data = self.__get_config_file_data()
         return data.get("mapping_files", [])
+
+    @property
+    def test_files(self):
+        """
+        Retrieves and returns the list of test files defined in the configuration file.
+
+        This method accesses a configuration file through a helper method, processes
+        its contents, and extracts a list of test files from a specific key.
+
+        :return: The list of test files, empty if no such key exists.
+        :rtype: List[Any]
+        """
+        data = self.__get_config_file_data()
+        return data.get("test_files", [])
 
     def __get_config_item(self, name: str, env_var: str|None = None, config_name: str|None = None) -> str|bool|None:
         """

@@ -74,6 +74,28 @@ class TestRunner:
             assert result[1][0] == 1
             assert result[1][1] == "B"
 
+    def test_json_runner_with_duplicates(self):
+        table_name = "customer_no_duplicates"
+        json_file = os.path.dirname(os.path.realpath(__file__)) + "/../example/json_order_configuration_drop_duplicates.yml"
+        initialize_db_engine(Config(), PrintReporter())
+
+        with get_db_engine().engine.connect() as conn:
+            metadata = MetaData()
+            table = Table(table_name, metadata, Column('customer_id', Integer), Column('customer_name', String))
+            metadata.create_all(conn)
+
+            runner = PanchamRunner(Config())
+            runner.load_and_run(configuration_file=json_file)
+
+            query = select(table.c['customer_id', 'customer_name'])
+            result = conn.execute(query).fetchall()
+
+            assert result[0][0] == 1
+            assert result[0][1] == "A"
+
+            assert result[1][0] == 2
+            assert result[1][1] == "C"
+
     def test_json_runner_iterator(self):
         table_name = "jsoniter"
         json_file = os.path.dirname(os.path.realpath(__file__)) + "/../example/json_order_configuration_iterator.yml"

@@ -36,6 +36,9 @@ class DataFrameConfigurationLoader:
             for d in data["post"]:
                 configuration.post_run_configuration.append(self.__load_section(d, d['name']))
 
+        if "drop_duplicates" in data:
+            configuration.drop_duplicates = data['drop_duplicates']
+
         if "validation" in data:
             for v in data['validation']:
                 configuration.validation_rules.append(self.__load_validation_configuration(v))

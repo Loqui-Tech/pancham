@@ -1,0 +1,18 @@
+name: order
+file_type: json
+file_path: example/orders.json
+key: orders
+drop_duplicates:
+  - customer
+output:
+  - output_type: database
+    table: customer_no_duplicates
+fields:
+  - name: customer_name
+    source_name: name
+    field_type: str
+    nullable: false
+  - name: customer_id
+    source_name: customer
+    nullable: false
+    field_type: int

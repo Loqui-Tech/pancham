@@ -22,3 +22,9 @@ class TestOrderedPanchamConfiguration():
         del os.environ['PANCHAM_DATABASE_CONNECTION']
 
         assert config.database_connection is None
+
+    def test_get_test_files(self):
+        filename = os.path.dirname(os.path.realpath(__file__)) + "/../example/config_with_test.yaml"
+        config = OrderedPanchamConfiguration(filename)
+
+        assert config.test_files == ['example.yml']

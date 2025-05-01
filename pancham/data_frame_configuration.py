@@ -51,6 +51,7 @@ class DataFrameConfiguration(FileLoaderConfiguration):
                  key: str|None = None,
                  merge_configuration: MergeConfiguration|None = None,
                  depends_on: list[str]|None = None,
+                 drop_duplicates: str|list[str]|None = None,
                  ):
         self.file_path = file_path
         self.file_type = file_type
@@ -59,6 +60,7 @@ class DataFrameConfiguration(FileLoaderConfiguration):
         self.key = key
         self.merge_configuration = merge_configuration
         self.depends_on = depends_on
+        self.drop_duplicates = drop_duplicates
 
         self.fields: list[DataFrameField] = []
         self.validation_rules: list[ValidationField] = []
