@@ -15,6 +15,7 @@ def run(
         data_configuration: Annotated[Optional[str], typer.Argument(help = "Path to the data mapping if individual files are being used")] = None,
         test: Annotated[bool, typer.Option(help="Run all the tests")] = False
 ):
+    print("Starting Pancham!")
     pancham_configuration = OrderedPanchamConfiguration(configuration)
 
     if pancham_configuration.reporter_name == 'spinner':
@@ -22,6 +23,7 @@ def run(
     else:
         reporter = get_reporter(pancham_configuration.debug_status)
 
+    print(f"Reporter enabled - Debug = {pancham_configuration.debug_status}")
     runner = PanchamRunner(pancham_configuration, reporter = reporter)
 
     if data_configuration is not None:

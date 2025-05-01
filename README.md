@@ -21,6 +21,7 @@ flowchart LR;
 - Validate data types and not-null columns
 - Apply python functions to transform values
 - Return data as a Pandas DataFrame
+- Write data to a database
 
 ### Supported Source Files
 
@@ -28,6 +29,7 @@ flowchart LR;
 - SQL
 - YAML
 - CSV
+- JSON
 
 ### Supported Output
 
@@ -36,14 +38,39 @@ flowchart LR;
 
 Additional sources and output formats will be added with time.
 
-## Example
+## Usage
 
-```python
-loader = DataFrameLoader({FileType.EXCEL_XLSX: ExcelFileLoader()}, PrintReporter())
-configuration = DataFrameConfiguration(self.filename, FileType.EXCEL_XLSX, sheet='Sheet1')
-configuration.add_field('Order', 'Order Id', int)
-configuration.add_field('Date', 'Rec Date', datetime.datetime)
-configuration.add_dynamic_field('Sent', field_type=bool, func=lambda row: row['Disp.'] == 'X')
+The most common approach is to use a mapping file.
 
-data = loader.load(configuration)
+```yaml
+name: example
+file_type: yaml
+file_path: source/customer.yml
+key: customer
+output:
+  - table: customers
+    output_type: database
+fields:
+  - name: id
+    source_name: customer_id
+    field_type: str
+    nullable: false
+  - name: status
+    source_name: account_status
+    field_type: str
+    nullable: false
 ```
+
+This simple mapping file expects to be able to load a source file called `customer.yml` with the following content:
+
+```yaml
+customer:
+    - customer_id: 123
+      account_status: active
+    - customer_id: 456
+      account_status: on_hold
+```
+
+The pipeline wll read the input file and populate a database that you can then query.
+
+The final part is the pancham configuration.

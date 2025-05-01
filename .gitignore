@@ -5,3 +5,4 @@ dist
 coverage.xml
 .coverage
 test.db
+__pycache__

@@ -1,9 +1,5 @@
-from .validation.contains_validation import ContainsValidation
-from .validation.matching_validation import MatchingValidation
-from .validation.not_all_null_validation import NotAllNullValidation
-from .validation.one_of_validation import OneOfValidation
+from .validation import ContainsValidation, MatchingValidation, NotAllNullValidation, NotNullValidation, OneOfValidation
 from .validation_field import ValidationStep, ValidationInput
-from .validation.not_null_validation import NotNullValidation
 from .output_manager import OutputManager
 from .configuration.database_match_field_parser import DatabaseMatchFieldParser
 from .configuration.datetime_field_parser import DateTimeFieldParser
@@ -184,9 +180,15 @@ class PanchamRunner:
         initialize_db_engine(self.pancham_configuration, self.reporter)
         if configuration.name.startswith('test'):
             return
+        
         loader = DataFrameLoader(self.file_loaders, self.reporter, self.pancham_configuration)
+<<<<<<< HEAD
 
+=======
+        self.reporter.report_debug("Loader created")
+>>>>>>> b9193cdc15afda72a03e305e47f6a70839ac3ba4
         for data in loader.load(configuration):
+            self.reporter.report_debug(f'Writing data {len(data.processed)}')
             self.outputs.write_output(data.processed, configuration)
 
             for post_run_configuration in configuration.post_run_configuration:

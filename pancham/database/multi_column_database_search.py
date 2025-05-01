@@ -92,30 +92,37 @@ class MultiColumnDatabaseSearch:
                 search_values[column] = data[search_option[FieldParser.SOURCE_NAME_KEY]]
 
             elif field_type == "split":
-                split_char = search_option["split_char"]
-                remove_pattern = search_option.get("remove_pattern", None)
-                source = data[search_option[FieldParser.SOURCE_NAME_KEY]]
+                split_values = self.__build_search_value(search_option, data)
 
-                fields = remove_and_split(source, split_char, remove_pattern)
-
-                for match in search_option["matches"]:
-                    field_index = match["field_index"]
-                    if len(fields) <= field_index:
-                        continue
-
-                    field_value = fields[field_index]
-
-                    if field_value is None:
-                        continue
-
-                    if (isinstance(field_value, int) or isinstance(field_value, float)) and math.isnan(field_value):
-                        continue
-
-                    column = match[self.SEARCH_COLUMN_KEY]
-                    search_values[column] = fields[field_index]
+                search_values = search_values | split_values
 
             else:
                 raise ValueError(f"Unsupported search type: {search_option['type']}")
+
+        return search_values
+    
+    def __build_search_value(self, search_option: dict[str, str], data: dict) -> dict:
+        split_char = search_option["split_char"]
+        remove_pattern = search_option.get("remove_pattern", None)
+        source = data[search_option[FieldParser.SOURCE_NAME_KEY]]
+
+        fields = remove_and_split(source, split_char, remove_pattern)
+        search_values = {}
+        for match in search_option["matches"]:
+            field_index = match["field_index"]
+            if len(fields) <= field_index:
+                continue
+
+            field_value = fields[field_index]
+
+            if field_value is None:
+                continue
+
+            if (isinstance(field_value, int) or isinstance(field_value, float)) and math.isnan(field_value):
+                continue
+
+            column = match[self.SEARCH_COLUMN_KEY]
+            search_values[column] = fields[field_index]
 
         return search_values
 

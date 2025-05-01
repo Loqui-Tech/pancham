@@ -1,4 +1,5 @@
 import yaml
+from typing import Literal
 
 from .validation_field import ValidationField, ValidationRule
 from .data_frame_configuration import MergeConfiguration
@@ -15,23 +16,14 @@ class DataFrameConfigurationLoader:
     def load(self, filename: str) -> DataFrameConfiguration:
 
         data = self.load_file(filename)
-        sheet: str|None = None
-        key: str|None = None
 
-        if "file_path" not in data or "file_type" not in data:
-            raise ValueError(f"file_path and file_type are required fields in {filename}")
+        self.__validate_input(data, filename)
 
-        if data["file_type"] == "xlsx" and "sheet" in data:
-            sheet = data["sheet"]
-
-        if (data['file_type'] == 'yaml' or data['file_type'] == 'json') and 'key' in data:
-            key = data['key']
-
+        sheet: str|None = self.__get_configuration_for_file_type(data, 'sheet', ['xlsx'])
+        key: str|None = self.__get_configuration_for_file_type(data, 'key', ['json', 'yaml'])
         configuration = self.__load_section(data, "main", sheet=sheet, key=key)
-        if "pre" in data:
-            for d in data["pre"]:
-                configuration.pre_run_configuration.append(self.__load_section(d, d['name']))
 
+<<<<<<< HEAD
         if "post" in data:
             for d in data["post"]:
                 configuration.post_run_configuration.append(self.__load_section(d, d['name']))
@@ -42,9 +34,15 @@ class DataFrameConfigurationLoader:
         if "validation" in data:
             for v in data['validation']:
                 configuration.validation_rules.append(self.__load_validation_configuration(v))
+=======
+        self.__load_additional_fields(data, configuration, 'pre')
+        self.__load_additional_fields(data, configuration, 'post')
+        self.__load_additional_fields(data, configuration, 'validation')
+>>>>>>> b9193cdc15afda72a03e305e47f6a70839ac3ba4
 
         if data.get('use_iterator', False) is True:
             configuration.use_iterator = True
+            configuration.chunk_size = data.get('chunk_size', 100000)
 
         return configuration
 
@@ -61,6 +59,37 @@ class DataFrameConfigurationLoader:
         :rtype: dict
         """
         pass
+
+    def __validate_input(self, data: dict, filename: str):
+        """
+        Validate the configuration has the keys that it needs
+
+        If the input is not valid throw a value error
+        """
+        if "file_path" not in data or "file_type" not in data:
+            raise ValueError(f"file_path and file_type are required fields in {filename}")
+        
+    def __get_configuration_for_file_type(self, data: dict, key: str, types: list[str]) -> str|None:
+        """
+        Test if the file type matches the expected value and return the key if it exists
+        """
+        if data["file_type"] in types and key in data:
+            return data[key]
+        
+        return None
+    
+    def __load_additional_fields(self, data: dict, configuration: DataFrameConfiguration, key: Literal['pre', 'post', 'validation']):
+        """
+        Load the keys for the additional items
+        """
+        if key in data:
+            for d in data[key]:
+                if key == 'pre':
+                    configuration.pre_run_configuration.append(self.__load_section(d, d['name']))
+                if key == 'post':
+                    configuration.post_run_configuration.append(self.__load_section(d, d['name']))
+                if key == 'validation':
+                    configuration.validation_rules.append(self.__load_validation_configuration(d))
 
     def __load_section(self, data: dict, label: str, sheet: str|None = None, key: str|None = None) -> DataFrameConfiguration:
         """

@@ -52,7 +52,7 @@ class FileLoader:
             reporter.report_start(path)
 
             if will_use_iterator:
-                yield from self.yield_file(path, sheet = sheet, key = key)
+                yield from self.yield_file(path, sheet = sheet, key = key, chunk_size = configuration.chunk_size)
             else:
                 frame = self.read_file(path, sheet = sheet, key = key)
                 data.append(frame)
@@ -179,6 +179,9 @@ class YamlFileLoader(FileLoader):
 class JsonFileLoader(FileLoader):
 
     def read_file(self, filename: str, **kwargs) -> pd.DataFrame:
+        reporter = get_reporter()
+
+        reporter.report_debug("Loading json file")
         if "key" not in kwargs or kwargs["key"] is None:
             return pd.read_json(filename)
 
@@ -193,8 +196,12 @@ class JsonFileLoader(FileLoader):
         return True
 
     def yield_file(self, filename: str, **kwargs) -> Iterator[pd.DataFrame]:
-        for data in read_json_chunk(filename, key=kwargs.get("key", None)):
+        reporter = get_reporter()
+        reporter.report_debug("Starting Json chunk load")
+        for data in read_json_chunk(filename, key=kwargs.get("key", None), chunk_size=kwargs.get('chunk_size', 1000)):
             df = pd.DataFrame(data)
+            reporter.report_debug(f"Loading iterator - size {len(data)}")
+            reporter.report_debug(df)
             yield df
 
 

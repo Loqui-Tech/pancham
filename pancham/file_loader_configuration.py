@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Union
 
 
 @dataclass(kw_only=True)
@@ -22,6 +22,7 @@ class FileLoaderConfiguration:
 
     sheet: Optional[str] = None
     key: Optional[str] = None
-    file_path: str|list[str] = None
-    file_type: str = None
+    file_path: Optional[Union[str|list[str]]]
+    file_type: Optional[str]
     use_iterator: bool = False
+    chunk_size: int = 100000

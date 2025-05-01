@@ -59,13 +59,13 @@ class PhoneDatabaseSearch(DatabaseSearch):
             res = conn.execute(query).fetchall()
 
             for row in res:
-                id = self.cast_value(row[1], self.value_col)
+                id_value = self.cast_value(row[1], self.value_col)
                 value = row[0]
                 phone = self.__parse_and_format(value, row[2])
                 if phone is None:
                     continue
 
-                self.cached_data[phone] = id
+                self.cached_data[phone] = id_value
 
         return self.cached_data
 

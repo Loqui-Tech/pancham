@@ -38,7 +38,7 @@ class MatchingValidation(ValidationStep):
             validation_failures.append(failure)
         else:
             # Validate the expected value against the test_field value
-            if not (matching_row.iloc[0][test_field] == expected_value):
+            if matching_row.iloc[0][test_field] != expected_value:
                 failure = ValidationFailure(
                     failed_id=matching_row.iloc[0][input.rule.id_field],
                     test_name=self.get_name(),
