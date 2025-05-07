@@ -205,6 +205,7 @@ class PanchamRunner:
         :type configuration: DataFrameConfiguration
         :return: None
         """
+        initialize_db_engine(self.pancham_configuration, self.reporter)
 
         loader = DataFrameLoader(self.file_loaders, self.reporter, self.pancham_configuration)
         for data in loader.load_file(configuration):
