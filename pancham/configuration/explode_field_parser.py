@@ -1,4 +1,7 @@
+import pandas as pd
+
 from pancham.data_frame_field import DataFrameField
+from pancham.reporter import get_reporter
 from .field_parser import FieldParser
 
 class ExplodeFieldParser(FieldParser):
@@ -24,10 +27,21 @@ class ExplodeFieldParser(FieldParser):
     def parse_field(self, field: dict) -> DataFrameField:
         properties = field[self.FUNCTION_KEY][self.FUNCTION_ID]
 
+        def apply_explode(data: pd.DataFrame) -> pd.DataFrame:
+            output = data.explode(properties[self.SOURCE_NAME_KEY])
+            reporter = get_reporter()
+
+            if properties.get('drop_nulls', False):
+                output = output.dropna(subset=[properties[self.SOURCE_NAME_KEY]])
+
+            reporter.report_debug(f'Explode outcome {output}')
+
+            return output
+
         return DataFrameField(
             name = field['name'],
             field_type=field[self.FIELD_TYPE_KEY],
             nullable=self.is_nullable(field),
             source_name=self.get_source_name(field),
-            df_func=lambda d: d.explode(properties[self.SOURCE_NAME_KEY]),
+            df_func=apply_explode
         )
