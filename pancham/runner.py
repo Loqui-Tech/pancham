@@ -19,7 +19,7 @@ from .data_frame_configuration import DataFrameConfiguration
 from .data_frame_loader import DataFrameLoader
 from .data_frame_configuration_loader import YamlDataFrameConfigurationLoader
 from .database.database_engine import initialize_db_engine
-from .database.sql_file_loader import SqlFileLoader
+from .database.sql_file_loader import SqlFileLoader, SqlExecuteFileLoader
 from .database.database_output import DatabaseOutput
 from .file_loader import FileLoader, ExcelFileLoader, YamlFileLoader, CsvFileLoader, JsonFileLoader
 from .output_configuration import OutputWriter, OutputConfiguration
@@ -29,6 +29,7 @@ from .reporter import Reporter, PrintReporter
 DEFAULT_LOADERS = {
     'xlsx': ExcelFileLoader(),
     'sql_file': SqlFileLoader(),
+    'sql_execute': SqlExecuteFileLoader(),
     'yaml': YamlFileLoader(),
     'csv': CsvFileLoader(),
     'json': JsonFileLoader()

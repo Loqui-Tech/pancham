@@ -25,3 +25,21 @@ class SqlFileLoader(FileLoader):
                 select = text(sql_file.read())
 
                 return pd.read_sql(select, connection)
+
+class SqlExecuteFileLoader(FileLoader):
+    """
+    A loader class for executing SQL statements against a database engine.
+
+    This loader will not return any data, but will execute the SQL statements
+    """
+
+    def read_file(self, filename: str, **kwargs) -> pd.DataFrame:
+
+        with open(filename, 'r') as sql_file:
+            with get_db_engine().engine.connect() as connection:
+                query = text(sql_file.read())
+
+                connection.execute(query)
+                connection.commit()
+
+                return pd.DataFrame()

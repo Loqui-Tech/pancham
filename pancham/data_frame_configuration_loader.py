@@ -103,7 +103,7 @@ class DataFrameConfigurationLoader:
         """
         configuration = self.__load_base_configuration(data, label, sheet=sheet, key=key)
 
-        if configuration.name.startswith('test') and 'fields' not in data:
+        if configuration.name.startswith('test') or 'fields' not in data:
             return configuration
 
         for f in data['fields']:
