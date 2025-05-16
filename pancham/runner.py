@@ -7,6 +7,7 @@ from .configuration.remove_field_parser import RemoveFieldParser
 from .configuration.database_fixed_field_parser import DatabaseFixedFieldParser
 from .configuration.part_text_extractor_parser import PartTextExtractorParser
 from .configuration.explode_field_parser import ExplodeFieldParser
+from .configuration.deduplicate_field_parser import DeduplicateFieldParser
 from .configuration.split_field_parser import SplitFieldParser
 from .configuration.database_multi_field_search_parser import DatabaseMultiFieldSearchParser
 from .configuration.static_field_parser import StaticFieldParser
@@ -49,7 +50,8 @@ DEFAULT_FIELD_PARSERS = [
     ExplodeFieldParser(),
     ConcatFieldParser(),
     DatabaseMultiFieldSearchParser(),
-    RemoveFieldParser()
+    RemoveFieldParser(),
+    DeduplicateFieldParser()
 ]
 DEFAULT_OUTPUTS = [
     DatabaseOutput()
