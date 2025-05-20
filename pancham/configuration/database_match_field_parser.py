@@ -1,3 +1,4 @@
+from database.caching_database_search import DatabaseSearch
 from pancham.database.database_search_manager import get_database_search
 from pancham.data_frame_field import DataFrameField
 from .field_parser import FieldParser
@@ -48,22 +49,19 @@ class DatabaseMatchFieldParser(FieldParser):
         if self.TABLE_NAME_KEY not in properties or self.SEARCH_COLUMN_KEY not in properties or self.VALUE_COLUMN_KEY not in properties:
             raise ValueError("Missing required properties for database_match function.")
 
-        search_cast = properties.get(self.SEARCH_CAST_VALUE_KEY, None)
-        value_cast = properties.get(self.VALUE_CAST_VALUE_KEY, None)
         filter_value = properties.get(self.FILTER_KEY, None)
-        populate = properties.get(self.POPULATE_KEY, False)
 
         def map_value(data: dict) -> str:
-            database_search = get_database_search(
-                table_name=properties[self.TABLE_NAME_KEY],
-                search_col=properties[self.SEARCH_COLUMN_KEY],
-                value_col=properties[self.VALUE_COLUMN_KEY],
-                cast_search=search_cast,
-                cast_value=value_cast,
-                filter=filter_value,
-                populate=populate
-            )
+            mapped_filtered = {}
+            if filter_value:
+                for key, value in filter_value.items():
+                    if isinstance(value, str):
+                        mapped_filtered[key] = data[value]
+                    else:
+                        filter_search = self.__build_search_value(value)
+                        mapped_filtered[key] = filter_search.get_mapped_id(data[value[self.VALUE_COLUMN_KEY]])
 
+            database_search = self.__build_search_value(properties, filter=mapped_filtered)
             search_value = data[properties[self.SOURCE_NAME_KEY]]
 
             return database_search.get_mapped_id(search_value)
@@ -72,4 +70,26 @@ class DatabaseMatchFieldParser(FieldParser):
             field=field,
             func=map_value
         )
+
+    def __build_search_value(self, properties: dict, filter: dict[str, str]|None = None) -> DatabaseSearch:
+
+        populate = properties.get(self.POPULATE_KEY, False)
+        search_cast = properties.get(self.SEARCH_CAST_VALUE_KEY, None)
+        value_cast = properties.get(self.VALUE_CAST_VALUE_KEY, None)
+
+        if filter:
+            filter_value = filter
+        else:
+            filter_value = properties.get(self.FILTER_KEY, None)
+
+        return get_database_search(
+            table_name=properties[self.TABLE_NAME_KEY],
+            search_col=properties[self.SEARCH_COLUMN_KEY],
+            value_col=properties[self.VALUE_COLUMN_KEY],
+            cast_search=search_cast,
+            cast_value=value_cast,
+            filter=filter_value,
+            populate=populate
+        )
+
 
