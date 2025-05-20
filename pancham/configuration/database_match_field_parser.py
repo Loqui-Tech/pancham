@@ -1,4 +1,4 @@
-from database.caching_database_search import DatabaseSearch
+from pancham.database.caching_database_search import DatabaseSearch
 from pancham.database.database_search_manager import get_database_search
 from pancham.data_frame_field import DataFrameField
 from .field_parser import FieldParser
