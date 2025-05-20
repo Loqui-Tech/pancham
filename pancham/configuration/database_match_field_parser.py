@@ -39,6 +39,7 @@ class DatabaseMatchFieldParser(FieldParser):
     VALUE_CAST_VALUE_KEY = "value_cast"
     FILTER_KEY = "filter"
     POPULATE_KEY = "populate"
+    STATIC_VALUE_KEY = "static"
 
     def can_parse_field(self, field: dict) -> bool:
         return self.has_function_key(field, self.FUNCTION_ID)
@@ -59,10 +60,11 @@ class DatabaseMatchFieldParser(FieldParser):
                         mapped_filtered[key] = data[value]
                     else:
                         filter_search = self.__build_search_value(value)
-                        mapped_filtered[key] = filter_search.get_mapped_id(data[value[self.VALUE_COLUMN_KEY]])
+                        search_value = self.__get_search_value(data, properties)
+                        mapped_filtered[key] = filter_search.get_mapped_id(search_value)
 
             database_search = self.__build_search_value(properties, filter=mapped_filtered)
-            search_value = data[properties[self.SOURCE_NAME_KEY]]
+            search_value = self.__get_search_value(data, properties)
 
             return database_search.get_mapped_id(search_value)
 
@@ -91,5 +93,27 @@ class DatabaseMatchFieldParser(FieldParser):
             filter=filter_value,
             populate=populate
         )
+
+    def  __get_search_value(self, data: dict, properties: dict[str, str]) -> str:
+        """
+        Retrieve the search value from the given data and properties based on specific keys.
+
+        This method determines whether to extract a value directly from the `properties`
+        dictionary or to use it as a reference to obtain a value from the `data` dictionary.
+        If the `STATIC_VALUE_KEY` is present in the `properties`, the corresponding
+        value in `properties` is returned. Otherwise, the value associated with
+        `properties[self.SOURCE_NAME_KEY]` in `data` is returned.
+
+        :param data: Input data dictionary containing potential values.
+        :type data: dict
+        :param properties: Dictionary of property keys and their associated values.
+        :type properties: dict[str, str]
+        :return: Extracted search value based on provided data and properties.
+        :rtype: str
+        """
+        if self.STATIC_VALUE_KEY in properties:
+            return properties[self.STATIC_VALUE_KEY]
+
+        return data[properties[self.SOURCE_NAME_KEY]]
 
 
