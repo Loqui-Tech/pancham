@@ -42,6 +42,13 @@ class DeduplicateFieldParser(FieldParser):
 
         def apply_deduplicate(data: pd.DataFrame) -> pd.DataFrame:
             reporter = get_reporter()
+            if 'sort_by' in properties:
+                sort_values = [properties[self.SOURCE_NAME_KEY]]
+                sort_values.extend(properties['sort_by'])
+                ascending = properties.get('ascending', True)
+
+                data = data.sort_values(by=sort_values, ascending=ascending)
+
             output = data.drop_duplicates(subset=[properties[self.SOURCE_NAME_KEY]], keep='first')
             reporter.report_debug(f'Deduplicate outcome {output}')
 
