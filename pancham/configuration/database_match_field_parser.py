@@ -56,7 +56,7 @@ class DatabaseMatchFieldParser(FieldParser):
             mapped_filtered = {}
             if filter_value:
                 for key, value in filter_value.items():
-                    if isinstance(value, str):
+                    if isinstance(value, str) or isinstance(value, int) or isinstance(value, float):
                         mapped_filtered[key] = data[value]
                     else:
                         filter_search = self.__build_search_value(value)
