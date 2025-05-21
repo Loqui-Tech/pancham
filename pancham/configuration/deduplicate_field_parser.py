@@ -44,7 +44,12 @@ class DeduplicateFieldParser(FieldParser):
             reporter = get_reporter()
             if 'sort_by' in properties:
                 sort_values = [properties[self.SOURCE_NAME_KEY]]
-                sort_values.extend(properties['sort_by'])
+                sort_by_key = properties.get('sort_by', None)
+                if isinstance(sort_by_key, list):
+                    sort_values.extend(sort_by_key)
+                else:
+                    sort_values.append(sort_by_key)
+                    
                 ascending = properties.get('ascending', True)
 
                 data = data.sort_values(by=sort_values, ascending=ascending)
