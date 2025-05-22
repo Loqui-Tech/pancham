@@ -40,6 +40,7 @@ class DatabaseMatchFieldParser(FieldParser):
     FILTER_KEY = "filter"
     POPULATE_KEY = "populate"
     STATIC_VALUE_KEY = "static"
+    SQL_FILE_KEY = "sql_file"
 
     def can_parse_field(self, field: dict) -> bool:
         return self.has_function_key(field, self.FUNCTION_ID)
@@ -78,6 +79,7 @@ class DatabaseMatchFieldParser(FieldParser):
         populate = properties.get(self.POPULATE_KEY, False)
         search_cast = properties.get(self.SEARCH_CAST_VALUE_KEY, None)
         value_cast = properties.get(self.VALUE_CAST_VALUE_KEY, None)
+        sql_file = properties.get(self.SQL_FILE_KEY, None)
 
         if filter:
             filter_value = filter
@@ -85,13 +87,14 @@ class DatabaseMatchFieldParser(FieldParser):
             filter_value = properties.get(self.FILTER_KEY, None)
 
         return get_database_search(
-            table_name=properties[self.TABLE_NAME_KEY],
-            search_col=properties[self.SEARCH_COLUMN_KEY],
-            value_col=properties[self.VALUE_COLUMN_KEY],
+            table_name=properties.get(self.TABLE_NAME_KEY, ''),
+            search_col=properties.get(self.SEARCH_COLUMN_KEY, ''),
+            value_col=properties.get(self.VALUE_COLUMN_KEY, ''),
             cast_search=search_cast,
             cast_value=value_cast,
             filter=filter_value,
-            populate=populate
+            populate=populate,
+            sql_file=sql_file
         )
 
     def  __get_search_value(self, data: dict, properties: dict[str, str]) -> str:

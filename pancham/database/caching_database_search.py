@@ -1,4 +1,4 @@
-from sqlalchemy import Table, select, Connection, Select
+from sqlalchemy import Table, select, Connection, Select, text, TextClause
 
 from pancham.reporter import get_reporter
 from .database_engine import get_db_engine, META
@@ -113,7 +113,7 @@ class CachingDatabaseSearch(DatabaseSearch):
 
         return data.get(search_value, None)
 
-    def get_query(self, conn: Connection) -> Select:
+    def get_query(self, conn: Connection) -> Select|TextClause:
         """
         Create a SQL SELECT query on a specified table, filtering out rows where the
         search column is NULL. This function constructs a SQLAlchemy Select object
@@ -154,6 +154,34 @@ class CachingDatabaseSearch(DatabaseSearch):
                 self.cached_data[key] = value
 
         return self.cached_data
+
+class SQLFileCachingDatabaseSearch(CachingDatabaseSearch):
+    """
+    A specialized class that extends CachingDatabaseSearch to include SQL file
+    functionality.
+    """
+    def __init__(self, file: str, cast_search: None|str = None, cast_value: None|str = None):
+        super().__init__('', '', '', cast_search, cast_value)
+        self.file = file
+
+    def get_query(self, conn: Connection) -> Select|TextClause:
+        """
+        Retrieve and return an SQL query from a file associated with the instance.
+
+        This method reads the content of the SQL file specified by the instance's `file`
+        attribute and converts it into a valid SQL query object. The result can be used
+        to execute database operations.
+
+        :param conn: A connection object to interact with the database. This parameter is unused in the function but
+                     provides context for potential future utilization.
+        :type conn: Connection
+        :return: A representation of the SQL query read from the file. This can be either a SQLAlchemy `Select`
+                 object or a `TextClause` object, depending on the format of the query in the SQL file.
+        :rtype: Select | TextClause
+        """
+        with open(self.file, 'r') as sql_file:
+            query = sql_file.read()
+            return text(query)
 
 class FilteredCachingDatabaseSearch(CachingDatabaseSearch):
     """

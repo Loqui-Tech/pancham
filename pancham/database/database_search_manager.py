@@ -1,7 +1,8 @@
 import hashlib
 import json
 
-from .caching_database_search import DatabaseSearch, FilteredCachingDatabaseSearch, CachingDatabaseSearch
+from .caching_database_search import DatabaseSearch, FilteredCachingDatabaseSearch, CachingDatabaseSearch, \
+    SQLFileCachingDatabaseSearch
 from .populating_database_search import PopulatingDatabaseSearch
 
 __managed_db_cache: dict[str, DatabaseSearch] = {}
@@ -13,7 +14,8 @@ def get_database_search(
         filter: dict[str, str]|None = None,
         cast_search: None | str = None,
         cast_value: None | str = None,
-        populate: bool = False
+        populate: bool = False,
+        sql_file: str|None = None,
 ) -> DatabaseSearch:
     """
     Retrieve a cached instance of `CachingDatabaseSearch` for querying a database table.
@@ -46,6 +48,8 @@ def get_database_search(
             __managed_db_cache[db_key] = PopulatingDatabaseSearch(table_name, search_col, value_col, cast_search, cast_value)
         elif filter is not None:
             __managed_db_cache[db_key] = FilteredCachingDatabaseSearch(table_name, search_col, value_col, filter, cast_search, cast_value)
+        elif sql_file is not None:
+            __managed_db_cache[db_key] = SQLFileCachingDatabaseSearch(sql_file, cast_search, cast_value)
         else:
             __managed_db_cache[db_key] = CachingDatabaseSearch(table_name, search_col, value_col, cast_search, cast_value)
 

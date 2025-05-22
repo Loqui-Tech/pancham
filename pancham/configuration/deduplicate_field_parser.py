@@ -49,7 +49,7 @@ class DeduplicateFieldParser(FieldParser):
                     sort_values.extend(sort_by_key)
                 else:
                     sort_values.append(sort_by_key)
-                    
+
                 ascending = properties.get('ascending', True)
 
                 data = data.sort_values(by=sort_values, ascending=ascending)
