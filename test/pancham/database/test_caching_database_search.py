@@ -1,5 +1,6 @@
 from sqlalchemy import MetaData, Table, Column, String, Integer, UniqueConstraint
 import pandas as pd
+import os
 
 from pancham.database.database_search_manager import get_database_search
 from pancham.database.database_engine import get_db_engine, initialize_db_engine
@@ -86,7 +87,7 @@ class TestCachingDatabaseSearch:
         db_engine.write_df(type_data, type_name)
         db_engine.write_df(data, table_name)
 
-        id_search = SQLFileCachingDatabaseSearch('example/customer_type_load.sql')
+        id_search = SQLFileCachingDatabaseSearch(f'{os.path.dirname(os.path.realpath(__file__))}/../../example/customer_type_load.sql')
         type_id = id_search.get_mapped_id('B')
 
         assert type_id == 2
