@@ -1,3 +1,5 @@
+import pandas as pd
+
 from pancham.database.caching_database_search import DatabaseSearch
 from pancham.database.database_search_manager import get_database_search
 from pancham.data_frame_field import DataFrameField
@@ -41,6 +43,8 @@ class DatabaseMatchFieldParser(FieldParser):
     POPULATE_KEY = "populate"
     STATIC_VALUE_KEY = "static"
     SQL_FILE_KEY = "sql_file"
+    FIXTURE_KEY = "fixture_key"
+    fixture_map = {}
 
     def can_parse_field(self, field: dict) -> bool:
         return self.has_function_key(field, self.FUNCTION_ID)
@@ -53,16 +57,29 @@ class DatabaseMatchFieldParser(FieldParser):
 
         filter_value = properties.get(self.FILTER_KEY, None)
 
-        def map_value(data: dict) -> str:
+        def map_value(data: dict|pd.Series) -> str:
             mapped_filtered = {}
+
+            if isinstance(data, pd.Series):
+                data = data.to_dict()
+
             if filter_value:
                 for key, value in filter_value.items():
                     if isinstance(value, str) or isinstance(value, int) or isinstance(value, float):
                         mapped_filtered[key] = data[value]
                     else:
+                        fixture_key = value.get(self.FIXTURE_KEY, None)
+                        if fixture_key is not None and fixture_key in self.fixture_map:
+                            mapped_filtered[key] = self.fixture_map[fixture_key]
+                            continue
+
                         filter_search = self.__build_search_value(value)
                         search_value = self.__get_search_value(data, properties)
-                        mapped_filtered[key] = filter_search.get_mapped_id(search_value)
+                        filter_id = filter_search.get_mapped_id(search_value)
+                        mapped_filtered[key] = filter_id
+
+                        if fixture_key is not None:
+                            self.fixture_map[fixture_key] = filter_id
 
             database_search = self.__build_search_value(properties, filter=mapped_filtered)
             search_value = self.__get_search_value(data, properties)
@@ -119,4 +136,7 @@ class DatabaseMatchFieldParser(FieldParser):
 
         return data[properties[self.SOURCE_NAME_KEY]]
 
-
+    def __get_fixture_key(self, value: dict) -> str:
+        """
+        Retrieve the fixture key from the given value.
+        """
