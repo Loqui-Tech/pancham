@@ -40,7 +40,7 @@ def get_database_search(
     if filter is not None:
         filter_key = json.dumps(filter, sort_keys=True)
 
-    db_key_str = f"{table_name}_{search_col}_{value_col}_{cast_search}_{cast_value}_{populate}_{filter_key}"
+    db_key_str = f"{table_name}_{search_col}_{value_col}_{cast_search}_{cast_value}_{populate}_{filter_key}_{sql_file}"
     db_key = hashlib.md5(db_key_str.encode()).hexdigest()
 
     if db_key not in __managed_db_cache:

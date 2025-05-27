@@ -74,7 +74,7 @@ class DatabaseMatchFieldParser(FieldParser):
                             continue
 
                         filter_search = self.__build_search_value(value)
-                        search_value = self.__get_search_value(data, properties)
+                        search_value = self.__get_search_value(data, value)
                         filter_id = filter_search.get_mapped_id(search_value)
                         mapped_filtered[key] = filter_id
 
