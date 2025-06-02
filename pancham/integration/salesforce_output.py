@@ -3,7 +3,7 @@ from io import StringIO
 import pandas as pd
 
 from .salesforce_connection import get_connection
-from output_configuration import OutputConfiguration, OutputWriter
+from pancham.output_configuration import OutputConfiguration, OutputWriter
 
 SALESFORCE_BULK = 'salesforce_bulk'
 
