@@ -2,6 +2,7 @@ from .validation import ContainsValidation, MatchingValidation, NotAllNullValida
 from .validation_field import ValidationStep, ValidationInput
 from .output_manager import OutputManager
 from .configuration.database_match_field_parser import DatabaseMatchFieldParser
+from .configuration.dynamic_field_parser import DynamicFieldParser
 from .configuration.datetime_field_parser import DateTimeFieldParser
 from .configuration.remove_field_parser import RemoveFieldParser
 from .configuration.database_fixed_field_parser import DatabaseFixedFieldParser
@@ -26,6 +27,7 @@ from .file_loader import FileLoader, ExcelFileLoader, YamlFileLoader, CsvFileLoa
 from .output_configuration import OutputWriter, OutputConfiguration
 from .pancham_configuration import PanchamConfiguration
 from .reporter import Reporter, PrintReporter
+from .integration.salesforce_output import SalesforceBulkOutputConfiguration
 
 DEFAULT_LOADERS = {
     'xlsx': ExcelFileLoader(),
@@ -41,6 +43,7 @@ DEFAULT_FIELD_PARSERS = [
     TextFieldParser(),
     MatchFieldParser(),
     DateTimeFieldParser(),
+    DynamicFieldParser(),
     ToIntFieldParser(),
     PartTextExtractorParser(),
     StaticFieldParser(),
@@ -54,7 +57,8 @@ DEFAULT_FIELD_PARSERS = [
     DeduplicateFieldParser()
 ]
 DEFAULT_OUTPUTS = [
-    DatabaseOutput()
+    DatabaseOutput(),
+    SalesforceBulkOutputConfiguration()
 ]
 DEFAULT_VALIDATION_RULES = [
     NotNullValidation(),

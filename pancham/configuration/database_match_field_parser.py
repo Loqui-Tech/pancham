@@ -66,7 +66,7 @@ class DatabaseMatchFieldParser(FieldParser):
             if filter_value:
                 for key, value in filter_value.items():
                     if isinstance(value, str) or isinstance(value, int) or isinstance(value, float):
-                        mapped_filtered[key] = data[value]
+                        mapped_filtered[key] = value
                     else:
                         fixture_key = value.get(self.FIXTURE_KEY, None)
                         if fixture_key is not None and fixture_key in self.fixture_map:

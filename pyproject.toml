@@ -13,7 +13,8 @@ dependencies = [
     'halo',
     'async-typer',
     'phonenumbers',
-    'jsonstraw>=0.1.3'
+    'jsonstraw>=0.1.3',
+    'simple_salesforce>=1.12.6'
 ]
 requires-python = ">=3.11"
 readme = 'README.md'

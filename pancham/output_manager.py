@@ -33,7 +33,23 @@ class OutputManager:
         """
         for output in configuration.output:
             writer = self.__get_output(output)
+
+            if 'success_handler' in output:
+                output['success_handler']['instance'] = self.__get_handler_result_handler(output, 'success_handler')
+
+            if 'failure_handler' in output:
+                output['failure_handler']['instance'] = self.__get_handler_result_handler(output, 'failure_handler')
+
             writer.write(data, output)
+
+    def __get_handler_result_handler(self, output: dict, handler: str) -> OutputWriter|None:
+        """
+        Retrieves or creates an output writer based on the specified handler configuration.
+        """
+        if handler in output:
+            return self.__get_output(output[handler])
+
+        return None
 
     def __get_output(self, output_config: dict) -> OutputWriter:
         """
