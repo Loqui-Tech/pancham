@@ -1,4 +1,4 @@
-from typing import Self, Type
+from typing import Self, Type, Literal
 
 import pandera as pa
 
@@ -52,6 +52,7 @@ class DataFrameConfiguration(FileLoaderConfiguration):
                  merge_configuration: MergeConfiguration|None = None,
                  depends_on: list[str]|None = None,
                  drop_duplicates: str|list[str]|None = None,
+                 process: Literal['passthrough', 'parse'] = 'parse'
                  ):
         self.file_path = file_path
         self.file_type = file_type
@@ -67,6 +68,7 @@ class DataFrameConfiguration(FileLoaderConfiguration):
         self.output: list[dict] = []
         self.pre_run_configuration: list[DataFrameConfiguration] = []
         self.post_run_configuration: list[DataFrameConfiguration] = []
+        self.process = process
 
     def add_field(
             self,

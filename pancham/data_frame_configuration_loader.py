@@ -28,6 +28,7 @@ class DataFrameConfigurationLoader:
         self.__load_additional_fields(data, configuration, 'validation')
 
         configuration.drop_duplicates = data.get('drop_duplicates', None)
+        configuration.process = data.get('process', 'parse')
 
         if data.get('use_iterator', False) is True:
             configuration.use_iterator = True

@@ -1,1 +1,1 @@
-from .configuration import FieldParser
+from .configuration import *

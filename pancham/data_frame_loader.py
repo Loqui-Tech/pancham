@@ -1,4 +1,4 @@
-from typing import Iterable, Iterator
+from typing import Iterator
 
 import numpy as np
 import pandas as pd
@@ -138,6 +138,9 @@ class DataFrameLoader:
         :return: A transformed DataFrame adhering to the configuration rules.
         :rtype: pd.DataFrame
         """
+        if configuration.process == 'passthrough':
+            return source_df.copy()
+        
         renamed_df = source_df.rename(columns=configuration.renames)
 
         for field in configuration.dynamic_fields:
