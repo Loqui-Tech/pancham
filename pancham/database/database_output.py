@@ -2,6 +2,7 @@ import pandas as pd
 
 from .database_engine import get_db_engine
 from pancham.output_configuration import OutputConfiguration, OutputWriter
+from pancham.reporter import get_reporter
 
 class DatabaseOutput(OutputConfiguration):
 
@@ -74,6 +75,9 @@ class DatabaseOutputWriter(OutputWriter):
         :type configuration: dict
         :return: None
         """
+        reporter = get_reporter()
+        reporter.report_debug(f'Writing to database', data)
+
         if 'columns' in configuration:
             data = data[configuration['columns']]
 

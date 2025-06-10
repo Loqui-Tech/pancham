@@ -175,9 +175,11 @@ class PanchamRunner:
         initialize_db_engine(self.pancham_configuration, self.reporter)
         if configuration.name.startswith('test'):
             return
-        
+
+        self.reporter.report_info(f"Starting run for {configuration.name}")
         loader = DataFrameLoader(self.file_loaders, self.reporter, self.pancham_configuration)
         self.reporter.report_debug("Loader created")
+
         for data in loader.load(configuration):
             self.reporter.report_debug(f'Writing data {len(data.processed)}')
             self.outputs.write_output(data.processed, configuration)

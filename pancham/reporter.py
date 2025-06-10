@@ -90,7 +90,7 @@ class Reporter:
         """
         pass
 
-    def report_debug(self, debug_message: str):
+    def report_debug(self, debug_message: str, data: pd.DataFrame|None = None):
         """
         Logs and reports the provided debug message for analysis or tracking purposes.
         This method facilitates streamlined logging processes by accepting a debug message
@@ -99,6 +99,20 @@ class Reporter:
         :param debug_message: The debug message string provided for logging or reporting purposes.
         :type debug_message: str
 
+        :return: None
+        """
+        pass
+
+    def report_info(self, message: str):
+        """
+        Logs an informational message typically used for normal operational messages.
+
+        This method is used to report informational level logs to the system.
+        The logged message provides context for operations that were carried
+        out successfully or key milestones reached.
+
+        :param message: The informational message to be logged.
+        :type message: str
         :return: None
         """
         pass
@@ -168,9 +182,15 @@ class PrintReporter(Reporter):
             for f in configuration.fields:
                 print(f" - {f}")
 
-    def report_debug(self, debug_message: str):
+    def report_debug(self, debug_message: str, data: pd.DataFrame|None = None):
         if self.debug:
             print(f"DEBUG: {debug_message}")
+
+            if data is not None:
+                print(data)
+
+    def report_info(self, message: str):
+        print(message)
 
     def save_validation_failure(self, validation_failure: ValidationFailure):
         self.validation_failures.append(validation_failure)
