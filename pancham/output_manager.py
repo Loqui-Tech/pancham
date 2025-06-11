@@ -76,7 +76,7 @@ class OutputManager:
         if output_type in self.loaded_outputs:
             return self.loaded_outputs[output_type]
 
-        if output_type == 'salesforce__bulk':
+        if output_type == 'salesforce_bulk':
             self.loaded_outputs[output_type] = SalesforceBulkOutputWriter()
             return self.loaded_outputs[output_type]
 
