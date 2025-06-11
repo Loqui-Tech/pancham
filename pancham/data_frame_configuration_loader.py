@@ -104,20 +104,21 @@ class DataFrameConfigurationLoader:
         """
         configuration = self.__load_base_configuration(data, label, sheet=sheet, key=key)
 
-        if configuration.name.startswith('test') or 'fields' not in data:
+        if configuration.name.startswith('test'):
             return configuration
 
-        for f in data['fields']:
-            has_parsed = False
-            for parser in self.field_parsers:
-                if parser.can_parse_field(f):
-                    field = parser.parse_field(f)
-                    configuration.add_field(data_frame_field=field)
-                    has_parsed = True
-                    break
+        if 'fields' in data:
+            for f in data['fields']:
+                has_parsed = False
+                for parser in self.field_parsers:
+                    if parser.can_parse_field(f):
+                        field = parser.parse_field(f)
+                        configuration.add_field(data_frame_field=field)
+                        has_parsed = True
+                        break
 
-            if not has_parsed:
-                raise ValueError(f"Could not parse field {f}")
+                if not has_parsed:
+                    raise ValueError(f"Could not parse field {f}")
 
         if 'output' in data:
             for c in self.output_configuration:

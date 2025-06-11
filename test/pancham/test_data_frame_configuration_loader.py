@@ -11,6 +11,7 @@ class TestDataFrameConfigurationLoader:
     filename = os.path.dirname(os.path.realpath(__file__)) + "/../example/order_configuration.yml"
     yaml_filename = os.path.dirname(os.path.realpath(__file__)) + "/../example/yaml_order_configuration.yml"
     invalid_filename = os.path.dirname(os.path.realpath(__file__)) + "/../example/invalid_order_configuration.yml"
+    salesforce_filename = os.path.dirname(os.path.realpath(__file__)) + "/../example/salesforce_config.yml"
 
     def test_load_order_configuration(self):
         loader = YamlDataFrameConfigurationLoader(field_parsers=DEFAULT_FIELD_PARSERS, output_configuration=DEFAULT_OUTPUTS)
@@ -49,3 +50,11 @@ class TestDataFrameConfigurationLoader:
         assert config.fields[1].name == 'Date'
         assert config.fields[1].nullable is False
         assert config.fields[1].field_type == datetime.datetime
+
+    def test_load_salesforce_yml_configuration(self):
+        loader = YamlDataFrameConfigurationLoader(field_parsers=DEFAULT_FIELD_PARSERS, output_configuration=DEFAULT_OUTPUTS)
+
+        config = loader.load(self.salesforce_filename)
+
+        assert config.file_type == 'sql_file'
+        assert config.output[0]['output_type'] == 'salesforce_bulk'

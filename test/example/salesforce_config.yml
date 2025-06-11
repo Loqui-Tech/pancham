@@ -1,0 +1,10 @@
+name: sf_example
+file_type: sql_file
+file_path: demo.sql
+process: passthrough
+output:
+  - output_type: salesforce_bulk
+    object_name: Account
+    success_handler:
+      output_type: database
+      table: sf_out
