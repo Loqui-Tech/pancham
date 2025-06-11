@@ -4,6 +4,7 @@ from .pancham_configuration import PanchamConfiguration
 from .reporter import Reporter
 from .data_frame_configuration import DataFrameConfiguration
 from .database.database_output import DatabaseOutputWriter
+from .integration.salesforce_output import SalesforceBulkOutputWriter
 from .output_configuration import OutputWriter
 from .database.database_engine import initialize_db_engine
 
@@ -73,6 +74,10 @@ class OutputManager:
             return self.outputs[output_type]
 
         if output_type in self.loaded_outputs:
+            return self.loaded_outputs[output_type]
+
+        if output_type == 'salesforce__bulk':
+            self.loaded_outputs[output_type] = SalesforceBulkOutputWriter()
             return self.loaded_outputs[output_type]
 
         if output_type == 'database':
