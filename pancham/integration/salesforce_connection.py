@@ -19,9 +19,13 @@ def get_connection() -> Salesforce:
     username = os.environ.get('PANCHAM_SF_USERNAME', None)
     password = os.environ.get('PANCHAM_SF_PASSWORD', None)
     url = os.environ.get('PANCHAM_SF_INSTANCE_URL', None)
+    token = os.environ.get('PANCHAM_SF_TOKEN', None)
+    domain = os.environ.get('PANCHAM_SF_DOMAIN', None)
 
     return Salesforce(
         username=username,
         password=password,
-        instance_url=url
+        instance_url=url,
+        security_token=token,
+        domain=domain
     )

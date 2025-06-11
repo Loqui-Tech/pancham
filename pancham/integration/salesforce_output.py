@@ -2,6 +2,7 @@ from io import StringIO
 
 import pandas as pd
 
+from pancham.reporter import get_reporter
 from .salesforce_connection import get_connection
 from pancham.output_configuration import OutputConfiguration, OutputWriter
 
@@ -84,17 +85,22 @@ class SalesforceBulkOutputWriter(OutputWriter):
         :return: None
         """
         sf = get_connection()
+        reporter = get_reporter()
 
         data_dict = data.to_dict('records')
         object_name = configuration['object_name']
+
+        reporter.report_debug(f'Writing to Salesforce Bulk', data)
         results = sf.bulk2[object_name].insert(records = data_dict)
 
         for r in results:
             job_id = r['job_id']
 
+            reporter.report_debug(f'Salesforce Bulk job {job_id} completed', r)
             success_handler = self.__get_handler_configuration(configuration, 'success_handler')
             failure_handler = self.__get_handler_configuration(configuration, 'failure_handler')
 
+            reporter.report_debug(f'Applying success and failure handlers {success_handler}, {failure_handler}')
             if success_handler is not None:
                 success = sf.bulk2[object_name].get_successful_records(job_id)
                 self.__save_handled_data(success, success_handler)
