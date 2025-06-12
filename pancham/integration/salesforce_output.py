@@ -97,11 +97,13 @@ class SalesforceBulkOutputWriter(OutputWriter):
 
             if success_handler is not None:
                 success = getattr(sf.bulk2, self.object_name).get_successful_records(job_id)
-                self.__save_handled_data(success, success_handler)
+                reporter.report_debug('success', success
+                self.__save_handled_data(success, success_handler, loader)
 
             if failure_handler is not None:
                 failed = getattr(sf.bulk2, self.object_name).get_failed_records(job_id)
-                self.__save_handled_data(failed, failure_handler)
+                reporter.report_debug('failures', failed)
+                self.__save_handled_data(failed, failure_handler, loader)
 
     def __get_handler_configuration(self, configuration: dict, handler_name: str) -> dict|None:
         """
