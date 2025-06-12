@@ -99,6 +99,8 @@ class OutputConfiguration:
         :return: A dictionary representing the matched configuration, or None if no
             match is found.
         """
+        if 'output_type' in configuration and configuration['output_type'] == key:
+            return configuration
 
         if not 'output' in configuration:
             return None

@@ -58,3 +58,9 @@ class TestDataFrameConfigurationLoader:
 
         assert config.file_type == 'sql_file'
         assert len(config.output) == 1
+
+        output = config.output[0]
+
+        assert output.primary_writer is not None
+        assert output.success_handler is not None
+        assert output.failure_handler is None

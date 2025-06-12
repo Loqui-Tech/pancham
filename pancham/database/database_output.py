@@ -24,20 +24,12 @@ class DatabaseOutput(OutputConfiguration):
         :raises ValueError: If the 'database' output type is detected but the
                             required 'table' key is missing.
         """
-        if not 'output' in configuration:
+        database_configuration = self.extract_configuration_by_key(configuration, 'database')
+
+        if database_configuration is None:
             return False
 
-        db_config: dict | None = None
-
-        for output in configuration['output']:
-            if output['output_type'] == 'database':
-                db_config = output
-                break
-
-        if db_config is None:
-            return False
-
-        if 'table' not in db_config:
+        if 'table' not in database_configuration:
             raise ValueError('table is required in database output configuration')
 
         return True
