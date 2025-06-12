@@ -1,4 +1,44 @@
+from dataclasses import dataclass
+
 import pandas as pd
+
+from pancham.data_frame_configuration import DataFrameConfiguration
+from pancham.data_frame_loader import DataFrameLoader
+
+class OutputWriter:
+    """
+    Write the output data to the target system
+    """
+
+    def __init__(self, root_configuration: dict):
+        self.root_configuration = root_configuration
+
+    def write(self, data: pd.DataFrame,
+              success_handler: DataFrameConfiguration|None = None,
+              failure_handler: DataFrameConfiguration|None = None,
+              loader: DataFrameLoader|None = None
+              ):
+        """
+        Writes the output data to the target system
+        :param data:
+        :param success_handler:
+        :param failure_handler:
+        :param loader:
+        :return: None
+        """
+        pass
+
+
+@dataclass
+class OutputActivitySet:
+    """
+    Output objects that will be loaded as part of the configuration
+    """
+
+    primary_writer: OutputWriter
+    success_handler: DataFrameConfiguration|None
+    failure_handler: DataFrameConfiguration|None
+
 
 class OutputConfiguration:
     """
@@ -29,18 +69,16 @@ class OutputConfiguration:
         """
         pass
 
-    def to_output_configuration(self, configuration: dict):
+    def to_output_writer(self, configuration: dict) -> OutputWriter:
         """
-        Converts the given input configuration dictionary into an output configuration
-        dictionary. This method processes the specified input configuration to generate
-        an appropriately structured output configuration.
+        Converts the given input configuration dictionary into an output writer.
 
         :param configuration: Input configuration dictionary containing the necessary
             data to be transformed.
         :type configuration: dict
         :return: The transformed output configuration dictionary based on the input
             configuration.
-        :rtype: dict
+        :rtype: OutputWriter
         """
         pass
 
@@ -74,29 +112,3 @@ class OutputConfiguration:
 
         return matched
 
-
-
-class OutputWriter:
-    """
-    Write the output data to the target system
-    """
-
-    def write(self, data: pd.DataFrame, configuration: dict):
-        """
-        Writes the provided data to a destination as specified in the configuration.
-
-        This method takes a pandas DataFrame and a dictionary containing configurations,
-        and processes them to perform a write operation. The `configuration` parameter
-        determines how the data will be written, including any necessary settings,
-        formats, or connection details. This method encapsulates the logic for a
-        write operation based on the input.
-
-        :param data: The pandas DataFrame to be written.
-        :type data: pd.DataFrame
-        :param configuration: A dictionary containing the configuration parameters
-            for the write operation. May include file format, destination details,
-            or additional settings required for the writing process.
-        :type configuration: dict
-        :return: None
-        """
-        pass

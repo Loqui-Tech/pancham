@@ -8,3 +8,8 @@ output:
     success_handler:
       output_type: database
       table: sf_out
+      fields:
+        - name: internal_id
+          source_name: InternalId__c
+          field_type: str
+          nullable: true

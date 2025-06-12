@@ -2,6 +2,8 @@ from io import StringIO
 
 import pandas as pd
 
+from pancham.data_frame_configuration import DataFrameConfiguration
+from pancham.data_frame_loader import DataFrameLoader
 from pancham.reporter import get_reporter
 from .salesforce_connection import get_connection
 from pancham.output_configuration import OutputConfiguration, OutputWriter
@@ -33,36 +35,31 @@ class SalesforceBulkOutputConfiguration(OutputConfiguration):
 
         return True
 
-    def to_output_configuration(self, configuration: dict):
+    def to_output_writer(self, configuration: dict) -> OutputWriter:
         """
-        Converts the given configuration dictionary into an output-specific configuration
-        by extracting the Salesforce configuration using a predefined key. If the Salesforce
-        configuration is not set, an exception is raised.
-
-        :param configuration: The full configuration dictionary to extract the
-                              Salesforce-specific configuration from. It expects
-                              a dictionary with valid Salesforce configurations stored
-                              under the specific key.
-        :type configuration: dict
-
-        :return: A dictionary representing the Salesforce-specific configuration
-                 extracted from the input configuration.
-        :rtype: dict
-
-        :raises ValueError: Raised when the Salesforce configuration is not found
-                            in the given input dictionary.
+        Get output writer
+        :param configuration:
+        :return:
         """
         salesforce_configuration = self.extract_configuration_by_key(configuration, SALESFORCE_BULK)
 
-        if not salesforce_configuration:
-            raise ValueError('Salesforce configuration not set')
-
-        return salesforce_configuration
-
+        return SalesforceBulkOutputWriter(salesforce_configuration)
 
 class SalesforceBulkOutputWriter(OutputWriter):
 
-    def write(self, data: pd.DataFrame, configuration: dict):
+    def __init__(
+            self,
+            configuration: dict
+            ):
+        super().__init__(configuration)
+        self.object_name = configuration.get('object_name')
+
+    def write(self,
+              data: pd.DataFrame,
+              success_handler: DataFrameConfiguration | None = None,
+              failure_handler: DataFrameConfiguration | None = None,
+              loader: DataFrameLoader | None = None
+              ):
         """
         Writes data to a Salesforce object using the Salesforce Bulk API 2.0. The method
         uses the provided configuration to determine the object name and how to handle
@@ -88,25 +85,22 @@ class SalesforceBulkOutputWriter(OutputWriter):
         reporter = get_reporter()
 
         data_dict = data.to_dict('records')
-        object_name = configuration['object_name']
 
         reporter.report_debug(f'Writing to Salesforce Bulk', data)
-        results = getattr(sf.bulk2, object_name).insert(records = data_dict)
+        results = getattr(sf.bulk2, self.object_name).insert(records = data_dict)
 
         for r in results:
             job_id = r['job_id']
 
             reporter.report_debug(f'Salesforce Bulk job {job_id} completed', r)
-            success_handler = self.__get_handler_configuration(configuration, 'success_handler')
-            failure_handler = self.__get_handler_configuration(configuration, 'failure_handler')
-
             reporter.report_debug(f'Applying success and failure handlers {success_handler}, {failure_handler}')
+
             if success_handler is not None:
-                success = getattr(sf.bulk2, object_name).get_successful_records(job_id)
+                success = getattr(sf.bulk2, self.object_name).get_successful_records(job_id)
                 self.__save_handled_data(success, success_handler)
 
             if failure_handler is not None:
-                failed = getattr(sf.bulk2, object_name).get_failed_records(job_id)
+                failed = getattr(sf.bulk2, self.object_name).get_failed_records(job_id)
                 self.__save_handled_data(failed, failure_handler)
 
     def __get_handler_configuration(self, configuration: dict, handler_name: str) -> dict|None:
@@ -131,7 +125,7 @@ class SalesforceBulkOutputWriter(OutputWriter):
 
         return None
 
-    def __save_handled_data(self, data: str, handler_configuration: dict):
+    def __save_handled_data(self, data: str, handler_configuration: DataFrameConfiguration, loader: DataFrameLoader):
         """
         Handles the saving of processed data using a configured output writer.
 
@@ -148,8 +142,9 @@ class SalesforceBulkOutputWriter(OutputWriter):
         :type handler_configuration: dict
         :return: None
         """
-        handler: OutputWriter = handler_configuration['instance']
+        handler: OutputWriter = handler_configuration.output[0].primary_writer
 
         df = pd.read_csv(StringIO(data))
-        handler.write(df, handler_configuration)
+        processed = loader.process_dataframe(df, handler_configuration)
+        handler.write(processed, handler_configuration)
 

@@ -5,7 +5,8 @@ from .validation_field import ValidationField, ValidationRule
 from .data_frame_configuration import MergeConfiguration
 from .configuration.field_parser import FieldParser
 from .data_frame_configuration import DataFrameConfiguration
-from .output_configuration import OutputConfiguration
+from .output_configuration import OutputConfiguration, OutputActivitySet
+
 
 class DataFrameConfigurationLoader:
 
@@ -107,23 +108,16 @@ class DataFrameConfigurationLoader:
         if configuration.name.startswith('test'):
             return configuration
 
-        if 'fields' in data:
-            for f in data['fields']:
-                has_parsed = False
-                for parser in self.field_parsers:
-                    if parser.can_parse_field(f):
-                        field = parser.parse_field(f)
-                        configuration.add_field(data_frame_field=field)
-                        has_parsed = True
-                        break
-
-                if not has_parsed:
-                    raise ValueError(f"Could not parse field {f}")
+        configuration = self.__parse_fields(configuration, data)
 
         if 'output' in data:
             for c in self.output_configuration:
                 if c.can_apply(data):
-                    configuration.add_output(c.to_output_configuration(data))
+                    output_writer = c.to_output_writer(data)
+                    success_handler = self.__parse_post_output(output_writer.root_configuration.get('success_handler', None))
+                    failure_handler = self.__parse_post_output(output_writer.root_configuration.get('failure_handler', None))
+
+                    configuration.add_output(OutputActivitySet(primary_writer=output_writer, success_handler=success_handler, failure_handler=failure_handler))
 
         return configuration
 
@@ -181,6 +175,62 @@ class DataFrameConfigurationLoader:
             name = data['name'],
             rule=rule
         )
+
+    def __parse_fields(self, configuration: DataFrameConfiguration, data: dict) -> DataFrameConfiguration:
+        """
+        Parses fields from the provided data based on the configuration and applicable
+        field parsers. If a field cannot be parsed by any parser, an exception is raised.
+        The function iterates through the 'fields' provided in the input data and attempts
+        to parse each using the available field parsers.
+
+        :param configuration: The DataFrameConfiguration object that will be updated
+            with parsed fields.
+        :param data: A dictionary containing field definitions under the 'fields' key
+            for parsing.
+        :return: The updated DataFrameConfiguration object containing the successfully
+            parsed fields.
+        :rtype: DataFrameConfiguration
+        :raises ValueError: If a field in the data cannot be parsed by any of the
+            available field parsers.
+        """
+        if 'fields' in data:
+            for f in data['fields']:
+                has_parsed = False
+                for parser in self.field_parsers:
+                    if parser.can_parse_field(f):
+                        field = parser.parse_field(f)
+                        configuration.add_field(data_frame_field=field)
+                        has_parsed = True
+                        break
+
+                if not has_parsed:
+                    raise ValueError(f"Could not parse field {f}")
+
+        return configuration
+
+    def __parse_post_output(self, configuration: dict|None) -> DataFrameConfiguration|None:
+        """
+        Get configuration for handlers
+        :param configuration:
+        :param handler:
+        :return:
+        """
+
+        if configuration is None:
+           return None
+
+        dataframe_configuration = self.__parse_fields(DataFrameConfiguration(file_path='', file_type='', name=''), configuration)
+
+        for c in self.output_configuration:
+            if c.can_apply(configuration):
+                output_writer = c.to_output_writer(configuration)
+                dataframe_configuration.add_output(OutputActivitySet(primary_writer=output_writer, success_handler=None, failure_handler=None))
+
+                return dataframe_configuration
+
+        return None
+
+
 
 
 class YamlDataFrameConfigurationLoader(DataFrameConfigurationLoader):

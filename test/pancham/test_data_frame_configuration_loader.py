@@ -57,4 +57,4 @@ class TestDataFrameConfigurationLoader:
         config = loader.load(self.salesforce_filename)
 
         assert config.file_type == 'sql_file'
-        assert config.output[0]['output_type'] == 'salesforce_bulk'
+        assert len(config.output) == 1

@@ -65,7 +65,7 @@ class DataFrameConfiguration(FileLoaderConfiguration):
 
         self.fields: list[DataFrameField] = []
         self.validation_rules: list[ValidationField] = []
-        self.output: list[dict] = []
+        self.output: list = []
         self.pre_run_configuration: list[DataFrameConfiguration] = []
         self.post_run_configuration: list[DataFrameConfiguration] = []
         self.process = process
@@ -253,18 +253,15 @@ class DataFrameConfiguration(FileLoaderConfiguration):
 
         return casts
 
-    def add_output(self, output_configuration: dict) -> Self:
+    def add_output(self, output_configuration) -> Self:
         """
-        Adds the specified output configuration to the output list and returns
-        the updated instance of the class. This method modifies the instance in-place
-        by appending the given configuration dictionary to its `output` attribute.
+        Appends the given output configuration to the output list of the current
+        instance. This method is chainable, allowing for sequential method calls.
 
-        :param output_configuration: A dictionary containing the configuration for
-            the output to be added. The structure and expected keys of the dictionary
-            should adhere to the output formatting requirements.
-        :return: The updated instance of the class after the output configuration
-            has been appended to the `output` attribute.
-        :rtype: Self
+        :param output_configuration: The output configuration object to
+            append. It should be of type `OutputWriter`.
+        :return: The current instance of the class with the updated
+            output list.
         """
         self.output.append(output_configuration)
         return self

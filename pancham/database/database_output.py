@@ -1,5 +1,7 @@
 import pandas as pd
 
+from pancham.data_frame_configuration import DataFrameConfiguration
+from pancham.data_frame_loader import DataFrameLoader
 from .database_engine import get_db_engine
 from pancham.output_configuration import OutputConfiguration, OutputWriter
 from pancham.reporter import get_reporter
@@ -40,26 +42,31 @@ class DatabaseOutput(OutputConfiguration):
 
         return True
 
-    def to_output_configuration(self, configuration: dict) -> dict:
-        """
-        Return the output configuration block for this object
-       
-        Will return:
-            output_type: database
-            table: Name of the table to write to
-        
-        :param configuration: 
-        :return: 
-        """
-        for output in configuration['output']:
-            if output['output_type'] == 'database':
-                return output
+    def to_output_writer(self, configuration: dict) -> OutputWriter:
+        database_config = self.extract_configuration_by_key(configuration, 'database')
+        return DatabaseOutputWriter(database_config)
 
-        raise ValueError('Database configuration not set')
 
 class DatabaseOutputWriter(OutputWriter):
 
-    def write(self, data: pd.DataFrame, configuration: dict):
+    def __init__(
+            self,
+            configuration: dict
+    ):
+        super().__init__(configuration)
+        self.table = configuration['table']
+        self.columns = configuration.get('columns', [])
+        self.merge_key = configuration.get('merge_key', None)
+        self.on_missing = configuration.get('on_missing', None)
+        self.merge_data_type = configuration.get('merge_data_type', None)
+        self.native = configuration.get('native', None)
+
+    def write(self,
+              data: pd.DataFrame,
+              success_handler: DataFrameConfiguration | None = None,
+              failure_handler: DataFrameConfiguration | None = None,
+              loader: DataFrameLoader | None = None
+              ):
         """
         Write data from a pandas DataFrame to a database table using the specified
         configuration. The function optionally filters the DataFrame columns
@@ -78,17 +85,12 @@ class DatabaseOutputWriter(OutputWriter):
         reporter = get_reporter()
         reporter.report_debug(f'Writing to database', data)
 
-        if 'columns' in configuration:
-            data = data[configuration['columns']]
+        if len(self.columns) > 0:
+            data = data[self.columns]
 
-        if 'merge_key' in configuration:
-            on_missing = configuration.get('on_missing', 'ignore')
-            merge_data_type = configuration.get('merge_data_type', None)
-            native = configuration.get('native', None)
-            merge_key = configuration['merge_key']
-
+        if self.merge_key is not None:
             for _, row in data.iterrows():
-                get_db_engine().merge_row(row, configuration['table'], merge_key, on_missing, merge_data_type, native)
+                get_db_engine().merge_row(row, self.table, self.merge_key, self.on_missing, self.merge_data_type, self.native)
             return
 
-        get_db_engine().write_df(data, configuration['table'])
+        get_db_engine().write_df(data, self.table)

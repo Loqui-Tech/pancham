@@ -1,6 +1,7 @@
+import pandas as pd
+
 from .validation import ContainsValidation, MatchingValidation, NotAllNullValidation, NotNullValidation, OneOfValidation
 from .validation_field import ValidationStep, ValidationInput
-from .output_manager import OutputManager
 from .configuration.database_match_field_parser import DatabaseMatchFieldParser
 from .configuration import DynamicFieldParser, DateTimeFieldParser, RemoveFieldParser, DatabaseFixedFieldParser, DatabaseMultiFieldSearchParser, StaticFieldParser, ToIntFieldParser, FieldParser, MatchFieldParser, SplitFieldParser, PartTextExtractorParser, ConcatFieldParser, TextFieldParser
 from .configuration.explode_field_parser import ExplodeFieldParser
@@ -61,7 +62,6 @@ class PanchamRunner:
     def __init__(self,
                  pancham_configuration: PanchamConfiguration,
                  file_loaders: dict[str, FileLoader] | None = None,
-                 outputs: dict[str, OutputWriter]|None = None,
                  reporter: Reporter | None = None,
                  field_parsers: list[FieldParser] | None = None,
                  outputs_configuration: list[OutputConfiguration] | None = None,
@@ -69,11 +69,6 @@ class PanchamRunner:
                 ):
         self.pancham_configuration = pancham_configuration
         self.loaded_outputs: dict[str, OutputWriter] = {}
-
-        if outputs is None:
-            self.outputs = OutputManager(pancham_configuration, {}, reporter)
-        else:
-            self.outputs = OutputManager(pancham_configuration, outputs, reporter)
 
         if file_loaders is None:
             self.file_loaders = DEFAULT_LOADERS
@@ -182,13 +177,13 @@ class PanchamRunner:
 
         for data in loader.load(configuration):
             self.reporter.report_debug(f'Writing data {len(data.processed)}')
-            self.outputs.write_output(data.processed, configuration)
+            self.__write_output(configuration, data.processed, loader)
 
             for post_run_configuration in configuration.post_run_configuration:
                 input_data = data.get_required_dataframe(post_run_configuration.merge_configuration)
                 post_run_data = loader.process_dataframe(input_data, post_run_configuration)
 
-                self.outputs.write_output(post_run_data, post_run_configuration)
+                self.__write_output(post_run_configuration, post_run_data, loader)
 
     def run_validation(self, configuration: DataFrameConfiguration):
         """
@@ -221,4 +216,27 @@ class PanchamRunner:
                         for failure in failures:
                             self.reporter.save_validation_failure(failure)
 
+    def __write_output(self, configuration: DataFrameConfiguration, output: pd.DataFrame, loader: DataFrameLoader):
+        """
+        Writes the given output DataFrame to the destinations specified in the
+        configuration's output writers.
+
+        Iterates through each output writer defined in the input configuration
+        and delegates the writing of the provided DataFrame to the respective
+        writer.
+
+        :param configuration: Configuration object containing a list of output
+            writers that specify the destinations for writing the DataFrame.
+        :type configuration: DataFrameConfiguration
+        :param output: The DataFrame to be written to the specified destinations.
+        :type output: pd.DataFrame
+        :return: None
+        """
+        for output_writer in configuration.output:
+            output_writer.primary_writer.write(
+                output,
+                success_handler=output_writer.success_handler,
+                failure_handler=output_writer.failure_handler,
+                loader=loader
+            )
 
