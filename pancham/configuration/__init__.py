@@ -11,6 +11,8 @@ from .static_field_parser import StaticFieldParser
 from .split_field_parser import SplitFieldParser
 from .text_field_parser import TextFieldParser
 from .to_int_field_parser import ToIntFieldParser
+from .email_regex_match_parser import EmailRegexMatchParser
+from .regex_match_field_parser import RegexMatchFieldParser
 
 __all__ = [
     'FieldParser',
@@ -25,5 +27,7 @@ __all__ = [
     'StaticFieldParser',
     'SplitFieldParser',
     'TextFieldParser',
-    'ToIntFieldParser'
+    'ToIntFieldParser',
+    'RegexMatchFieldParser',
+    'EmailRegexMatchParser'
 ]
