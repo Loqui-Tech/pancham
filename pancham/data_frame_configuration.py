@@ -52,7 +52,7 @@ class DataFrameConfiguration(FileLoaderConfiguration):
                  merge_configuration: MergeConfiguration|None = None,
                  depends_on: list[str]|None = None,
                  drop_duplicates: str|list[str]|None = None,
-                 process: Literal['passthrough', 'parse'] = 'parse'
+                 process: Literal['passthrough', 'parse', 'append'] = 'parse'
                  ):
         self.file_path = file_path
         self.file_type = file_type

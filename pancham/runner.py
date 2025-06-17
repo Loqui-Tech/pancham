@@ -3,7 +3,7 @@ import pandas as pd
 from .validation import ContainsValidation, MatchingValidation, NotAllNullValidation, NotNullValidation, OneOfValidation
 from .validation_field import ValidationStep, ValidationInput
 from .configuration.database_match_field_parser import DatabaseMatchFieldParser
-from .configuration import DynamicFieldParser, DateTimeFieldParser, RemoveFieldParser, DatabaseFixedFieldParser, DatabaseMultiFieldSearchParser, StaticFieldParser, ToIntFieldParser, FieldParser, MatchFieldParser, SplitFieldParser, PartTextExtractorParser, ConcatFieldParser, TextFieldParser, EmailRegexMatchParser, RegexMatchFieldParser
+from .configuration import DynamicFieldParser, DateTimeFieldParser, RemoveFieldParser, SFLookupFieldParser, DatabaseFixedFieldParser, DatabaseMultiFieldSearchParser, StaticFieldParser, ToIntFieldParser, FieldParser, MatchFieldParser, SplitFieldParser, PartTextExtractorParser, ConcatFieldParser, TextFieldParser, EmailRegexMatchParser, RegexMatchFieldParser
 from .configuration.explode_field_parser import ExplodeFieldParser
 from .configuration.deduplicate_field_parser import DeduplicateFieldParser
 from .data_frame_configuration import DataFrameConfiguration
@@ -45,7 +45,8 @@ DEFAULT_FIELD_PARSERS = [
     RemoveFieldParser(),
     DeduplicateFieldParser(),
     RegexMatchFieldParser(),
-    EmailRegexMatchParser()
+    EmailRegexMatchParser(),
+    SFLookupFieldParser()
 ]
 DEFAULT_OUTPUTS = [
     DatabaseOutput(),

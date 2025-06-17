@@ -155,6 +155,9 @@ class DataFrameLoader:
                 else:
                     raise e
 
+        if configuration.process == 'append':
+            return renamed_df.copy()
+
         output = renamed_df[configuration.output_fields].copy()
 
         for key, value in configuration.cast_values.items():

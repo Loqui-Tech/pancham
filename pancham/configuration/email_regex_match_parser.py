@@ -24,7 +24,6 @@ class EmailRegexMatchParser(FieldParser):
         return self.has_function_key(field, self.FUNCTION_ID)
 
     def parse_field(self, field: dict) -> DataFrameField:
-        properties = field[self.FUNCTION_KEY][self.FUNCTION_ID]
 
         source_name = self.get_source_name(field)
         field[self.FIELD_TYPE_KEY] = bool
