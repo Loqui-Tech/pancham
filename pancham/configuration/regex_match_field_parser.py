@@ -25,10 +25,14 @@ class RegexMatchFieldParser(FieldParser):
 
         source_name = self.get_source_name(field)
         pattern = properties['pattern']
-        field[self.FIELD_TYPE_KEY] = str
+        field[self.FIELD_TYPE_KEY] = bool
 
         def regex_match(data: dict) -> bool:
             value = data[source_name]
+
+            if not isinstance(value, str):
+                return False
+            
             return bool(re.search(pattern, value))
 
         return self.build_func_field(field, regex_match)

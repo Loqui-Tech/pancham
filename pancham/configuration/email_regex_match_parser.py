@@ -27,10 +27,14 @@ class EmailRegexMatchParser(FieldParser):
         properties = field[self.FUNCTION_KEY][self.FUNCTION_ID]
 
         source_name = self.get_source_name(field)
-        field[self.FIELD_TYPE_KEY] = str
+        field[self.FIELD_TYPE_KEY] = bool
 
         def regex_match(data: dict) -> bool:
             value = data[source_name]
+
+            if not isinstance(value, str):
+                return False
+
             return bool(re.search(self.PATTERN, value))
 
         return self.build_func_field(field, regex_match)
