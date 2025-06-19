@@ -34,6 +34,6 @@ class SFLookupFieldParser(FieldParser):
         def sf_lookup(data: dict) -> str|None:
             value = data[self.get_source_name(field)]
 
-            return lookup.get_mapped_id(search_column, value_column, value)
+            return lookup.get_mapped_id(search_column=search_column, value = value, value_column=value_column)
 
         return self.build_func_field(field, sf_lookup)

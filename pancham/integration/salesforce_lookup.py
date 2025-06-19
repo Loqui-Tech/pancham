@@ -10,7 +10,7 @@ class SalesforceLookup:
         self.query = query
         self.cache = None
 
-    def get_mapped_id(self, key: str, value: str, output_key: str = 'Id') -> str|None:
+    def get_mapped_id(self, search_column: str, value: str, value_column: str = 'Id') -> str | None:
         """
         Retrieve a mapped ID from a DataFrame based on a key-value pair.
 
@@ -20,7 +20,7 @@ class SalesforceLookup:
         from the first matched row. If no matches are found, the function
         returns None.
 
-        :param key: The column name to use as the key for filtering.
+        :param search_column: The column name to use as the key for filtering.
         :param value: The value to match in the specified key column.
         :param output_key: The column name from which to retrieve the mapped ID.
                            Defaults to 'Id'.
@@ -30,15 +30,15 @@ class SalesforceLookup:
         """
         data = self.__get_data()
 
-        filtered = data.loc[data[key] == value]
+        filtered = data.loc[data[search_column] == value]
 
         reporter = get_reporter()
-        reporter.report_debug(f'Matching {key} and {value} = ', filtered)
+        reporter.report_debug(f'Matching {search_column} and {value} = ', filtered)
 
         if len(filtered) == 0:
             return None
 
-        return filtered[output_key].iloc[0]
+        return filtered[value_column].iloc[0]
 
     def __get_data(self) -> pd.DataFrame:
         if self.cache is not None:
