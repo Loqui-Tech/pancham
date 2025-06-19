@@ -32,6 +32,9 @@ class SalesforceLookup:
 
         filtered = data.loc[data[key] == value]
 
+        reporter = get_reporter()
+        reporter.report_debug(f'Matching {key} and {value} = ', filtered)
+
         if len(filtered) == 0:
             return None
 
