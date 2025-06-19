@@ -1,5 +1,6 @@
 import pandas as pd
 
+from pancham.reporter import get_reporter
 from .salesforce_connection import get_connection
 
 
@@ -47,6 +48,11 @@ class SalesforceLookup:
         for record in query_result:
             data.append(record)
         self.cache = pd.DataFrame(data)
+
+        reporter = get_reporter()
+        reporter.report_debug(
+            f'Salesforce Lookup data {self.cache}'
+        )
 
         return self.cache
 
