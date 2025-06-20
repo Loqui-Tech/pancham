@@ -14,6 +14,7 @@ from .to_int_field_parser import ToIntFieldParser
 from .email_regex_match_parser import EmailRegexMatchParser
 from .regex_match_field_parser import RegexMatchFieldParser
 from .sf_lookup_field_parser import SFLookupFieldParser
+from .fillnan_field_parser import FillNanFieldParser
 
 __all__ = [
     'FieldParser',
@@ -31,5 +32,6 @@ __all__ = [
     'ToIntFieldParser',
     'RegexMatchFieldParser',
     'EmailRegexMatchParser',
-    'SFLookupFieldParser'
+    'SFLookupFieldParser',
+    'FillNanFieldParser'
 ]

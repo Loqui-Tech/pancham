@@ -2,7 +2,6 @@ import pandas as pd
 
 from configuration.explode_field_parser import ExplodeFieldParser
 
-
 class TestExplodeFieldParser:
 
 
