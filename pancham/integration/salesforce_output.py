@@ -85,7 +85,7 @@ class SalesforceBulkOutputWriter(OutputWriter):
         reporter = get_reporter()
 
         numbered_data = data.fillna(0)
-        data_dict = data.to_dict('records')
+        data_dict = numbered_data.to_dict('records')
 
 
         reporter.report_debug(f'Writing to Salesforce Bulk', data)
