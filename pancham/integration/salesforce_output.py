@@ -35,7 +35,7 @@ def pd_to_sf_dict(data: pd.DataFrame, int_cols: list[str] = [], bool_cols: list[
     for col in bool_cols:
         data[col] = data[col].apply(map_bool)
 
-    with tempfile.NamedTemporaryFile(mode='w', delete=False, delete_on_close=False, encoding='utf-8') as f:
+    with tempfile.NamedTemporaryFile(mode='w', delete=False, encoding='utf-8') as f:
         data.to_csv(f, index=False)
         return f.name
 
