@@ -1,6 +1,7 @@
 from io import StringIO
 
 import pandas as pd
+import tempfile
 
 from pancham.data_frame_configuration import DataFrameConfiguration
 from pancham.data_frame_loader import DataFrameLoader
@@ -9,6 +10,34 @@ from .salesforce_connection import get_connection
 from pancham.output_configuration import OutputConfiguration, OutputWriter
 
 SALESFORCE_BULK = 'salesforce_bulk'
+
+def pd_to_sf_dict(data: pd.DataFrame, int_cols: list[str] = [], bool_cols: list[str] = []) -> str:
+    data = data.fillna('')
+
+    def map_int(value):
+        if isinstance(value, float):
+            return int(value)
+
+        return value
+
+    def map_bool(value):
+        if isinstance(value, bool) and value is True :
+            return 'true'
+
+        if isinstance(value, bool) and value is False:
+            return 'false'
+
+        return value
+
+    for col in int_cols:
+        data[col] = data[col].apply(map_int)
+
+    for col in bool_cols:
+        data[col] = data[col].apply(map_bool)
+
+    with tempfile.NamedTemporaryFile(mode='w', delete=False, delete_on_close=False, encoding='utf-8') as f:
+        data.to_csv(f, index=False)
+        return f.name
 
 class SalesforceBulkOutputConfiguration(OutputConfiguration):
 
@@ -53,6 +82,8 @@ class SalesforceBulkOutputWriter(OutputWriter):
             ):
         super().__init__(configuration)
         self.object_name = configuration.get('object_name')
+        self.int_cols = configuration.get('int_cols', [])
+        self.bool_cols = configuration.get('bool_cols', [])
 
     def write(self,
               data: pd.DataFrame,
@@ -84,11 +115,9 @@ class SalesforceBulkOutputWriter(OutputWriter):
         sf = get_connection()
         reporter = get_reporter()
 
-        data_dict = data.to_dict('records')
-
-
-        reporter.report_debug(f'Writing to Salesforce Bulk', data)
-        results = getattr(sf.bulk2, self.object_name).insert(records = data_dict)
+        filename = pd_to_sf_dict(data, int_cols=self.int_cols, bool_cols=self.bool_cols)
+        reporter.report_debug(f'Writing to Salesforce Bulk', filename)
+        results = getattr(sf.bulk2, self.object_name).insert(filename)
 
         for r in results:
             job_id = r['job_id']
