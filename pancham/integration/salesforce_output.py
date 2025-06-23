@@ -96,6 +96,7 @@ class SalesforceBulkOutputWriter(OutputWriter):
         self.object_name = configuration.get('object_name')
         self.int_cols = configuration.get('int_cols', [])
         self.bool_cols = configuration.get('bool_cols', [])
+        self.nullable_cols = configuration.get('nullable_cols', [])
 
     def write(self,
               data: pd.DataFrame,
@@ -127,7 +128,7 @@ class SalesforceBulkOutputWriter(OutputWriter):
         sf = get_connection()
         reporter = get_reporter()
 
-        filename = pd_to_sf_dict(data, int_cols=self.int_cols, bool_cols=self.bool_cols)
+        filename = pd_to_sf_dict(data, int_cols=self.int_cols, bool_cols=self.bool_cols, nullable_cols=self.nullable_cols)
         reporter.report_debug(f'Writing to Salesforce Bulk', filename)
         results = getattr(sf.bulk2, self.object_name).insert(filename)
 
