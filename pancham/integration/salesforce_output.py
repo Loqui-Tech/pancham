@@ -11,7 +11,7 @@ from pancham.output_configuration import OutputConfiguration, OutputWriter
 
 SALESFORCE_BULK = 'salesforce_bulk'
 
-def pd_to_sf_dict(data: pd.DataFrame, int_cols: list[str] = [], bool_cols: list[str] = []) -> str:
+def pd_to_sf_dict(data: pd.DataFrame, int_cols: list[str] = [], bool_cols: list[str] = [], nullable_cols: list[str] = []) -> str:
     data = data.fillna('')
 
     def map_int(value):
@@ -29,11 +29,23 @@ def pd_to_sf_dict(data: pd.DataFrame, int_cols: list[str] = [], bool_cols: list[
 
         return value
 
+    def map_nullable(value):
+        if pd.isna(value):
+            return ''
+
+        if value is None or value == 'None':
+            return ''
+
+        return value
+
     for col in int_cols:
         data[col] = data[col].apply(map_int)
 
     for col in bool_cols:
         data[col] = data[col].apply(map_bool)
+
+    for col in nullable_cols:
+        data[col] = data[col].apply(map_nullable)
 
     with tempfile.NamedTemporaryFile(mode='w', delete=False, encoding='utf-8') as f:
         data.to_csv(f, index=False)
