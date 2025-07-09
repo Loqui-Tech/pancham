@@ -5,7 +5,6 @@ from configuration.part_text_extractor_parser import PartTextExtractorParser
 
 class TestPartTextExtractorParser:
 
-
     def test_can_parse(self):
         field = {
             'name': 'a',
