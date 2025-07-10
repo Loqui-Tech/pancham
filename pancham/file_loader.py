@@ -43,7 +43,7 @@ class FileLoader:
             """
             If a query is coded into the mapping then load it directly 
             """
-            yield from self.yield_file(configuration.query, query=configuration.query)
+            yield from self.read_file(configuration.query, query=configuration.query)
             return
 
         for file_path in self.reduce_file_paths(configuration, pancham_configuration):
