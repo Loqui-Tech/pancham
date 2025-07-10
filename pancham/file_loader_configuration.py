@@ -26,3 +26,4 @@ class FileLoaderConfiguration:
     file_type: Optional[str]
     use_iterator: bool = False
     chunk_size: int = 100000
+    query: Optional[str] = None

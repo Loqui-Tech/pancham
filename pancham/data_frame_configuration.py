@@ -52,7 +52,8 @@ class DataFrameConfiguration(FileLoaderConfiguration):
                  merge_configuration: MergeConfiguration|None = None,
                  depends_on: list[str]|None = None,
                  drop_duplicates: str|list[str]|None = None,
-                 process: Literal['passthrough', 'parse', 'append'] = 'parse'
+                 process: Literal['passthrough', 'parse', 'append'] = 'parse',
+                 query: str|None = None,
                  ):
         self.file_path = file_path
         self.file_type = file_type
@@ -62,6 +63,7 @@ class DataFrameConfiguration(FileLoaderConfiguration):
         self.merge_configuration = merge_configuration
         self.depends_on = depends_on
         self.drop_duplicates = drop_duplicates
+        self.query = query
 
         self.fields: list[DataFrameField] = []
         self.validation_rules: list[ValidationField] = []

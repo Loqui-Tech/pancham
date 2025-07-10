@@ -1,5 +1,8 @@
+from typing import Optional
+
 import pandas as pd
 
+from reporter_lib.halo_reporter import HaloReporter
 from .validation import ContainsValidation, MatchingValidation, NotAllNullValidation, NotNullValidation, OneOfValidation
 from .validation_field import ValidationStep, ValidationInput
 from .configuration.database_match_field_parser import DatabaseMatchFieldParser
@@ -14,9 +17,10 @@ from .database.sql_file_loader import SqlFileLoader, SqlExecuteFileLoader
 from .database.database_output import DatabaseOutput
 from .file_loader import FileLoader, ExcelFileLoader, YamlFileLoader, CsvFileLoader, JsonFileLoader
 from .output_configuration import OutputWriter, OutputConfiguration
-from .pancham_configuration import PanchamConfiguration
-from .reporter import Reporter, PrintReporter
+from .pancham_configuration import PanchamConfiguration, OrderedPanchamConfiguration
+from .reporter import Reporter, PrintReporter, get_reporter
 from .integration.salesforce_output import SalesforceBulkOutputConfiguration
+from .integration.salesforce_query_loader import SalesforceQueryLoader
 
 DEFAULT_LOADERS = {
     'xlsx': ExcelFileLoader(),
@@ -24,7 +28,8 @@ DEFAULT_LOADERS = {
     'sql_execute': SqlExecuteFileLoader(),
     'yaml': YamlFileLoader(),
     'csv': CsvFileLoader(),
-    'json': JsonFileLoader()
+    'json': JsonFileLoader(),
+    'soql': SalesforceQueryLoader()
 }
 DEFAULT_REPORTER = PrintReporter()
 
@@ -62,6 +67,29 @@ DEFAULT_VALIDATION_RULES = [
     MatchingValidation(),
     ContainsValidation()
 ]
+
+def start_pancham(
+        configuration: str,
+        data_configuration: Optional[str],
+        test: bool = False
+):
+    print("Starting Pancham!")
+    pancham_configuration = OrderedPanchamConfiguration(configuration)
+
+    reporter = get_reporter(pancham_configuration.debug_status)
+
+    print(f"Reporter enabled - Debug = {pancham_configuration.debug_status}")
+    runner = PanchamRunner(pancham_configuration, reporter = reporter)
+
+    if data_configuration is not None:
+        runner.load_and_run(data_configuration)
+    else:
+        if test:
+            runner.run_all_tests()
+        else:
+            runner.run_all()
+
+
 
 class PanchamRunner:
 

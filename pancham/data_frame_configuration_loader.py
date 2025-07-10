@@ -143,7 +143,7 @@ class DataFrameConfigurationLoader:
                  configuration data and label.
         """
         if label == 'main':
-            return DataFrameConfiguration(data["file_path"], data["file_type"], name=data['name'], sheet=sheet, key=key, depends_on=data.get('depends_on', None))
+            return DataFrameConfiguration(data["file_path"], data["file_type"], name=data['name'], sheet=sheet, key=key, depends_on=data.get('depends_on', None), query=data.get('query', None))
 
         merge_configuration = None
         if 'merge' in data:

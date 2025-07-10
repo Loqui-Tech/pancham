@@ -3,9 +3,10 @@ import os
 
 from sqlalchemy import Table, MetaData, select, Integer, Column, DateTime, Boolean, String
 
+from pancham.file_loader import FileLoader
 from pancham.database.database_engine import get_db_engine, initialize_db_engine
 from pancham.pancham_configuration import PanchamConfiguration
-from pancham.runner import PanchamRunner
+from pancham.runner import PanchamRunner, start_pancham
 from pancham.reporter import PrintReporter
 
 
@@ -118,3 +119,50 @@ class TestRunner:
             assert result[1][0] == 1
             assert result[1][1] == "B"
 
+    def test_add_custom_loaders(self):
+        loaders = {'a': FileLoader()}
+
+        runner = PanchamRunner(Config(), file_loaders=loaders)
+
+        assert runner.file_loaders['a'] is not None
+
+    def test_add_custom_report(self):
+        reporters = PrintReporter()
+
+        runner = PanchamRunner(Config(), reporter=reporters)
+
+        assert runner.reporter == reporters
+
+
+
+class TestStartPancham:
+
+    def test_start_pancham(self, mocker):
+        run_all = mocker.patch('pancham.runner.PanchamRunner.run_all', return_value=None)
+        mocker.patch('pancham.runner.OrderedPanchamConfiguration.reporter_name', return_value=None)
+        mocker.patch('pancham.runner.OrderedPanchamConfiguration.debug_status', return_value=False)
+        mocker.patch('pancham.runner.get_reporter', return_value=None)
+
+        start_pancham('', None)
+
+        assert run_all.call_count == 1
+
+    def test_start_pancham_test(self, mocker):
+        run_all = mocker.patch('pancham.runner.PanchamRunner.run_all_tests', return_value=None)
+        mocker.patch('pancham.runner.OrderedPanchamConfiguration.reporter_name', return_value=None)
+        mocker.patch('pancham.runner.OrderedPanchamConfiguration.debug_status', return_value=False)
+        mocker.patch('pancham.runner.get_reporter', return_value=None)
+
+        start_pancham('', None, test=True)
+
+        assert run_all.call_count == 1
+
+    def test_start_pancham_with_data_configuration(self, mocker):
+        run_all = mocker.patch('pancham.runner.PanchamRunner.load_and_run', return_value=None)
+        mocker.patch('pancham.runner.OrderedPanchamConfiguration.reporter_name', return_value=None)
+        mocker.patch('pancham.runner.OrderedPanchamConfiguration.debug_status', return_value=False)
+        mocker.patch('pancham.runner.get_reporter', return_value=None)
+
+        start_pancham('', 'a')
+
+        assert run_all.call_count == 1

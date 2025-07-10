@@ -39,6 +39,13 @@ class FileLoader:
         data = []
         will_use_iterator = configuration.use_iterator is True and self.can_yield()
 
+        if configuration.query is not None:
+            """
+            If a query is coded into the mapping then load it directly 
+            """
+            yield from self.yield_file(configuration.query, query=configuration.query)
+            return
+
         for file_path in self.reduce_file_paths(configuration, pancham_configuration):
             sheet = configuration.sheet
             key = configuration.key
