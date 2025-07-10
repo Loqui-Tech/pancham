@@ -24,7 +24,7 @@ class SalesforceQueryLoader(FileLoader):
         data = []
 
         sf_data = sf.query_all(query)
-        df = pd.DataFrame(sf_data['records']).drop(['attributes'], axis=1)
+        df = pd.DataFrame(sf_data['records'])
 
         reporter = get_reporter()
         reporter.report_debug(f'Salesforce Query data {df}')
