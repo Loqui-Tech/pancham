@@ -2,7 +2,6 @@ from typing import Optional
 
 import pandas as pd
 
-from reporter_lib.halo_reporter import HaloReporter
 from .validation import ContainsValidation, MatchingValidation, NotAllNullValidation, NotNullValidation, OneOfValidation
 from .validation_field import ValidationStep, ValidationInput
 from .configuration.database_match_field_parser import DatabaseMatchFieldParser
