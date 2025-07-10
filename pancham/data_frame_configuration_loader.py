@@ -57,7 +57,7 @@ class DataFrameConfigurationLoader:
 
         If the input is not valid throw a value error
         """
-        if "file_path" not in data or "file_type" not in data:
+        if ("file_path" not in data or "file_type" not in data) and "query" not in data:
             raise ValueError(f"file_path and file_type are required fields in {filename}")
         
     def __get_configuration_for_file_type(self, data: dict, key: str, types: list[str]) -> str|None:
