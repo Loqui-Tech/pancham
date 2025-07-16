@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional, Union
 
+DEFAULT_CHUNK_SIZE = 100000
 
 @dataclass(kw_only=True)
 class FileLoaderConfiguration:
@@ -25,5 +26,5 @@ class FileLoaderConfiguration:
     file_path: Optional[Union[str|list[str]]]
     file_type: Optional[str]
     use_iterator: bool = False
-    chunk_size: int = 100000
+    chunk_size: int = DEFAULT_CHUNK_SIZE
     query: Optional[str] = None

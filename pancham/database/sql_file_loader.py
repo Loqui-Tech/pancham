@@ -3,7 +3,7 @@ from typing import Iterator
 import pandas as pd
 from sqlalchemy import text
 
-from file_loader_configuration import FileLoaderConfiguration
+from pancham.file_loader_configuration import FileLoaderConfiguration, DEFAULT_CHUNK_SIZE
 from pancham.database.database_engine import get_db_engine
 from pancham.file_loader import FileLoader
 
@@ -30,7 +30,9 @@ class SqlFileLoader(FileLoader):
                 return pd.read_sql(select, connection)
 
     def can_yield(self, configuraton: FileLoaderConfiguration|None = None) -> bool:
-        return configuraton is not None and configuraton.chunk_size is not None
+        return (configuraton is not None
+                and configuraton.chunk_size is not None
+                and configuraton.chunk_size != DEFAULT_CHUNK_SIZE)
 
     def yield_file(self, filename: str, **kwargs) -> Iterator[pd.DataFrame]:
         chunk_size = kwargs.get('chunk_size', 10000)
