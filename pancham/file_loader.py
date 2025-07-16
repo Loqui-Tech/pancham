@@ -37,7 +37,7 @@ class FileLoader:
         """
         reporter = get_reporter()
         data = []
-        will_use_iterator = configuration.use_iterator is True and self.can_yield()
+        will_use_iterator = configuration.use_iterator is True and self.can_yield(configuration)
 
         if configuration.query is not None:
             """
@@ -83,7 +83,7 @@ class FileLoader:
         """
         pass
 
-    def can_yield(self) -> bool:
+    def can_yield(self, configuraton: FileLoaderConfiguration|None = None) -> bool:
         """
         Return true if the class can yield an interator instead of return a single data frame
         :return: True if the yield file method is available
@@ -199,7 +199,7 @@ class JsonFileLoader(FileLoader):
 
             return pd.DataFrame(keyed_data)
 
-    def can_yield(self) -> bool:
+    def can_yield(self, configuraton: FileLoaderConfiguration|None = None) -> bool:
         return True
 
     def yield_file(self, filename: str, **kwargs) -> Iterator[pd.DataFrame]:
