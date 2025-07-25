@@ -93,6 +93,7 @@ class SalesforceBulkOutputWriter(OutputWriter):
             configuration: dict
             ):
         super().__init__(configuration)
+        self.method = configuration.get('method', 'insert')
         self.object_name = configuration.get('object_name')
         self.int_cols = configuration.get('int_cols', [])
         self.bool_cols = configuration.get('bool_cols', [])
@@ -130,7 +131,13 @@ class SalesforceBulkOutputWriter(OutputWriter):
 
         filename = pd_to_sf_dict(data, int_cols=self.int_cols, bool_cols=self.bool_cols, nullable_cols=self.nullable_cols)
         reporter.report_debug(f'Writing to Salesforce Bulk', filename)
-        results = getattr(sf.bulk2, self.object_name).insert(filename)
+
+        if self.method == 'upsert':
+            results = getattr(sf.bulk2, self.object_name).upsert(filename)
+        elif self.method == 'update':
+            results = getattr(sf.bulk2, self.object_name).update(filename)
+        else:
+            results = getattr(sf.bulk2, self.object_name).insert(filename)
 
         for r in results:
             job_id = r['job_id']
