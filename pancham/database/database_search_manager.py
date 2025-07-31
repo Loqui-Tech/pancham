@@ -1,6 +1,7 @@
 import hashlib
 import json
 
+from reporter import get_reporter
 from .caching_database_search import DatabaseSearch, FilteredCachingDatabaseSearch, CachingDatabaseSearch, \
     SQLFileCachingDatabaseSearch
 from .populating_database_search import PopulatingDatabaseSearch
@@ -35,6 +36,10 @@ def get_database_search(
     :rtype: CachingDatabaseSearch
     """
     global __managed_db_cache
+
+    reporter = get_reporter()
+    reporter.report_debug(f'Database search cache {__managed_db_cache}')
+    reporter.report_debug(f'Database search using populate - {populate}, filter - {filter}, Sql file - {sql_file}')
 
     filter_key = ''
     if filter is not None:
