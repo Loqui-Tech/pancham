@@ -1,7 +1,7 @@
 import hashlib
 import json
 
-from reporter import get_reporter
+from pancham.reporter import get_reporter
 from .caching_database_search import DatabaseSearch, FilteredCachingDatabaseSearch, CachingDatabaseSearch, \
     SQLFileCachingDatabaseSearch
 from .populating_database_search import PopulatingDatabaseSearch
