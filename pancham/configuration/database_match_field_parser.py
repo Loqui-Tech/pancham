@@ -89,8 +89,10 @@ class DatabaseMatchFieldParser(FieldParser):
             database_search = self.__build_search_value(properties, filter=mapped_filtered)
             search_value = self.__get_search_value(data, properties)
 
-            reporter.report_debug(f'Database search {database_search}')
-            return database_search.get_mapped_id(search_value)
+            mapped_id = database_search.get_mapped_id(search_value)
+            reporter.report_debug(f'Database search {search_value} mapped to {mapped_id}')
+
+            return mapped_id
 
         return self.build_func_field(
             field=field,
