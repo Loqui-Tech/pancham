@@ -1,5 +1,6 @@
 from pancham.data_frame_field import DataFrameField
 from pancham.tool.str_tools import remove_and_split
+from pancham.reporter import get_reporter
 from .field_parser import FieldParser
 
 class SplitFieldParser(FieldParser):
@@ -28,11 +29,14 @@ class SplitFieldParser(FieldParser):
         remove_pattern = properties.get("remove_pattern", None)
         source_name = self.get_source_name(field)
         field[self.FIELD_TYPE_KEY] = list[str]
+        reporter = get_reporter()
 
         def extract(data: dict) -> list[str|int|float]:
             value = data[source_name]
 
-            return remove_and_split(value, split_char, remove_pattern)
+            split_values = remove_and_split(value, split_char, remove_pattern)
+            reporter.report_debug(f'Split outcome {split_values}')
+            return split_values
 
         return self.build_func_field(field, extract)
 
