@@ -217,9 +217,11 @@ class FilteredCachingDatabaseSearch(CachingDatabaseSearch):
     def get_query(self, conn: Connection) -> Select:
         data_table = Table(self.table_name, META, autoload_with=conn)
         select_query = select(data_table.c[self.search_col, self.value_col]).where(data_table.c[self.search_col].is_not(None))
+        reporter = get_reporter()
 
         for k, v in self.filter.items():
             select_query = select_query.where(data_table.c[k] == v)
 
+        reporter.report_debug(f"Generated query: {str(select_query)}")
         return select_query
 
