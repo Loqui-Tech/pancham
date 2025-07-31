@@ -144,6 +144,7 @@ class DataFrameLoader:
         renamed_df = source_df.rename(columns=configuration.renames)
 
         for field in configuration.dynamic_fields:
+            self.reporter.report_debug(f"Processing dynamic field {field.name} - Data frame field {field.has_df_func()}")
             try:
                 if field.has_df_func():
                     renamed_df = field.df_func(renamed_df)

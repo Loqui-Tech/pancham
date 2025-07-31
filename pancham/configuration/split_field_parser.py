@@ -31,6 +31,8 @@ class SplitFieldParser(FieldParser):
         field[self.FIELD_TYPE_KEY] = list[str]
         reporter = get_reporter()
 
+        reporter.report_debug(f'Split field {source_name} with split_char {split_char} and remove_pattern {remove_pattern}')
+
         def extract(data: dict) -> list[str|int|float]:
             value = data[source_name]
 
