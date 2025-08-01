@@ -40,17 +40,21 @@ class DatabaseSearch:
         :rtype: str | int | any
         """
         reporter = get_reporter()
-        if cast_to == 'str':
-            reporter.report_debug(f"Casting {value} to string")
-            return str(value)
 
-        if cast_to == 'int':
-            reporter.report_debug(f"Casting {value} to int")
-            return int(value)
+        try:
+            if cast_to == 'str':
+                reporter.report_debug(f"Casting {value} to string")
+                return str(value)
 
-        reporter.report_debug(f"No cast to value set - {cast_to}")
+            if cast_to == 'int':
+                reporter.report_debug(f"Casting {value} to int")
+                return int(value)
 
-        return value
+        except ValueError:
+            reporter.report_debug(f"No cast to value set - {cast_to}")
+
+            return value
+
 
 
 class CachingDatabaseSearch(DatabaseSearch):
