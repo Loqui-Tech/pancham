@@ -110,6 +110,9 @@ class CachingDatabaseSearch(DatabaseSearch):
             which can be of type `str` or `int`. Returns `None` if the key is not found.
         """
         data = self.__load_data()
+        reporter = get_reporter()
+        reporter.report_debug(f"Finding id {search_value}")
+        reporter.report_debug(f"Reading cached data: {data}")
 
         return data.get(search_value, None)
 
