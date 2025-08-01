@@ -111,10 +111,12 @@ class CachingDatabaseSearch(DatabaseSearch):
         """
         data = self.__load_data()
         reporter = get_reporter()
-        reporter.report_debug(f"Finding id {search_value} - type {type(search_value)}")
         reporter.report_debug(f"Reading cached data: {data}")
 
-        return data.get(search_value, None)
+        search = self.cast_value(search_value, self.cast_search)
+        reporter.report_debug(f"Finding id {search} - type {type(search)}")
+
+        return data.get(search, None)
 
     def get_query(self, conn: Connection) -> Select|TextClause:
         """
