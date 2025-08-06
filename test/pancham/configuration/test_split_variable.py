@@ -54,6 +54,28 @@ class TestSplitVariable:
         assert output[0] == 'a'
         assert output[1] == 'b'
 
+    def test_valid_event_with_multi_split(self):
+        config = {
+            'name': 'a',
+            'func': {
+                'split': {
+                    'source_name': 'input',
+                    'split_char': [';', ',']
+                }
+            }
+        }
+
+        data = {
+            'input': 'a;b,c'
+        }
+
+        split_field_parser = SplitFieldParser()
+        output = split_field_parser.parse_field(config).func(data)
+
+        assert output[0] == 'a'
+        assert output[1] == 'b'
+        assert output[2] == 'c'
+
     def test_valid_event_with_remove(self):
         config = {
             'name': 'a',

@@ -52,7 +52,7 @@ class DatabaseSearch:
 
         except ValueError:
             reporter.report_debug(f"Value {value} cannot be cast to {cast_to}")
-            
+
         reporter.report_debug(f"No cast to value set - {cast_to}")
 
         return value
