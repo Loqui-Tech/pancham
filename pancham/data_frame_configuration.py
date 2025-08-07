@@ -255,6 +255,23 @@ class DataFrameConfiguration(FileLoaderConfiguration):
 
         return casts
 
+    def get_field_type(self, field_name: str):
+        """
+        Fetches the type of a field with the specified name.
+
+        Iterates through the list of fields to find a field whose name matches
+        the provided field name, and returns its corresponding type. If no
+        matching field is found, returns None.
+
+        :param field_name: The name of the field for which the type
+            needs to be fetched.
+        :return: The type of the field if found, otherwise None.
+        """
+        for field in self.fields:
+            if field.name == field_name:
+                return field.field_type
+        return None
+
     def add_output(self, output_configuration) -> Self:
         """
         Appends the given output configuration to the output list of the current

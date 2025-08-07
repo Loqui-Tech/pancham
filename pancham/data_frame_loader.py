@@ -154,7 +154,11 @@ class DataFrameLoader:
                 if field.has_df_func():
                     renamed_df = field.df_func(renamed_df)
                 else:
-                    renamed_df[field.name] = renamed_df.apply(field.func, axis=1)
+                    if isinstance(renamed_df, dd.DataFrame):
+                        type = configuration.get_field_type(field.name)
+                        renamed_df[field.name] = renamed_df.apply(field.func, axis=1, meta=(field.name, type))
+                    else:
+                        renamed_df[field.name] = renamed_df.apply(field.func, axis=1)
             except Exception as e:
                 if field.suppress_errors:
                     self.reporter.report_error(e)
