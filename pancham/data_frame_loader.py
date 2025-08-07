@@ -2,6 +2,7 @@ from typing import Iterator
 
 import numpy as np
 import pandas as pd
+import dask.dataframe as dd
 from pandera.errors import SchemaError
 
 from .file_loader_configuration import FileLoaderConfiguration
@@ -28,6 +29,8 @@ class DataFrameOutput:
         processed.
     :type processed: pd.DataFrame
     """
+
+    MAX_ROWS_IN_FRAME = 100000
 
     def __init__(self, source: pd.DataFrame, processed: pd.DataFrame):
         self.source = source
@@ -140,8 +143,10 @@ class DataFrameLoader:
         """
         if configuration.process == 'passthrough':
             return source_df.copy()
-        
-        renamed_df = source_df.rename(columns=configuration.renames)
+
+        split_df = self.__split_df(source_df)
+
+        renamed_df = split_df.rename(columns=configuration.renames)
 
         for field in configuration.dynamic_fields:
             self.reporter.report_debug(f"Processing dynamic field {field.name} - Data frame field {field.has_df_func()}")
@@ -166,9 +171,14 @@ class DataFrameLoader:
                 output[key] = output[key].replace([np.nan, np.inf, -np.inf], 0)
             output[key] = output[key].astype(value)
 
-        self.__validate_schema(output, configuration)
+        if isinstance(output, dd.DataFrame):
+            procesed = output.compute()
+        else:
+            procesed = output
 
-        return output
+        self.__validate_schema(procesed, configuration)
+
+        return procesed
 
     def load_file(self, configuration: FileLoaderConfiguration) -> Iterator[pd.DataFrame]:
         """
@@ -219,3 +229,23 @@ class DataFrameLoader:
                 self.reporter.report_debug(f'Schema validation failed but is disabled: {e}')
             else:
                 raise e
+
+    def __split_df(self, df: pd.DataFrame) -> pd.DataFrame | dd.DataFrame:
+        """
+        Splits the given DataFrame into smaller partitions if it exceeds the maximum
+        number of rows allowed for a single frame. This helps to handle large
+        datasets by creating a Dask DataFrame with multiple partitions.
+
+        :param df: Input DataFrame to be split, which can be a pandas DataFrame.
+        :type df: pd.DataFrame
+        :return: Returns the original DataFrame if the number of rows is within the
+            allowed limit. Otherwise, returns a Dask DataFrame partitioned into
+            8 segments.
+        :rtype: pd.DataFrame | dd.DataFrame
+        """
+        rows = len(df.index)
+
+        if rows <= DataFrameOutput.MAX_ROWS_IN_FRAME:
+            return df
+
+        return dd.from_pandas(df, npartitions=8)
