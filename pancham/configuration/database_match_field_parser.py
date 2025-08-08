@@ -105,7 +105,7 @@ class DatabaseMatchFieldParser(FieldParser):
         value_cast = properties.get(self.VALUE_CAST_VALUE_KEY, None)
         sql_file = properties.get(self.SQL_FILE_KEY, None)
 
-        if filter:
+        if filter and len(filter) > 0:
             filter_value = filter
         else:
             filter_value = properties.get(self.FILTER_KEY, None)
