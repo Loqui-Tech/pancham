@@ -73,7 +73,11 @@ class DatabaseMatchFieldParser(FieldParser):
                         continue
 
                     filter_search = self.__build_search_value(value)
-                    search_value = self.__get_search_value(data, value)
+                    search_value = self.__get_search_value({}, value)
+
+                    if search_value is None:
+                        continue
+
                     filter_id = filter_search.get_mapped_id(search_value)
                     mapped_filtered[key] = filter_id
                     reporter.report_debug(f'Using filter value {filter_id} for {key}')
@@ -81,18 +85,14 @@ class DatabaseMatchFieldParser(FieldParser):
                     if fixture_key is not None:
                         self.fixture_map[fixture_key] = filter_id
 
-        def map_value(data: dict|pd.Series) -> str|None:
+        def map_value(data: dict|pd.Series) -> str:
             mapped_filtered = {}
 
             if isinstance(data, pd.Series):
                 data = data.to_dict()
 
-            search_value = self.__get_search_value(data, properties)
-
-            if not search_value:
-                return None
-
             database_search = self.__build_search_value(properties, filter=mapped_filtered)
+            search_value = self.__get_search_value(data, properties)
 
             mapped_id = database_search.get_mapped_id(search_value)
             reporter.report_debug(f'Database search {search_value} mapped to {mapped_id}')
@@ -127,7 +127,7 @@ class DatabaseMatchFieldParser(FieldParser):
             sql_file=sql_file
         )
 
-    def  __get_search_value(self, data: dict, properties: dict[str, str]) -> str:
+    def  __get_search_value(self, data: dict, properties: dict[str, str]) -> str|None:
         """
         Retrieve the search value from the given data and properties based on specific keys.
 
@@ -147,7 +147,7 @@ class DatabaseMatchFieldParser(FieldParser):
         if self.STATIC_VALUE_KEY in properties:
             return properties[self.STATIC_VALUE_KEY]
 
-        return data[properties[self.SOURCE_NAME_KEY]]
+        return data.get(properties[self.SOURCE_NAME_KEY], None)
 
     def __get_fixture_key(self, value: dict) -> str:
         """
