@@ -1,3 +1,4 @@
+import functools
 from typing import Iterator
 
 import numpy as np
@@ -184,6 +185,7 @@ class DataFrameLoader:
 
         return procesed
 
+    @functools.lru_cache(maxsize=5)
     def load_file(self, configuration: FileLoaderConfiguration) -> Iterator[pd.DataFrame]:
         """
         Loads a data file based on its specified file type and associated configuration details

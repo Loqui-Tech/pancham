@@ -59,35 +59,40 @@ class DatabaseMatchFieldParser(FieldParser):
         filter_value = properties.get(self.FILTER_KEY, None)
         reporter = get_reporter()
 
-        def map_value(data: dict|pd.Series) -> str:
+        mapped_filtered = {}
+        if filter_value:
+            reporter.report_debug(f'Filter value {filter_value}')
+            for key, value in filter_value.items():
+                if isinstance(value, str) or isinstance(value, int) or isinstance(value, float):
+                    mapped_filtered[key] = value
+                else:
+                    fixture_key = value.get(self.FIXTURE_KEY, None)
+                    if fixture_key is not None and fixture_key in self.fixture_map:
+                        mapped_filtered[key] = self.fixture_map[fixture_key]
+                        reporter.report_debug(f'Using fixture value {mapped_filtered[key]} for {key}')
+                        continue
+
+                    filter_search = self.__build_search_value(value)
+                    search_value = self.__get_search_value(data, value)
+                    filter_id = filter_search.get_mapped_id(search_value)
+                    mapped_filtered[key] = filter_id
+                    reporter.report_debug(f'Using filter value {filter_id} for {key}')
+
+                    if fixture_key is not None:
+                        self.fixture_map[fixture_key] = filter_id
+
+        def map_value(data: dict|pd.Series) -> str|None:
             mapped_filtered = {}
 
             if isinstance(data, pd.Series):
                 data = data.to_dict()
 
-            if filter_value:
-                reporter.report_debug(f'Filter value {filter_value}')
-                for key, value in filter_value.items():
-                    if isinstance(value, str) or isinstance(value, int) or isinstance(value, float):
-                        mapped_filtered[key] = value
-                    else:
-                        fixture_key = value.get(self.FIXTURE_KEY, None)
-                        if fixture_key is not None and fixture_key in self.fixture_map:
-                            mapped_filtered[key] = self.fixture_map[fixture_key]
-                            reporter.report_debug(f'Using fixture value {mapped_filtered[key]} for {key}')
-                            continue
+            search_value = self.__get_search_value(data, properties)
 
-                        filter_search = self.__build_search_value(value)
-                        search_value = self.__get_search_value(data, value)
-                        filter_id = filter_search.get_mapped_id(search_value)
-                        mapped_filtered[key] = filter_id
-                        reporter.report_debug(f'Using filter value {filter_id} for {key}')
-
-                        if fixture_key is not None:
-                            self.fixture_map[fixture_key] = filter_id
+            if not search_value:
+                return None
 
             database_search = self.__build_search_value(properties, filter=mapped_filtered)
-            search_value = self.__get_search_value(data, properties)
 
             mapped_id = database_search.get_mapped_id(search_value)
             reporter.report_debug(f'Database search {search_value} mapped to {mapped_id}')

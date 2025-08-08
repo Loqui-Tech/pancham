@@ -3,7 +3,7 @@ from typing import Optional, Union
 
 DEFAULT_CHUNK_SIZE = 100000
 
-@dataclass(kw_only=True)
+@dataclass(kw_only=True, unsafe_hash=True)
 class FileLoaderConfiguration:
     """
     Configuration class for handling file loading requirements.

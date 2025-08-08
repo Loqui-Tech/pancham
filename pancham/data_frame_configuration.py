@@ -284,3 +284,23 @@ class DataFrameConfiguration(FileLoaderConfiguration):
         """
         self.output.append(output_configuration)
         return self
+
+    def __hash__(self):
+        """
+        Computes and returns the hash value of the `FileLoaderConfiguration` instance
+        created with the current object's attributes.
+
+        :return: The hash value of the `FileLoaderConfiguration` instance.
+        :rtype: int
+        """
+        loader = FileLoaderConfiguration(
+            sheet=self.sheet,
+            file_type=self.file_type,
+            key=self.key,
+            file_path=self.file_path,
+            use_iterator=self.use_iterator,
+            chunk_size=self.chunk_size,
+            query=self.query
+        )
+
+        return hash(loader)
