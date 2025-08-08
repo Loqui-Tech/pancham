@@ -1,9 +1,10 @@
+import json
 from dataclasses import dataclass
 from typing import Optional, Union
 
 DEFAULT_CHUNK_SIZE = 100000
 
-@dataclass(kw_only=True, unsafe_hash=True)
+@dataclass(kw_only=True)
 class FileLoaderConfiguration:
     """
     Configuration class for handling file loading requirements.
@@ -28,3 +29,12 @@ class FileLoaderConfiguration:
     use_iterator: bool = False
     chunk_size: int = DEFAULT_CHUNK_SIZE
     query: Optional[str] = None
+
+
+    def __hash__(self):
+        path = self.file_path
+
+        if isinstance(path, list):
+            path = json.dumps(path)
+
+        return hash((self.key, self.file_type, self.sheet, path, self.query))
