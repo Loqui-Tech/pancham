@@ -128,6 +128,8 @@ class PanchamRunner:
         else:
             self.validation_rules = validation_rules
 
+        self.loader = DataFrameLoader(self.file_loaders, self.reporter, self.pancham_configuration)
+
     def run_all(self):
         """
         Executes the primary function for processing all specified configurations.
@@ -205,18 +207,16 @@ class PanchamRunner:
             return
 
         self.reporter.report_info(f"Starting run for {configuration.name}")
-        loader = DataFrameLoader(self.file_loaders, self.reporter, self.pancham_configuration)
-        self.reporter.report_debug("Loader created")
 
-        for data in loader.load(configuration):
+        for data in self.loader.load(configuration):
             self.reporter.report_debug(f'Writing data {len(data.processed)}')
-            self.__write_output(configuration, data.processed, loader)
+            self.__write_output(configuration, data.processed, self.loader)
 
             for post_run_configuration in configuration.post_run_configuration:
                 input_data = data.get_required_dataframe(post_run_configuration.merge_configuration)
-                post_run_data = loader.process_dataframe(input_data, post_run_configuration)
+                post_run_data = self.loader.process_dataframe(input_data, post_run_configuration)
 
-                self.__write_output(post_run_configuration, post_run_data, loader)
+                self.__write_output(post_run_configuration, post_run_data, self.loader)
 
     def run_validation(self, configuration: DataFrameConfiguration):
         """
@@ -232,8 +232,7 @@ class PanchamRunner:
         """
         initialize_db_engine(self.pancham_configuration, self.reporter)
 
-        loader = DataFrameLoader(self.file_loaders, self.reporter, self.pancham_configuration)
-        for data in loader.load_file(configuration):
+        for data in self.loader.load_file(configuration):
 
             # Loop the validation objects in the configuration
             for validation in configuration.validation_rules:
