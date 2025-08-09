@@ -6,6 +6,17 @@ from .field_parser import FieldParser
 from pancham.data_frame_field import DataFrameField
 
 class DateTimeFieldParser(FieldParser):
+    """
+    Parses fields containing datetime data into a standardized DataFrame format.
+
+    This class is designed to parse fields with datetime information specified
+    using a 'datetime' function identifier. It supports custom datetime formats
+    and user-specified error-handling behavior when parsing fails.
+
+    :ivar FUNCTION_ID: Identifier that specifies this parser processes fields
+        with datetime data.
+    :type FUNCTION_ID: str
+    """
 
     FUNCTION_ID = "datetime"
 
@@ -34,7 +45,7 @@ class DateTimeFieldParser(FieldParser):
 
         return DataFrameField(
             name = field['name'],
-            field_type=datetime.datetime,
+            field_type=field.get('field_type', datetime.datetime),
             nullable=self.is_nullable(field),
             source_name=None,
             func=parse_datetime
