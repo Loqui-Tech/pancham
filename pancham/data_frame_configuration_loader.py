@@ -199,6 +199,10 @@ class DataFrameConfigurationLoader:
                 for parser in self.field_parsers:
                     if parser.can_parse_field(f):
                         field = parser.parse_field(f)
+
+                        if 'supress_error' in f:
+                            field.supress_error = f['supress_error']
+                            
                         configuration.add_field(data_frame_field=field)
                         has_parsed = True
                         break
