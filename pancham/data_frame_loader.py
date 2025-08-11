@@ -31,7 +31,7 @@ class DataFrameOutput:
     :type processed: pd.DataFrame
     """
 
-    MAX_ROWS_IN_FRAME = 100000
+    MAX_ROWS_IN_FRAME = 25000
 
     def __init__(self, source: pd.DataFrame, processed: pd.DataFrame):
         self.source = source
