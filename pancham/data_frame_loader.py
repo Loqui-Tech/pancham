@@ -247,9 +247,10 @@ class DataFrameLoader:
             8 segments.
         :rtype: pd.DataFrame | dd.DataFrame
         """
-        rows = len(df.index)
-
-        if rows <= DataFrameOutput.MAX_ROWS_IN_FRAME:
-            return df
-
-        return dd.from_pandas(df, npartitions=8)
+        return df
+        # rows = len(df.index)
+        #
+        # if rows <= DataFrameOutput.MAX_ROWS_IN_FRAME:
+        #     return df
+        #
+        # return dd.from_pandas(df, npartitions=8)
