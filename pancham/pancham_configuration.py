@@ -109,6 +109,37 @@ class PanchamConfiguration:
         """
         return []
 
+    @property
+    def enabled_features(self) -> list[str]:
+        """
+        Retrieves the list of enabled features.
+
+        This property provides a list of feature names that are currently
+        enabled in the system.
+
+        Returns:
+            list[str]: A list of strings representing the names of enabled
+            features.
+        """
+        return []
+
+    def has_feature_enabled(self, feature: str) -> bool:
+        """
+        Checks if a specified feature is enabled for the current instance.
+
+        This method verifies whether the provided feature exists within the list
+        of features marked as enabled.
+
+        Parameters:
+        feature: str
+            The name of the feature whose enabled status is being checked.
+
+        Returns:
+        bool
+            True if the feature is enabled, False otherwise.
+        """
+        return feature in self.enabled_features
+
 class OrderedPanchamConfiguration(PanchamConfiguration):
 
     def __init__(self, config_file_path: str|None):
@@ -135,6 +166,15 @@ class OrderedPanchamConfiguration(PanchamConfiguration):
     @property
     def reporter_name(self) -> str:
         return self.__get_config_item("reporter_name", "PANCHAM_DEBUG_REPORTER", "debug.reporter")
+
+    @property
+    def enabled_features(self) -> list[str]:
+        features = self.__get_config_item("enabled_features", "PANCHAM_ENABLED_FEATURES", "enabled_features")
+
+        if isinstance(features, str):
+            return features.split(",")
+
+        return super().enabled_features
 
     @property
     def mapping_files(self) -> list[str]:

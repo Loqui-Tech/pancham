@@ -42,7 +42,6 @@ mdurl==0.1.2
 more-itertools==10.6.0
 msgpack==1.1.1
 mypy-extensions==1.0.0
-mysqlclient==2.2.7
 narwhals==2.0.1
 nh3==0.2.20
 numpy==2.2.2
