@@ -30,6 +30,11 @@ class RegexExtractFieldParser(FieldParser):
             if not isinstance(value, str):
                 return None
 
-            return re.search(pattern, value).group(1)
+            match = re.search(pattern, value)
+
+            if match:
+                return match.group(1)
+
+            return None
 
         return self.build_func_field(field, regex_extract)

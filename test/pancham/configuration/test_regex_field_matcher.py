@@ -1,6 +1,5 @@
 from configuration.regex_match_field_parser import RegexMatchFieldParser
 
-
 class TestRegexFieldMatcher:
 
     def test_can_parse(self):
