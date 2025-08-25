@@ -137,7 +137,9 @@ class CachingDatabaseSearch(DatabaseSearch):
         :rtype: Select
         """
         data_table = Table(self.table_name, META, autoload_with=conn)
-        return select(data_table.c[self.search_col, self.value_col]).where(data_table.c[self.search_col].is_not(None))
+        return (select(data_table.c[self.search_col, self.value_col])
+                .where(data_table.c[self.search_col].is_not(None))
+                .where(data_table.c[self.value_col].is_not(None)))
 
     def __load_data(self) -> dict[str|int, str|int]:
         """

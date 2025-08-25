@@ -27,10 +27,11 @@ class PyDatabaseCacheSearch(DatabaseSearch):
     database table based on a search key.
     """
 
-    def __init__(self, table_name: str, search_col: str, value_col: str, cast_value: None | str = None):
+    def __init__(self, table_name: str, search_col: str, value_col: str, cast_search: None|str = None, cast_value: None | str = None):
         self.table_name = table_name
         self.search_col = search_col
         self.value_col = value_col
+        self.cast_search = cast_search
         self.cast_value_type = cast_value
 
     def get_mapped_id(self, search_value: str|int) -> str|int|None:
@@ -49,5 +50,5 @@ class PyDatabaseCacheSearch(DatabaseSearch):
         reporter = get_reporter()
         reporter.report_debug(f"Reading non-cached data")
 
-        value = get_db_value(self.table_name, self.search_col, self.value_col, search_value)
+        value = get_db_value(self.table_name, self.search_col, self.value_col, self.cast_value(search_value, self.cast_search))
         return self.cast_value(value, self.cast_value_type)
