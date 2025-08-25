@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from sqlalchemy import Table, select, Connection, Select, text, TextClause
 
 from pancham.reporter import get_reporter
@@ -58,7 +60,6 @@ class DatabaseSearch:
         return value
 
 
-
 class CachingDatabaseSearch(DatabaseSearch):
     """
     Implements a caching mechanism for querying and retrieving data from a
@@ -100,7 +101,7 @@ class CachingDatabaseSearch(DatabaseSearch):
         self.value_col = value_col
         self.cast_search = cast_search
         self.cast_value_type = cast_value
-        self.cached_data = {}
+        self.cached_data = defaultdict(lambda: None)
 
     def get_mapped_id(self, search_value: str|int) -> str|int|None:
         """
@@ -122,7 +123,7 @@ class CachingDatabaseSearch(DatabaseSearch):
         search = self.cast_value(search_value, self.cast_search)
         reporter.report_debug(f"Finding id {search} - type {type(search)}")
 
-        return data.get(search, None)
+        return data[search]
 
     def get_query(self, conn: Connection) -> Select|TextClause:
         """

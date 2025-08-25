@@ -44,6 +44,7 @@ class DatabaseMatchFieldParser(FieldParser):
     POPULATE_KEY = "populate"
     STATIC_VALUE_KEY = "static"
     SQL_FILE_KEY = "sql_file"
+    CACHE_METHOD_KEY = "cache_method"
     FIXTURE_KEY = "fixture_key"
     fixture_map = {}
 
@@ -59,36 +60,78 @@ class DatabaseMatchFieldParser(FieldParser):
         filter_value = properties.get(self.FILTER_KEY, None)
         reporter = get_reporter()
         mapped_filtered = {}
+        database_search: DatabaseSearch|None = None
+
+        def build_database_search() -> DatabaseSearch:
+            """
+            Builds and configures a `DatabaseSearch` object based on provided filters and properties.
+
+            This method initializes and returns a `DatabaseSearch` instance. If `database_search`
+            is not already set, it evaluates filters and maps filter values as needed. It handles
+            values directly as well as those requiring additional processing, including resolving
+            through fixture maps or extracting search-related data.
+
+            Attributes
+            ----------
+            database_search : DatabaseSearch
+                Configured `DatabaseSearch` instance. Initializes if `None`.
+            mapped_filtered : dict
+                Dictionary of mapped filter values derived from `filter_value`.
+
+            Returns
+            -------
+            DatabaseSearch
+                A configured `DatabaseSearch` object initialized with the provided filters.
+
+            Parameters
+            ----------
+            None
+
+            Raises
+            ------
+            None
+
+            Notes
+            -----
+            - The method processes `filter_value` to map filters into `mapped_filtered`.
+            - For complex values in `filter_value`, it resolves fixture keys or search values.
+            - Updates the `fixture_map` with resolved identifiers for future references.
+            """
+            nonlocal database_search, mapped_filtered
+            if database_search is None:
+                if filter_value and len(mapped_filtered) == 0:
+                    reporter.report_debug(f'Filter value {filter_value}')
+                    for key, value in filter_value.items():
+                        if isinstance(value, str) or isinstance(value, int) or isinstance(value, float):
+                            mapped_filtered[key] = value
+                        else:
+                            fixture_key = value.get(self.FIXTURE_KEY, None)
+                            if fixture_key is not None and fixture_key in self.fixture_map:
+                                mapped_filtered[key] = self.fixture_map[fixture_key]
+                                reporter.report_debug(f'Using fixture value {mapped_filtered[key]} for {key}')
+                                continue
+
+                            filter_search = self.__build_search_value(value)
+                            search_value = self.__get_search_value(data, value)
+                            filter_id = filter_search.get_mapped_id(search_value)
+                            mapped_filtered[key] = filter_id
+                            reporter.report_debug(f'Using filter value {filter_id} for {key}')
+
+                            if fixture_key is not None:
+                                self.fixture_map[fixture_key] = filter_id
+
+                database_search = self.__build_search_value(properties, filter=mapped_filtered)
+
+            return database_search
 
         def map_value(data: dict|pd.Series) -> str:
             if isinstance(data, pd.Series):
                 data = data.to_dict()
 
-            if filter_value and len(mapped_filtered) == 0:
-                reporter.report_debug(f'Filter value {filter_value}')
-                for key, value in filter_value.items():
-                    if isinstance(value, str) or isinstance(value, int) or isinstance(value, float):
-                        mapped_filtered[key] = value
-                    else:
-                        fixture_key = value.get(self.FIXTURE_KEY, None)
-                        if fixture_key is not None and fixture_key in self.fixture_map:
-                            mapped_filtered[key] = self.fixture_map[fixture_key]
-                            reporter.report_debug(f'Using fixture value {mapped_filtered[key]} for {key}')
-                            continue
-
-                        filter_search = self.__build_search_value(value)
-                        search_value = self.__get_search_value(data, value)
-                        filter_id = filter_search.get_mapped_id(search_value)
-                        mapped_filtered[key] = filter_id
-                        reporter.report_debug(f'Using filter value {filter_id} for {key}')
-
-                        if fixture_key is not None:
-                            self.fixture_map[fixture_key] = filter_id
-
-            database_search = self.__build_search_value(properties, filter=mapped_filtered)
+            search = build_database_search()
             search_value = self.__get_search_value(data, properties)
 
-            mapped_id = database_search.get_mapped_id(search_value)
+            mapped_id = search.get_mapped_id(search_value)
             reporter.report_debug(f'Database search {search_value} mapped to {mapped_id}')
 
             return mapped_id
@@ -104,6 +147,7 @@ class DatabaseMatchFieldParser(FieldParser):
         search_cast = properties.get(self.SEARCH_CAST_VALUE_KEY, None)
         value_cast = properties.get(self.VALUE_CAST_VALUE_KEY, None)
         sql_file = properties.get(self.SQL_FILE_KEY, None)
+        cache_method = properties.get(self.CACHE_METHOD_KEY, 'dict')
 
         if filter and len(filter) > 0:
             filter_value = filter
@@ -118,7 +162,8 @@ class DatabaseMatchFieldParser(FieldParser):
             cast_value=value_cast,
             filter=filter_value,
             populate=populate,
-            sql_file=sql_file
+            sql_file=sql_file,
+            cache_method=cache_method
         )
 
     def  __get_search_value(self, data: dict, properties: dict[str, str]) -> str:
