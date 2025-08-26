@@ -170,6 +170,25 @@ class ExcelFileLoader(FileLoader):
 
         return pd.read_excel(filename, sheet_name=kwargs["sheet"])
 
+    def can_yield(self, configuraton: FileLoaderConfiguration|None = None) -> bool:
+        return True
+
+    def yield_file(self, filename: str, **kwargs) -> Iterator[pd.DataFrame]:
+        """
+        Reads data from a file and yields it as a pandas DataFrame. Supports specifying
+        additional options like the sheet name for cases where the file format is
+        spreadsheet-based.
+
+        :param filename: The name of the file to be read.
+        :param kwargs: Arbitrary keyword arguments, such as 'sheet' for specifying
+            the sheet name when reading spreadsheet files.
+        :return: An iterator over the read pandas DataFrame.
+        :rtype: Iterator[pd.DataFrame]
+        """
+        yield self.read_file(filename, sheet=kwargs.get("sheet", None))
+
+
+
 class YamlFileLoader(FileLoader):
 
     def read_file(self, filename: str, **kwargs) -> pd.DataFrame:
