@@ -101,7 +101,7 @@ class CachingDatabaseSearch(DatabaseSearch):
         self.value_col = value_col
         self.cast_search = cast_search
         self.cast_value_type = cast_value
-        self.cached_data = defaultdict(lambda: None)
+        self.cached_data = {}
 
     def get_mapped_id(self, search_value: str|int) -> str|int|None:
         """
