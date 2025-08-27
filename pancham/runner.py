@@ -18,7 +18,7 @@ from .file_loader import FileLoader, ExcelFileLoader, YamlFileLoader, CsvFileLoa
 from .output_configuration import OutputWriter, OutputConfiguration
 from .pancham_configuration import PanchamConfiguration, OrderedPanchamConfiguration
 from .reporter import Reporter, PrintReporter, get_reporter
-from .integration.salesforce_output import SalesforceBulkOutputConfiguration
+from .integration import SalesforceBulkOutputConfiguration, SalesforceCsvBulkOutputConfiguration
 from .integration.salesforce_query_loader import SalesforceQueryLoader
 
 DEFAULT_LOADERS = {
@@ -58,7 +58,8 @@ DEFAULT_FIELD_PARSERS = [
 ]
 DEFAULT_OUTPUTS = [
     DatabaseOutput(),
-    SalesforceBulkOutputConfiguration()
+    SalesforceBulkOutputConfiguration(),
+    SalesforceCsvBulkOutputConfiguration()
 ]
 DEFAULT_VALIDATION_RULES = [
     NotNullValidation(),
