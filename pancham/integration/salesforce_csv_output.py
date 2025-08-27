@@ -55,6 +55,8 @@ class SalesforceCsvBulkOutputWriter(OutputWriter):
             ):
         super().__init__(configuration)
         self.csv_file = configuration.get('csv_file')
+        self.object_name = configuration.get('object_name')
+        self.method = configuration.get('method', 'insert')
 
 
     def write(self,
@@ -111,3 +113,28 @@ class SalesforceCsvBulkOutputWriter(OutputWriter):
                 failed = getattr(sf.bulk2, self.object_name).get_failed_records(job_id)
                 reporter.report_debug('failures', failed)
                 self.__save_handled_data(failed, failure_handler, loader)
+
+                
+    def __save_handled_data(self, data: str, handler_configuration: DataFrameConfiguration, loader: DataFrameLoader):
+        """
+        Handles the saving of processed data using a configured output writer.
+
+        This method reads data in CSV format, processes it into a pandas DataFrame, and
+        writes the result using the provided output writer instance. The handler
+        configuration must include the instance of an OutputWriter to determine how
+        and where the data is saved.
+
+        :param data: The string containing CSV formatted data to be handled and saved.
+        :type data: str
+        :param handler_configuration: A dictionary containing the configuration for the
+            output writer. Must include the key 'instance' associated with an
+            OutputWriter object.
+        :type handler_configuration: dict
+        :return: None
+        """
+        handler: OutputWriter = handler_configuration.output[0].primary_writer
+
+        df = pd.read_csv(StringIO(data))
+        processed = loader.process_dataframe(df, handler_configuration)
+        handler.write(processed, handler_configuration)
+
