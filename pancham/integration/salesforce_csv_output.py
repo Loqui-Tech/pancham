@@ -1,3 +1,5 @@
+from io import StringIO
+
 import pandas as pd
 
 from pancham.data_frame_configuration import DataFrameConfiguration
