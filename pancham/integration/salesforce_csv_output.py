@@ -40,7 +40,7 @@ class SalesforceCsvBulkOutputConfiguration(OutputConfiguration):
         :param configuration:
         :return:
         """
-        salesforce_configuration = self.extract_configuration_by_key(configuration, SALESFORCE_BULK)
+        salesforce_configuration = self.extract_configuration_by_key(configuration, SALESFORCE_CSV_BULK)
 
         return SalesforceCsvBulkOutputWriter(salesforce_configuration)
 
@@ -114,7 +114,7 @@ class SalesforceCsvBulkOutputWriter(OutputWriter):
                 reporter.report_debug('failures', failed)
                 self.__save_handled_data(failed, failure_handler, loader)
 
-                
+
     def __save_handled_data(self, data: str, handler_configuration: DataFrameConfiguration, loader: DataFrameLoader):
         """
         Handles the saving of processed data using a configured output writer.
