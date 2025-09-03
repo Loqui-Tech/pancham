@@ -98,7 +98,6 @@ class SalesforceBulkOutputWriter(OutputWriter):
         self.int_cols = configuration.get('int_cols', [])
         self.bool_cols = configuration.get('bool_cols', [])
         self.nullable_cols = configuration.get('nullable_cols', [])
-        self.external_id = configuration.get('external_id', None)
 
     def write(self,
               data: pd.DataFrame,
@@ -134,9 +133,9 @@ class SalesforceBulkOutputWriter(OutputWriter):
         reporter.report_debug(f'Writing to Salesforce Bulk', filename)
 
         if self.method == 'upsert':
-            results = getattr(sf.bulk2, self.object_name).upsert(filename, external_id_field=self.external_id)
+            results = getattr(sf.bulk2, self.object_name).upsert(filename)
         elif self.method == 'update':
-            results = getattr(sf.bulk2, self.object_name).update(filename, external_id_field=self.external_id)
+            results = getattr(sf.bulk2, self.object_name).update(filename)
         else:
             results = getattr(sf.bulk2, self.object_name).insert(filename)
 
